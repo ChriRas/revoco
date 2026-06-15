@@ -22,6 +22,7 @@ return [
         'email' => [
             'label' => 'E-Mail-Adresse',
             'error' => 'Bitte geben Sie Ihre E-Mail-Adresse ein.',
+            'invalid' => 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
         ],
         'order' => [
             'label' => 'Bestellnummer / Vertragsnummer',
@@ -42,6 +43,12 @@ return [
 
     'honeypot' => [
         'label' => 'Dieses Feld bitte frei lassen.',
+    ],
+
+    'success' => [
+        'title' => 'Eingang Ihres Widerrufs bestätigt',
+        'body' => 'Ihre Widerrufserklärung ist bei uns eingegangen und wird geprüft.',
+        'note' => 'Sie können dieses Fenster jetzt schließen.',
     ],
 
     'footer' => [
