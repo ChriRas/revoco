@@ -3,6 +3,8 @@
 /research/
 # Claude Code local settings
 /.claude/settings.local.json
+# CRAFT ephemeral slice plans (active plans + .next-id; archives live in .claude/project/slices/)
+/.claude/plans/
 # Local SQLite database (dev / operator data — never committed)
 /database/*.sqlite
 /database/*.sqlite-journal
