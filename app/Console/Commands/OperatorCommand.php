@@ -23,8 +23,8 @@ final class OperatorCommand extends Command
 
     public function handle(): int
     {
-        $email = (string) config('operator.email');
-        $password = (string) config('operator.password');
+        $email = is_string(config('operator.email')) ? config('operator.email') : '';
+        $password = is_string(config('operator.password')) ? config('operator.password') : '';
 
         if ($email === '') {
             $this->error('OPERATOR_EMAIL is not set. Aborting.');
