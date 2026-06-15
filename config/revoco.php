@@ -46,4 +46,24 @@ return [
 
     'privacy_url' => env('REVOCO_PRIVACY_URL', '#'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Delivery — merchant notification + optional ntfy push
+    |--------------------------------------------------------------------------
+    |
+    | Mail transport itself is configured via the standard MAIL_* env (config/mail).
+    | The merchant notification goes to MERCHANT_NOTIFICATION_EMAIL (when set).
+    | ntfy push is opt-in (NTFY_ENABLED) and data-minimal — see app/Services/Ntfy.
+    |
+    */
+
+    'merchant_email' => env('MERCHANT_NOTIFICATION_EMAIL'),
+
+    'ntfy' => [
+        'enabled' => (bool) env('NTFY_ENABLED', false),
+        'server' => env('NTFY_SERVER', 'https://ntfy.sh'),
+        'topic' => env('NTFY_TOPIC', ''),
+        'token' => env('NTFY_TOKEN'),
+    ],
+
 ];
