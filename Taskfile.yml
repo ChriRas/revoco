@@ -67,6 +67,11 @@ tasks:
     cmds:
       - "{{.DC}} run --rm --service-ports node npm run dev"
 
+  queue:
+    desc: Run the queue worker (processes withdrawal e-mails + ntfy push) — Ctrl-C to stop
+    cmds:
+      - "{{.RUN}} php artisan queue:work --tries=3"
+
   migrate:
     desc: Run database migrations
     cmds:
