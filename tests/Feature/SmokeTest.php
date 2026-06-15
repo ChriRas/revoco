@@ -1,5 +1,5 @@
 <?php
 
-it('serves the welcome page', function () {
+it('serves the withdrawal form on the root route', function () {
     $this->withoutVite()->get('/')->assertOk();
 });

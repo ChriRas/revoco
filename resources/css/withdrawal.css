@@ -1,0 +1,289 @@
+/* =============================================================================
+   Withdrawal form — neutral theme + token contract
+   -----------------------------------------------------------------------------
+   The whole appearance hangs off one variable contract (--wf-*), switched via
+   data-theme on the .wf-card. This repo ships the NEUTRAL theme plus the
+   mechanism only; concrete brand overlays live in the private infra repo.
+   ============================================================================ */
+
+/* ---------------------------------------------------------------------------
+   1) THEME CONTRACT — default = neutral (also addressable as [data-theme="neutral"])
+   Every visible property reads from these variables.
+   --------------------------------------------------------------------------- */
+.wf-card,
+.wf-card[data-theme="neutral"] {
+    --wf-font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
+    --wf-font-display: var(--wf-font);
+
+    --wf-card-bg: #ffffff;
+    --wf-card-border: #e1e6ec;
+    --wf-card-radius: 18px;
+    --wf-rail: linear-gradient(90deg, #33576f 0%, #5b8aa6 100%);
+
+    --wf-fg: #1b1f26;
+    --wf-heading-fg: #161b22;
+    --wf-muted: #5d6776;
+    --wf-border: #e4e8ee;
+
+    --wf-input-bg: #fbfcfd;
+    --wf-input-border: #d3dae2;
+    --wf-input-fg: #1b1f26;
+    --wf-input-radius: 12px;
+    --wf-placeholder: #9aa3b0;
+
+    --wf-accent: #33576f;
+    --wf-accent-hover: #284559;
+    --wf-focus-ring: rgba(51, 87, 111, .22);
+
+    --wf-btn-bg: #1e2630;
+    --wf-btn-hover: #11171f;
+    --wf-btn-fg: #ffffff;
+    --wf-btn-radius: 12px;
+
+    --wf-label-fg: #2a3038;
+    --wf-label-transform: none;
+    --wf-label-spacing: 0;
+    --wf-label-weight: 600;
+
+    --wf-badge-bg: #eef1f4;
+    --wf-badge-fg: #5d6776;
+
+    --wf-danger: #d23f31;
+
+    --wf-page-foot-fg: #5d6776;
+    --wf-shadow: 0 18px 50px rgba(20, 33, 48, .10);
+}
+
+/* ---------------------------------------------------------------------------
+   Brand overlay extension hook — EXAMPLE ONLY (commented out).
+   To add a brand theme: override the --wf-* contract under a new data-theme
+   and set APP_THEME to its name. Real overlays (with logos, fonts and colours)
+   live in the private infra repo and are mounted at deploy time — never here.
+   --------------------------------------------------------------------------- */
+/*
+.wf-card[data-theme="example"] {
+    --wf-rail: linear-gradient(90deg, #6d28d9 0%, #a78bfa 100%);
+    --wf-accent: #6d28d9;
+    --wf-accent-hover: #5b21b6;
+    --wf-focus-ring: rgba(109, 40, 217, .25);
+    --wf-btn-bg: #6d28d9;
+    --wf-btn-hover: #5b21b6;
+}
+*/
+
+/* ---------------------------------------------------------------------------
+   2) PAGE / RESET
+   --------------------------------------------------------------------------- */
+.wf-page *,
+.wf-page *::before,
+.wf-page *::after { box-sizing: border-box; }
+
+.wf-page {
+    margin: 0;
+    min-height: 100dvh;
+    font-family: var(--wf-page-font, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif);
+    background:
+        radial-gradient(1200px 600px at 50% -10%, rgba(51, 87, 111, .05), transparent 60%),
+        #e9edf2;
+    color: #1b1f26;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: clamp(16px, 4vw, 56px) clamp(14px, 4vw, 32px) 28px;
+    gap: clamp(16px, 3vw, 28px);
+}
+
+/* ---------------------------------------------------------------------------
+   3) CARD
+   --------------------------------------------------------------------------- */
+.wf-shell { width: 100%; max-width: 660px; display: flex; justify-content: center; }
+
+.wf-card {
+    width: 100%;
+    position: relative;
+    background: var(--wf-card-bg);
+    border: 1px solid var(--wf-card-border);
+    border-radius: var(--wf-card-radius);
+    box-shadow: var(--wf-shadow);
+    overflow: hidden;
+    font-family: var(--wf-font);
+    color: var(--wf-fg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* slim accent rail on top */
+.wf-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: var(--wf-rail);
+}
+
+/* Utility bar: logo slot left (neutral = empty, reserved space) */
+.wf-utility {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: clamp(30px, 5vw, 38px);
+    padding: clamp(18px, 3vw, 26px) clamp(20px, 4vw, 38px) 0;
+}
+.wf-logo {
+    flex: 0 0 auto;
+    height: var(--wf-logo-h, clamp(30px, 5vw, 38px));
+    width: var(--wf-logo-w, auto);
+    max-height: clamp(30px, 5vw, 38px);
+    background-size: contain;
+}
+
+/* ---------------------------------------------------------------------------
+   4) PANEL / HEADER
+   --------------------------------------------------------------------------- */
+.wf-panel { padding: clamp(18px, 3.4vw, 30px) clamp(20px, 4vw, 38px) clamp(20px, 3.4vw, 30px); }
+
+.wf-head { margin-bottom: clamp(18px, 3vw, 26px); }
+.wf-title {
+    margin: 0;
+    font-family: var(--wf-font-display);
+    color: var(--wf-heading-fg);
+    font-weight: 800;
+    letter-spacing: -.015em;
+    line-height: 1.12;
+    font-size: clamp(1.55rem, 1.15rem + 1.7vw, 2.05rem);
+}
+.wf-sub { margin: .55rem 0 0; color: var(--wf-muted); font-size: 1rem; line-height: 1.5; max-width: 46ch; }
+
+/* ---------------------------------------------------------------------------
+   5) FIELDS
+   --------------------------------------------------------------------------- */
+.wf-form { display: flex; flex-direction: column; gap: clamp(16px, 2.6vw, 20px); }
+.wf-grid { display: grid; grid-template-columns: 1fr; gap: clamp(16px, 2.6vw, 20px); }
+.wf-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.wf-field--full { grid-column: 1 / -1; }
+
+.wf-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+    font-size: .92rem;
+    line-height: 1.3;
+    font-weight: var(--wf-label-weight);
+    color: var(--wf-label-fg);
+    text-transform: var(--wf-label-transform);
+    letter-spacing: var(--wf-label-spacing);
+}
+.wf-req {
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--wf-badge-bg);
+    color: var(--wf-badge-fg);
+    text-transform: none;
+}
+.wf-optional { font-size: .74rem; font-weight: 500; color: var(--wf-muted); letter-spacing: 0; text-transform: none; }
+
+.wf-input {
+    width: 100%;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--wf-input-fg);
+    background: var(--wf-input-bg);
+    border: 1.5px solid var(--wf-input-border);
+    border-radius: var(--wf-input-radius);
+    padding: 13px 15px;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.wf-input::placeholder { color: var(--wf-placeholder); }
+.wf-input:hover { border-color: color-mix(in srgb, var(--wf-accent) 35%, var(--wf-input-border)); }
+.wf-input:focus {
+    outline: none;
+    border-color: var(--wf-accent);
+    box-shadow: 0 0 0 4px var(--wf-focus-ring);
+}
+
+/* error state — toggled by .is-invalid (server-side validation lands in slice-003) */
+.wf-field.is-invalid .wf-input {
+    border-color: var(--wf-danger);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--wf-danger) 18%, transparent);
+}
+.wf-error {
+    display: none;
+    align-items: flex-start;
+    gap: 7px;
+    color: var(--wf-danger);
+    font-size: .86rem;
+    line-height: 1.4;
+}
+.wf-field.is-invalid .wf-error { display: flex; }
+.wf-error svg { flex: none; width: 16px; height: 16px; margin-top: 1px; }
+
+/* honeypot: present in markup, hidden from users and assistive tech */
+.wf-hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+   6) ACTION
+   --------------------------------------------------------------------------- */
+.wf-actions { display: flex; flex-direction: column; gap: 12px; margin-top: 6px; }
+.wf-btn {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    font-size: 1.02rem;
+    letter-spacing: .01em;
+    color: var(--wf-btn-fg);
+    background: var(--wf-btn-bg);
+    border-radius: var(--wf-btn-radius);
+    padding: 15px 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background .15s, transform .08s, box-shadow .15s;
+    box-shadow: 0 8px 22px color-mix(in srgb, var(--wf-btn-bg) 28%, transparent);
+}
+.wf-btn:hover { background: var(--wf-btn-hover); }
+.wf-btn:active { transform: translateY(1px); }
+.wf-btn:focus-visible { outline: 3px solid var(--wf-focus-ring); outline-offset: 3px; }
+.wf-btn svg { width: 18px; height: 18px; }
+.wf-hint { font-size: .82rem; color: var(--wf-muted); text-align: center; }
+
+/* ---------------------------------------------------------------------------
+   7) PAGE FOOTER
+   --------------------------------------------------------------------------- */
+.wf-page-foot { display: flex; gap: 26px; justify-content: center; flex-wrap: wrap; padding-top: 6px; }
+.wf-page-foot a {
+    color: var(--wf-page-foot-fg);
+    text-decoration: none;
+    font-size: .92rem;
+    font-weight: 500;
+    transition: color .15s;
+}
+.wf-page-foot a:hover { text-decoration: underline; }
+
+/* ---------------------------------------------------------------------------
+   8) RESPONSIVE + MOTION
+   --------------------------------------------------------------------------- */
+@media (max-width: 560px) {
+    .wf-utility { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .wf-page *,
+    .wf-page *::before,
+    .wf-page *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
