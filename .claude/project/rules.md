@@ -16,6 +16,19 @@
 - **Infra:** Docker, GitHub Actions (CI: tests + image build to a registry). Generic, env-driven containers; operator deployment is out of this repo.
 - **Package Manager:** Composer (PHP), npm (assets).
 
+## Container & Dev Environment
+
+- **Base images:** Alpine + current stable/LTS, verified live (never Debian oldstable):
+  `php:8.5-fpm-alpine`, `nginx:1.30-alpine`, `node:24-alpine`.
+- **Runtime:** php-fpm + nginx (two containers) — not FrankenPHP/Sail; no dev/prod drift.
+- **Multi-stage Dockerfile** (`base → with-composer → dev`; `build`/`assets → prod`): the
+  prod image is Composer-, dev-dependency- and test-free.
+- **Node is build-only** — kept out of the PHP image, run as a profiled `node` compose
+  service (Vite).
+- **Task (go-task)** is the single host orchestrator; all PHP/Node tooling runs in
+  containers (no local runtimes). `task check` = Pint + PHPStan + Pest is the pre-commit gate.
+- **SQLite** persists as a bind-mounted file in dev (no DB service); dev stack on `localhost:8580`.
+
 ## Personality
 
 - **Stack-Pack:** stack-php-laravel

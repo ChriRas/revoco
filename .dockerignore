@@ -1,0 +1,32 @@
+# Build-context excludes. Keeps the image lean and the prod stage test-free.
+# Local dev uses bind mounts (docker-compose), which ignore this file.
+
+.git
+.gitignore
+.idea
+.claude
+research
+
+# Dependencies are installed inside the image, never copied from the host.
+vendor
+node_modules
+
+# Secrets / local env — only the example ships.
+.env
+.env.*
+!.env.example
+
+# Tooling / orchestration not needed inside the image.
+# (docker/ stays in context — the prod stage copies docker/php/opcache.ini.)
+Taskfile.yml
+docker-compose.yml
+docker-compose.*.yml
+
+# Tests never enter the production image (slice-001 decision D2: test-free prod).
+tests
+
+# Runtime artifacts.
+storage/logs/*
+*.sqlite
+public/build
+public/hot

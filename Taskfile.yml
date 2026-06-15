@@ -1,0 +1,116 @@
+# Revoco task runner (https://taskfile.dev).
+# All PHP/Node tooling runs inside the dev container — no local PHP/Composer/Node needed.
+# Tooling tasks use `run --rm --no-deps`, so they work even when the stack is down.
+version: '3'
+
+vars:
+  DC: docker compose
+  EXEC: docker compose exec app
+  RUN: docker compose run --rm --no-deps app
+  # `run` starts the profiled `node` service on demand — no `--profile tools` needed.
+  RUN_NODE: docker compose run --rm --no-deps node
+
+tasks:
+  default:
+    desc: List available tasks
+    cmds:
+      - task --list
+    silent: true
+
+  up:
+    desc: Start the dev stack (builds the image on first run) — http://localhost:8580
+    cmds:
+      - "{{.DC}} up -d"
+
+  down:
+    desc: Stop and remove the dev stack
+    cmds:
+      - "{{.DC}} down"
+
+  restart:
+    desc: Restart the dev stack
+    cmds:
+      - "{{.DC}} restart"
+
+  build:
+    desc: (Re)build the dev image — run after changing the Dockerfile
+    cmds:
+      - "{{.DC}} build"
+
+  logs:
+    desc: Follow the stack logs (Ctrl-C to stop)
+    cmds:
+      - "{{.DC}} logs -f"
+
+  shell:
+    desc: Open a shell in the running app container (requires `task up`)
+    cmds:
+      - "{{.EXEC}} sh"  # Alpine image ships busybox sh, not bash
+
+  composer:
+    desc: 'Run Composer in the container — e.g. task composer -- require vendor/pkg'
+    cmds:
+      - "{{.RUN}} composer {{.CLI_ARGS}}"
+
+  artisan:
+    desc: 'Run Artisan — e.g. task artisan -- migrate'
+    cmds:
+      - "{{.RUN}} php artisan {{.CLI_ARGS}}"
+
+  npm:
+    desc: 'Run npm in the Node container — e.g. task npm -- install'
+    cmds:
+      - "{{.RUN_NODE}} npm {{.CLI_ARGS}}"
+
+  dev:
+    desc: Start the Vite dev server (HMR) on http://localhost:5173
+    cmds:
+      - "{{.DC}} run --rm --service-ports node npm run dev"
+
+  migrate:
+    desc: Run database migrations
+    cmds:
+      - "{{.RUN}} php artisan migrate"
+
+  fresh:
+    desc: Drop all tables and re-run migrations
+    cmds:
+      - "{{.RUN}} php artisan migrate:fresh"
+
+  test:
+    desc: 'Run the Pest test suite — e.g. task test -- --filter=Smoke'
+    cmds:
+      - "{{.RUN}} ./vendor/bin/pest {{.CLI_ARGS}}"
+
+  pint:
+    desc: 'Run Laravel Pint (fixes) — use: task pint -- --test to only check'
+    cmds:
+      - "{{.RUN}} ./vendor/bin/pint {{.PINT_ARGS | default .CLI_ARGS}}"
+
+  stan:
+    desc: Run PHPStan/Larastan (level max)
+    cmds:
+      - "{{.RUN}} ./vendor/bin/phpstan analyse --no-progress --memory-limit=1G {{.CLI_ARGS}}"
+
+  check:
+    desc: Run all quality gates (Pint --test, PHPStan, Pest) — the pre-commit gate
+    cmds:
+      - task: pint
+        vars: { PINT_ARGS: '--test' }
+      - task: stan
+      - task: test
+
+  assets:
+    desc: Build front-end assets with Vite
+    cmds:
+      - "{{.RUN_NODE}} npm run build"
+
+  init:
+    desc: One-time bootstrap on a fresh checkout — build image, install deps, build assets
+    cmds:
+      - "{{.DC}} build"
+      - "{{.RUN}} composer install"
+      - "{{.RUN_NODE}} npm install"
+      - "{{.RUN_NODE}} npm run build"
+      - "{{.RUN}} php artisan key:generate"
+      - "{{.RUN}} php artisan migrate"
