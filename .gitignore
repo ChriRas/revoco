@@ -1,0 +1,10 @@
+# Research material — read-only reference, never committed (see rules.md)
+/research/
+
+# IDE
+/.idea/
+
+# Claude Code local settings
+/.claude/settings.local.json
+
+# (The full Laravel .gitignore is added with the scaffold in Phase 1.)
