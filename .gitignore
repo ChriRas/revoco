@@ -1,10 +1,37 @@
+# --- Revoco project-specific ---
 # Research material — read-only reference, never committed (see rules.md)
 /research/
-
-# IDE
-/.idea/
-
 # Claude Code local settings
 /.claude/settings.local.json
+# Local SQLite database (dev / operator data — never committed)
+/database/*.sqlite
+/database/*.sqlite-journal
 
-# (The full Laravel .gitignore is added with the scaffold in Phase 1.)
+# --- Laravel defaults ---
+*.log
+.DS_Store
+.env
+.env.backup
+.env.production
+.phpactor.json
+.phpunit.result.cache
+/.codex
+/.cursor/
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+/auth.json
+/node_modules
+/public/build
+/public/fonts-manifest.dev.json
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/vendor
+_ide_helper.php
+Homestead.json
+Homestead.yaml
+Thumbs.db
