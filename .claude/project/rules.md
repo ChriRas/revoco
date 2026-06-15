@@ -43,7 +43,7 @@
 
 ## Workflow Rules
 
-- The withdrawal submit must never fail on an external dependency (SMTP, push, shop) — async via queue is mandatory.
+- The withdrawal submit must never fail on an external dependency (SMTP, push, shop) — async via queue is mandatory. The delivery model (event → queued fan-out, ack-always, PII-free push) lives in [`design/delivery.md`](./design/delivery.md).
 - Tests green before commit; Pint + PHPStan (level max) before commit.
 - No direct push to `main` — always via PR.
 - Keep versions current; upgrades are their own slices behind green gates.
