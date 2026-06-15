@@ -42,4 +42,12 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /** Indicate that this user is a Filament panel operator. */
+    public function operator(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_operator' => true,
+        ]);
+    }
 }

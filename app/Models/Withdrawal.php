@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\WithdrawalFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
@@ -24,6 +26,9 @@ use Illuminate\Support\Carbon;
  */
 final class Withdrawal extends Model
 {
+    /** @use HasFactory<WithdrawalFactory> */
+    use HasFactory;
+
     /** @var list<string> */
     protected $fillable = [
         'name',
