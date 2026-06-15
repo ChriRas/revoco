@@ -11,6 +11,7 @@ use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Resources\Pages\PageRegistration;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -26,7 +27,6 @@ final class WithdrawalResource extends Resource
 {
     protected static ?string $model = Withdrawal::class;
 
-    /** @var string|BackedEnum|null */
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?string $navigationLabel = 'Withdrawals';
@@ -176,7 +176,7 @@ final class WithdrawalResource extends Resource
             ]);
     }
 
-    /** @return array<string, \Filament\Resources\Pages\PageRegistration> */
+    /** @return array<string, PageRegistration> */
     public static function getPages(): array
     {
         return [
