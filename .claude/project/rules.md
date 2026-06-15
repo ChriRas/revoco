@@ -58,6 +58,9 @@
 
 ## Tabus (Anti-Patterns)
 
+> The § 356a-derived rules below (never-block, mandatory-field limit, no ad in the
+> acknowledgment) are grounded in [`design/legal-compliance.md`](./design/legal-compliance.md).
+
 - No hard blocking of the submit via spam signals or captcha — signals classify only.
 - No mandatory fields beyond name / contract identification / e-mail; no advertising in the acknowledgment e-mail.
 - **No operator/infra specifics in this public repo** — real domains, IPs, hosting, reverse-proxy/VPN details, secrets, and brand assets live in the private infra repo. Ship placeholders + `.env.example` only.
