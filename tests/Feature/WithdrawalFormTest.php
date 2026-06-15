@@ -32,11 +32,6 @@ it('exposes a named store route for the form action', function () {
         ->assertSee('action="'.route('withdrawal.store').'"', false);
 });
 
-it('answers the store stub with 501 until slice-003 implements it', function () {
-    // Placeholder contract: the named route resolves, the handler is not yet built.
-    $this->post(route('withdrawal.store'))->assertStatus(501);
-});
-
 it('applies the configured theme to the form card', function () {
     // config('revoco.theme') is backed by env('APP_THEME'); overriding the
     // resolved config value exercises the same data-theme mechanism.

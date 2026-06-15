@@ -49,6 +49,8 @@
     --wf-badge-fg: #5d6776;
 
     --wf-danger: #d23f31;
+    --wf-success: #2e9e6a;
+    --wf-success-bg: #e7f7ef;
 
     --wf-page-foot-fg: #5d6776;
     --wf-shadow: 0 18px 50px rgba(20, 33, 48, .10);
@@ -261,7 +263,33 @@
 .wf-hint { font-size: .82rem; color: var(--wf-muted); text-align: center; }
 
 /* ---------------------------------------------------------------------------
-   7) PAGE FOOTER
+   7) SUCCESS STATE (withdrawal.success page)
+   --------------------------------------------------------------------------- */
+.wf-success { text-align: center; padding-top: clamp(8px, 2vw, 18px); }
+.wf-check {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    margin: 0 auto clamp(20px, 3vw, 30px);
+    background: var(--wf-success-bg);
+    color: var(--wf-success);
+    display: grid;
+    place-items: center;
+}
+.wf-check svg { width: 46px; height: 46px; }
+.wf-success-title {
+    margin: 0;
+    font-family: var(--wf-font-display);
+    color: var(--wf-heading-fg);
+    font-weight: 800;
+    letter-spacing: -.015em;
+    line-height: 1.15;
+    font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2rem);
+}
+.wf-success-text { margin: 14px auto 0; color: var(--wf-muted); font-size: 1.02rem; line-height: 1.55; max-width: 42ch; }
+
+/* ---------------------------------------------------------------------------
+   8) PAGE FOOTER
    --------------------------------------------------------------------------- */
 .wf-page-foot { display: flex; gap: 26px; justify-content: center; flex-wrap: wrap; padding-top: 6px; }
 .wf-page-foot a {
@@ -274,7 +302,7 @@
 .wf-page-foot a:hover { text-decoration: underline; }
 
 /* ---------------------------------------------------------------------------
-   8) RESPONSIVE + MOTION
+   9) RESPONSIVE + MOTION
    --------------------------------------------------------------------------- */
 @media (max-width: 560px) {
     .wf-utility { flex-wrap: wrap; }

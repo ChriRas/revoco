@@ -1,5 +1,6 @@
 @import 'tailwindcss';
-@import './withdrawal.css';
+/* withdrawal.css is inlined as critical CSS in the layout <head> (no FOUC) and is
+   intentionally NOT bundled here — these public pages don't load this Tailwind build. */
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
