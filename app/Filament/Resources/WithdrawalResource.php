@@ -111,8 +111,7 @@ final class WithdrawalResource extends Resource
                     ->action(function (Withdrawal $record): void {
                         $record->handled_at = $record->isHandled() ? null : Carbon::now();
                         $record->save();
-                    })
-                    ->requiresConfirmation(false),
+                    }),
             ])
             ->bulkActions([])
             ->recordAction(null)

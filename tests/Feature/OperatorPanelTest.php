@@ -197,3 +197,9 @@ it('fails gracefully when OPERATOR_EMAIL is missing', function () {
 
     $this->artisan('app:operator')->assertFailed();
 });
+
+it('fails gracefully when OPERATOR_PASSWORD is missing', function () {
+    config(['operator.email' => 'operator@example.com', 'operator.password' => '']);
+
+    $this->artisan('app:operator')->assertFailed();
+});
