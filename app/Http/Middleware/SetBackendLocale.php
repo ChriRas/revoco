@@ -25,7 +25,7 @@ final class SetBackendLocale
     public function handle(Request $request, Closure $next): Response
     {
         /** @var list<string> $supported */
-        $supported = config('operator.supported_locales', [self::DEFAULT_LOCALE, 'de']);
+        $supported = config('operator.supported_locales', [self::DEFAULT_LOCALE]);
 
         /** @var string $configured */
         $configured = config('operator.locale', self::DEFAULT_LOCALE);
