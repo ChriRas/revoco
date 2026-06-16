@@ -26,7 +26,8 @@ it('redirects guests away from admin login to a login page (not exposing data)',
 
 it('allows an operator to access the admin panel', function () {
     $operator = User::factory()->operator()->create();
-    $this->actingAs($operator)->get('/admin')->assertOk();
+    // /admin redirects to the Withdrawals list (homeUrl) — follow the redirect
+    $this->actingAs($operator)->get('/admin')->assertRedirectContains('/admin/withdrawals');
 });
 
 it('blocks a non-operator user from the admin panel', function () {

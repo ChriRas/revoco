@@ -49,28 +49,19 @@ final class WithdrawalResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('email')
-                    ->label('Email')
-                    ->searchable()
-                    ->sortable(),
-
                 TextColumn::make('order_number')
                     ->label('Order #')
                     ->searchable()
                     ->placeholder('—'),
 
-                TextColumn::make('subject')
-                    ->label('Subject')
-                    ->searchable()
-                    ->limit(60),
-
                 IconColumn::make('spam')
-                    ->label('Spam')
+                    ->label('No Spam')
                     ->boolean()
-                    ->trueIcon('heroicon-o-exclamation-triangle')
-                    ->falseIcon('heroicon-o-check-circle')
-                    ->trueColor('danger')
-                    ->falseColor('success'),
+                    ->getStateUsing(fn (Withdrawal $record): bool => ! $record->spam)
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-exclamation-triangle')
+                    ->trueColor('success')
+                    ->falseColor('danger'),
 
                 IconColumn::make('handled_at')
                     ->label('Handled')
