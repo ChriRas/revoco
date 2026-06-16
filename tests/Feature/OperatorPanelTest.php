@@ -25,14 +25,9 @@ it('redirects guests away from admin login to a login page (not exposing data)',
 });
 
 it('allows an operator to access the admin panel', function () {
-    $operator = User::factory()->operator()->create();
+    $operator = User::factory()->create();
     // /admin redirects to the Withdrawals list (homeUrl) — follow the redirect
     $this->actingAs($operator)->get('/admin')->assertRedirectContains('/admin/withdrawals');
-});
-
-it('blocks a non-operator user from the admin panel', function () {
-    $plain = User::factory()->create(['is_operator' => false]);
-    $this->actingAs($plain)->get('/admin')->assertForbidden();
 });
 
 // ---------------------------------------------------------------------------
@@ -40,7 +35,7 @@ it('blocks a non-operator user from the admin panel', function () {
 // ---------------------------------------------------------------------------
 
 it('shows withdrawal records to the operator', function () {
-    $operator = User::factory()->operator()->create();
+    $operator = User::factory()->create();
     $withdrawals = Withdrawal::factory()->count(3)->create();
 
     $this->actingAs($operator);
@@ -54,7 +49,7 @@ it('shows withdrawal records to the operator', function () {
 // ---------------------------------------------------------------------------
 
 it('filters withdrawals by name search', function () {
-    $operator = User::factory()->operator()->create();
+    $operator = User::factory()->create();
     $match = Withdrawal::factory()->create(['name' => 'Max Mustermann']);
     $other = Withdrawal::factory()->create(['name' => 'Jane Doe']);
 
@@ -71,7 +66,7 @@ it('filters withdrawals by name search', function () {
 // ---------------------------------------------------------------------------
 
 it('filters withdrawals by handled status', function () {
-    $operator = User::factory()->operator()->create();
+    $operator = User::factory()->create();
     $handled = Withdrawal::factory()->handled()->create();
     $unhandled = Withdrawal::factory()->create();
 
@@ -84,7 +79,7 @@ it('filters withdrawals by handled status', function () {
 });
 
 it('filters withdrawals by spam status', function () {
-    $operator = User::factory()->operator()->create();
+    $operator = User::factory()->create();
     $spam = Withdrawal::factory()->spam()->create();
     $clean = Withdrawal::factory()->create();
 
@@ -101,7 +96,7 @@ it('filters withdrawals by spam status', function () {
 // ---------------------------------------------------------------------------
 
 it('marks a withdrawal as handled via the table action', function () {
-    $operator = User::factory()->operator()->create();
+    $operator = User::factory()->create();
     $withdrawal = Withdrawal::factory()->create(['handled_at' => null]);
 
     $this->actingAs($operator);
@@ -113,7 +108,7 @@ it('marks a withdrawal as handled via the table action', function () {
 });
 
 it('clears handled_at when toggled again', function () {
-    $operator = User::factory()->operator()->create();
+    $operator = User::factory()->create();
     $withdrawal = Withdrawal::factory()->handled()->create();
 
     $this->actingAs($operator);
@@ -129,7 +124,7 @@ it('clears handled_at when toggled again', function () {
 // ---------------------------------------------------------------------------
 
 it('has no create action on the list page', function () {
-    $operator = User::factory()->operator()->create();
+    $operator = User::factory()->create();
     Withdrawal::factory()->count(2)->create();
 
     $this->actingAs($operator);
@@ -139,7 +134,7 @@ it('has no create action on the list page', function () {
 });
 
 it('has no edit action on the list page', function () {
-    $operator = User::factory()->operator()->create();
+    $operator = User::factory()->create();
     $withdrawal = Withdrawal::factory()->create();
 
     $this->actingAs($operator);
@@ -149,7 +144,7 @@ it('has no edit action on the list page', function () {
 });
 
 it('has no delete action on the list page', function () {
-    $operator = User::factory()->operator()->create();
+    $operator = User::factory()->create();
     $withdrawal = Withdrawal::factory()->create();
 
     $this->actingAs($operator);
@@ -168,7 +163,6 @@ it('creates an operator user from env when running app:operator', function () {
     $this->artisan('app:operator')->assertSuccessful();
 
     $user = User::where('email', 'test@example.com')->firstOrFail();
-    expect($user->is_operator)->toBeTrue();
     expect($user->email)->toBe('test@example.com');
 });
 

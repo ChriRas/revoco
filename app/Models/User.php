@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'is_operator'])]
+#[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 final class User extends Authenticatable implements FilamentUser
 {
@@ -21,12 +21,14 @@ final class User extends Authenticatable implements FilamentUser
     use HasFactory, Notifiable;
 
     /**
-     * Grant panel access only to users flagged as operators.
-     * The `is_operator` column is set by the `app:operator` command.
+     * Every authenticated User is an operator — public registration is closed
+     * and the only user-creation path is the `app:operator` command. There is
+     * no second role, so this can safely return true unconditionally.
+     * Revisit only if a second role is ever introduced (currently a Non-Goal).
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return (bool) $this->is_operator;
+        return true;
     }
 
     /**
@@ -39,7 +41,6 @@ final class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'is_operator' => 'boolean',
         ];
     }
 }

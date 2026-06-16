@@ -44,7 +44,6 @@ final class OperatorCommand extends Command
             [
                 'name' => 'Operator',
                 'password' => Hash::make($password),
-                'is_operator' => true,
             ],
         );
 
