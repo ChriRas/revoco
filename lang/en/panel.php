@@ -1,0 +1,70 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+| Operator panel UI strings — English (source of truth).
+| Must be COMPLETE: APP_FALLBACK_LOCALE=de means any missing key falls back to
+| German, leaking consumer-facing copy into the English operator panel.
+*/
+
+return [
+
+    'resource' => [
+        'navigation_label' => 'Withdrawals',
+        'model_label' => 'Withdrawal',
+        'plural_model_label' => 'Withdrawals',
+    ],
+
+    'column' => [
+        'received' => 'Received',
+        'name' => 'Name',
+        'order_number' => 'Order #',
+        'no_spam' => 'No Spam',
+        'handled' => 'Handled',
+    ],
+
+    'filter' => [
+        'handled_status' => 'Handled status',
+        'handled_only' => 'Handled only',
+        'unhandled_only' => 'Unhandled only',
+        'spam_status' => 'Spam status',
+        'spam_only' => 'Spam only',
+        'not_spam_only' => 'Not spam only',
+        'date_range' => 'Date range',
+        'date_from' => 'From',
+        'date_until' => 'Until',
+    ],
+
+    'action' => [
+        'mark_handled' => 'Mark handled',
+        'unmark_handled' => 'Unmark handled',
+    ],
+
+    'infolist' => [
+        'section' => [
+            'submitter' => 'Submitter details',
+            'statement' => 'Withdrawal statement',
+            'triage' => 'Triage',
+            'status' => 'Status & timestamps',
+        ],
+        'field' => [
+            'name' => 'Name',
+            'email' => 'Email',
+            'order_number' => 'Order number',
+            'locale' => 'Locale',
+            'subject' => 'Subject',
+            'spam_signal' => 'Spam signal',
+            'spam_reason' => 'Spam reason',
+            'handled_at' => 'Handled at',
+            'received_at' => 'Received at',
+            'last_updated' => 'Last updated',
+        ],
+        'spam' => [
+            'yes' => 'Spam',
+            'no' => 'Not spam',
+        ],
+        'not_handled' => 'Not handled',
+    ],
+
+];

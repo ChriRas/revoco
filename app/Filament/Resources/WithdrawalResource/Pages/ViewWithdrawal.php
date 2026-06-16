@@ -23,8 +23,8 @@ final class ViewWithdrawal extends ViewRecord
         return [
             Action::make('toggle_handled')
                 ->label(fn (): string => $this->record instanceof Withdrawal && $this->record->isHandled()
-                    ? 'Unmark handled'
-                    : 'Mark handled')
+                    ? __('panel.action.unmark_handled')
+                    : __('panel.action.mark_handled'))
                 ->icon(fn (): string => $this->record instanceof Withdrawal && $this->record->isHandled()
                     ? 'heroicon-o-x-circle'
                     : 'heroicon-o-check-circle')

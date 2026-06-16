@@ -29,33 +29,42 @@ final class WithdrawalResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationLabel = 'Withdrawals';
+    public static function getNavigationLabel(): string
+    {
+        return __('panel.resource.navigation_label');
+    }
 
-    protected static ?string $modelLabel = 'Withdrawal';
+    public static function getModelLabel(): string
+    {
+        return __('panel.resource.model_label');
+    }
 
-    protected static ?string $pluralModelLabel = 'Withdrawals';
+    public static function getPluralModelLabel(): string
+    {
+        return __('panel.resource.plural_model_label');
+    }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 TextColumn::make('created_at')
-                    ->label('Received')
+                    ->label(__('panel.column.received'))
                     ->dateTime('d.m.Y H:i', 'Europe/Berlin')
                     ->sortable(),
 
                 TextColumn::make('name')
-                    ->label('Name')
+                    ->label(__('panel.column.name'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('order_number')
-                    ->label('Order #')
+                    ->label(__('panel.column.order_number'))
                     ->searchable()
                     ->placeholder('—'),
 
                 IconColumn::make('spam')
-                    ->label('No Spam')
+                    ->label(__('panel.column.no_spam'))
                     ->boolean()
                     ->getStateUsing(fn (Withdrawal $record): bool => ! $record->spam)
                     ->trueIcon('heroicon-o-check-circle')
@@ -64,7 +73,7 @@ final class WithdrawalResource extends Resource
                     ->falseColor('danger'),
 
                 IconColumn::make('handled_at')
-                    ->label('Handled')
+                    ->label(__('panel.column.handled'))
                     ->boolean()
                     ->getStateUsing(fn (Withdrawal $record): bool => $record->isHandled())
                     ->trueIcon('heroicon-o-check-circle')
@@ -75,21 +84,21 @@ final class WithdrawalResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->filters([
                 TernaryFilter::make('handled_at')
-                    ->label('Handled status')
+                    ->label(__('panel.filter.handled_status'))
                     ->nullable()
-                    ->trueLabel('Handled only')
-                    ->falseLabel('Unhandled only'),
+                    ->trueLabel(__('panel.filter.handled_only'))
+                    ->falseLabel(__('panel.filter.unhandled_only')),
 
                 TernaryFilter::make('spam')
-                    ->label('Spam status')
-                    ->trueLabel('Spam only')
-                    ->falseLabel('Not spam only'),
+                    ->label(__('panel.filter.spam_status'))
+                    ->trueLabel(__('panel.filter.spam_only'))
+                    ->falseLabel(__('panel.filter.not_spam_only')),
 
                 Filter::make('date_range')
-                    ->label('Date range')
+                    ->label(__('panel.filter.date_range'))
                     ->form([
-                        DatePicker::make('from')->label('From'),
-                        DatePicker::make('until')->label('Until'),
+                        DatePicker::make('from')->label(__('panel.filter.date_from')),
+                        DatePicker::make('until')->label(__('panel.filter.date_until')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         /** @var string|null $from */
@@ -105,7 +114,9 @@ final class WithdrawalResource extends Resource
             ->actions([
                 ViewAction::make(),
                 Action::make('toggle_handled')
-                    ->label(fn (Withdrawal $record): string => $record->isHandled() ? 'Unmark handled' : 'Mark handled')
+                    ->label(fn (Withdrawal $record): string => $record->isHandled()
+                        ? __('panel.action.unmark_handled')
+                        : __('panel.action.mark_handled'))
                     ->icon(fn (Withdrawal $record): string => $record->isHandled() ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
                     ->color(fn (Withdrawal $record): string => $record->isHandled() ? 'gray' : 'success')
                     ->action(function (Withdrawal $record): void {
@@ -124,43 +135,45 @@ final class WithdrawalResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Submitter details')
+                Section::make(__('panel.infolist.section.submitter'))
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('name')->label('Name'),
-                        TextEntry::make('email')->label('Email'),
-                        TextEntry::make('order_number')->label('Order number')->placeholder('—'),
-                        TextEntry::make('locale')->label('Locale'),
+                        TextEntry::make('name')->label(__('panel.infolist.field.name')),
+                        TextEntry::make('email')->label(__('panel.infolist.field.email')),
+                        TextEntry::make('order_number')->label(__('panel.infolist.field.order_number'))->placeholder('—'),
+                        TextEntry::make('locale')->label(__('panel.infolist.field.locale')),
                     ]),
 
-                Section::make('Withdrawal statement')
+                Section::make(__('panel.infolist.section.statement'))
                     ->schema([
-                        TextEntry::make('subject')->label('Subject')->columnSpanFull(),
+                        TextEntry::make('subject')->label(__('panel.infolist.field.subject'))->columnSpanFull(),
                     ]),
 
-                Section::make('Triage')
+                Section::make(__('panel.infolist.section.triage'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('spam')
-                            ->label('Spam signal')
+                            ->label(__('panel.infolist.field.spam_signal'))
                             ->badge()
-                            ->formatStateUsing(fn (bool $state): string => $state ? 'Spam' : 'Not spam')
+                            ->formatStateUsing(fn (bool $state): string => $state
+                                ? __('panel.infolist.spam.yes')
+                                : __('panel.infolist.spam.no'))
                             ->color(fn (bool $state): string => $state ? 'danger' : 'success'),
-                        TextEntry::make('spam_reason')->label('Spam reason')->placeholder('—'),
+                        TextEntry::make('spam_reason')->label(__('panel.infolist.field.spam_reason'))->placeholder('—'),
                     ]),
 
-                Section::make('Status & timestamps')
+                Section::make(__('panel.infolist.section.status'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('handled_at')
-                            ->label('Handled at')
+                            ->label(__('panel.infolist.field.handled_at'))
                             ->dateTime('d.m.Y H:i', 'Europe/Berlin')
-                            ->placeholder('Not handled'),
+                            ->placeholder(__('panel.infolist.not_handled')),
                         TextEntry::make('created_at')
-                            ->label('Received at')
+                            ->label(__('panel.infolist.field.received_at'))
                             ->dateTime('d.m.Y H:i', 'Europe/Berlin'),
                         TextEntry::make('updated_at')
-                            ->label('Last updated')
+                            ->label(__('panel.infolist.field.last_updated'))
                             ->dateTime('d.m.Y H:i', 'Europe/Berlin'),
                     ]),
             ]);
