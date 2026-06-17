@@ -9,9 +9,9 @@ vars:
   RUN: docker compose run --rm --no-deps app
   # `run` starts the profiled `node` service on demand — no `--profile tools` needed.
   RUN_NODE: docker compose run --rm --no-deps node
-  # Test runner: force the testing env so the dev container's APP_ENV=local (and the
-  # dev DB path) can never shadow phpunit.xml — keeps the suite hermetic locally and
-  # in CI (where task check runs in the same container).
+  # Test runner: force the testing env so the prod base env vars (inherited by the
+  # dev override) can never shadow phpunit.xml. Pins exactly the five behaviour
+  # drivers. Keep in sync with the Pest step in .github/workflows/ci.yml.
   RUN_TEST: 'docker compose run --rm --no-deps -e APP_ENV=testing -e QUEUE_CONNECTION=sync -e CACHE_STORE=array -e SESSION_DRIVER=array -e MAIL_MAILER=array app'
 
 tasks:

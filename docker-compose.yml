@@ -74,6 +74,7 @@ services:
       - app_storage:/var/www/html/storage
       # Share the entire public/ directory with nginx (app entrypoint syncs it on start).
       - app_public:/var/www/html/public
+    restart: unless-stopped
 
   web:
     image: nginx:1.30-alpine
@@ -85,6 +86,7 @@ services:
       - app_public:/var/www/html/public:ro
     depends_on:
       - app
+    restart: unless-stopped
 
   queue:
     image: ghcr.io/${REVOCO_IMAGE_OWNER:-revoco}/revoco:${REVOCO_IMAGE_TAG:-latest}
@@ -153,7 +155,10 @@ services:
     profiles: ["ntfy"]
     command: serve
     environment:
-      NTFY_BASE_URL: "${NTFY_BASE_URL:-http://localhost:80}"
+      # NTFY_BASE_URL must match the public URL operators use to reach ntfy (incl. port
+      # if non-standard). The default http://localhost:80 does not match the published
+      # NTFY_PORT (default 8484) — set NTFY_BASE_URL explicitly when using this profile.
+      NTFY_BASE_URL: "${NTFY_BASE_URL:-http://localhost:${NTFY_PORT:-8484}}"
       NTFY_LISTEN_HTTP: ":80"
       NTFY_CACHE_DURATION: "12h"
       NTFY_AUTH_DEFAULT_ACCESS: deny-all

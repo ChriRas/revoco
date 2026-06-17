@@ -74,11 +74,11 @@ jobs:
             revoco-app:dev \
             ./vendor/bin/phpstan analyse --no-progress --memory-limit=1G
 
-      # Pin only the behaviour drivers (mirrors the local `RUN_TEST` Taskfile var) +
-      # a fixed throwaway APP_KEY (CI-only test key — encrypts nothing real, not a
-      # secret). DB is left to phpunit.xml (:memory:) — passing DB_DATABASE=:memory:
-      # as a real env var breaks in-memory connection sharing. No --env-file (it
-      # would inject .env.example's prod drivers as real env and shadow the suite).
+      # Pin exactly the five behaviour drivers to override the prod-base env vars that
+      # the dev override inherits. Keep in sync with RUN_TEST in Taskfile.yml.
+      # Throwaway APP_KEY: encrypts nothing real; not a secret. DB is left to
+      # phpunit.xml (:memory:) — a real DB_DATABASE env var breaks connection sharing.
+      # No --env-file: .env.example's prod defaults would shadow the suite.
       - name: Run Pest
         run: |
           docker run --rm \
