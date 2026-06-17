@@ -1,0 +1,94 @@
+name: CI
+
+# Run the quality gate on every pull request and on every push to main.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    name: Quality gate (Pint · PHPStan · Pest)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      # Build the dev image with BuildKit layer cache to speed up subsequent runs.
+      - name: Build dev image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: docker/Dockerfile
+          target: dev
+          push: false
+          load: true
+          tags: revoco-app:dev
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Install all Composer dependencies (incl. dev: Pint, PHPStan, Pest).
+      - name: Install Composer dependencies
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/var/www/html \
+            -w /var/www/html \
+            revoco-app:dev \
+            composer install --no-interaction --no-progress --prefer-dist
+
+      # Install Node dependencies and build front-end assets (needed for view cache).
+      - name: Install npm dependencies and build assets
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/var/www/html \
+            -w /var/www/html \
+            node:24-alpine \
+            sh -c "npm ci && npm run build"
+
+      # Run the full quality gate via Task (Pint --test, PHPStan max, Pest).
+      # `task check` uses `docker compose run --rm --no-deps app` internally;
+      # in CI we call each tool directly to avoid spinning up compose services.
+      # Provide a complete config base; Laravel's Dotenv loads .env but respects
+      # values already set (phpunit.xml + the -e flags on the Pest run), so the
+      # prod defaults here never shadow the test suite.
+      - name: Set up .env for tests
+        run: cp .env.example .env
+
+      - name: Run Pint (style check)
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/var/www/html \
+            -w /var/www/html \
+            revoco-app:dev \
+            ./vendor/bin/pint --test
+
+      - name: Run PHPStan
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/var/www/html \
+            -w /var/www/html \
+            revoco-app:dev \
+            ./vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+
+      # Pin exactly the five behaviour drivers to override the prod-base env vars that
+      # the dev override inherits. Keep in sync with RUN_TEST in Taskfile.yml.
+      # Throwaway APP_KEY: encrypts nothing real; not a secret. DB is left to
+      # phpunit.xml (:memory:) — a real DB_DATABASE env var breaks connection sharing.
+      # No --env-file: .env.example's prod defaults would shadow the suite.
+      - name: Run Pest
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/var/www/html \
+            -w /var/www/html \
+            -e APP_KEY=base64:WOLvb9Kx9cPdHWDlWu9PM0p8gzFfpRPeUE8UC/0nXys= \
+            -e APP_ENV=testing \
+            -e QUEUE_CONNECTION=sync \
+            -e CACHE_STORE=array \
+            -e SESSION_DRIVER=array \
+            -e MAIL_MAILER=array \
+            revoco-app:dev \
+            ./vendor/bin/pest
