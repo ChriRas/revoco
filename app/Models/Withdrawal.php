@@ -38,7 +38,8 @@ final class Withdrawal extends Model
         'locale',
         'spam',
         'spam_reason',
-        'handled_at',
+        // handled_at is intentionally excluded — set exclusively via the
+        // operator toggle action, never mass-assigned (immutable-record invariant).
     ];
 
     /**

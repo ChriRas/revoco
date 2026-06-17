@@ -6,6 +6,7 @@ namespace Database\Factories;
 
 use App\Models\Withdrawal;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Carbon;
 
 /**
  * @extends Factory<Withdrawal>
@@ -27,7 +28,6 @@ final class WithdrawalFactory extends Factory
             'locale' => 'de',
             'spam' => false,
             'spam_reason' => null,
-            'handled_at' => null,
         ];
     }
 
@@ -40,11 +40,18 @@ final class WithdrawalFactory extends Factory
         ]);
     }
 
-    /** Mark this withdrawal as handled. */
+    /**
+     * Mark this withdrawal as handled.
+     *
+     * Uses afterCreating to set handled_at directly (bypassing $fillable, which
+     * intentionally excludes handled_at — it is set exclusively via the operator
+     * toggle action, never mass-assigned).
+     */
     public function handled(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'handled_at' => now(),
-        ]);
+        return $this->afterCreating(function (Withdrawal $withdrawal): void {
+            $withdrawal->handled_at = Carbon::now();
+            $withdrawal->save();
+        });
     }
 }

@@ -154,46 +154,125 @@ it('has no delete action on the list page', function () {
 });
 
 // ---------------------------------------------------------------------------
-// app:operator command
+// app:operator command — options path
 // ---------------------------------------------------------------------------
 
-it('creates an operator user from env when running app:operator', function () {
-    config(['operator.email' => 'test@example.com', 'operator.password' => 'secret123']);
-
-    $this->artisan('app:operator')->assertSuccessful();
+it('creates an operator user from --email / --password options', function () {
+    $this->artisan('app:operator', [
+        '--email' => 'test@example.com',
+        '--password' => 'secret123',
+    ])->assertSuccessful();
 
     $user = User::where('email', 'test@example.com')->firstOrFail();
     expect($user->email)->toBe('test@example.com');
 });
 
-it('is idempotent — running app:operator twice leaves exactly one operator', function () {
-    config(['operator.email' => 'operator@example.com', 'operator.password' => 'secret123']);
+it('is idempotent — running app:operator twice with options leaves exactly one operator', function () {
+    $this->artisan('app:operator', [
+        '--email' => 'operator@example.com',
+        '--password' => 'secret123',
+    ])->assertSuccessful();
 
-    $this->artisan('app:operator')->assertSuccessful();
-    $this->artisan('app:operator')->assertSuccessful();
+    $this->artisan('app:operator', [
+        '--email' => 'operator@example.com',
+        '--password' => 'newpassword',
+    ])->assertSuccessful();
 
-    $count = User::where('email', 'operator@example.com')->count();
-    expect($count)->toBe(1);
+    expect(User::where('email', 'operator@example.com')->count())->toBe(1);
 });
 
 it('hashes the operator password', function () {
-    config(['operator.email' => 'hash@example.com', 'operator.password' => 'plaintext']);
-
-    $this->artisan('app:operator')->assertSuccessful();
+    $this->artisan('app:operator', [
+        '--email' => 'hash@example.com',
+        '--password' => 'plaintext',
+    ])->assertSuccessful();
 
     $user = User::where('email', 'hash@example.com')->firstOrFail();
     expect($user->password)->not->toBe('plaintext');
     expect(Hash::check('plaintext', $user->password))->toBeTrue();
 });
 
-it('fails gracefully when OPERATOR_EMAIL is missing', function () {
-    config(['operator.email' => '', 'operator.password' => 'secret']);
+it('preserves an existing operator name on update', function () {
+    User::factory()->create(['email' => 'alice@example.com', 'name' => 'Alice']);
 
-    $this->artisan('app:operator')->assertFailed();
+    $this->artisan('app:operator', [
+        '--email' => 'alice@example.com',
+        '--password' => 'newpassword',
+    ])->assertSuccessful();
+
+    $user = User::where('email', 'alice@example.com')->firstOrFail();
+    expect($user->name)->toBe('Alice');
+    expect(Hash::check('newpassword', $user->password))->toBeTrue();
 });
 
-it('fails gracefully when OPERATOR_PASSWORD is missing', function () {
-    config(['operator.email' => 'operator@example.com', 'operator.password' => '']);
+it('assigns default name Operator on create when no --name is given', function () {
+    $this->artisan('app:operator', [
+        '--email' => 'op@example.com',
+        '--password' => 'secret',
+    ])->assertSuccessful();
 
-    $this->artisan('app:operator')->assertFailed();
+    expect(User::where('email', 'op@example.com')->firstOrFail()->name)->toBe('Operator');
+});
+
+it('applies --name only on create', function () {
+    $this->artisan('app:operator', [
+        '--email' => 'named@example.com',
+        '--password' => 'secret',
+        '--name' => 'Boss',
+    ])->assertSuccessful();
+
+    expect(User::where('email', 'named@example.com')->firstOrFail()->name)->toBe('Boss');
+});
+
+it('rejects an invalid email format', function () {
+    $this->artisan('app:operator', [
+        '--email' => 'not-an-email',
+        '--password' => 'secret',
+    ])
+        ->expectsOutputToContain('A valid e-mail address is required.')
+        ->assertFailed();
+
+    expect(User::count())->toBe(0);
+});
+
+// ---------------------------------------------------------------------------
+// app:operator command — interactive prompt path
+// ---------------------------------------------------------------------------
+
+it('prompts for email and password interactively when no options are given', function () {
+    $this->artisan('app:operator')
+        ->expectsQuestion('Operator e-mail address', 'prompted@example.com')
+        ->expectsQuestion('Operator password', 'promptedpass')
+        ->assertSuccessful();
+
+    $user = User::where('email', 'prompted@example.com')->firstOrFail();
+    expect(Hash::check('promptedpass', $user->password))->toBeTrue();
+});
+
+it('prompts for password interactively when only --email is given', function () {
+    $this->artisan('app:operator', ['--email' => 'emailonly@example.com'])
+        ->expectsQuestion('Operator password', 'fromPrompt')
+        ->assertSuccessful();
+
+    expect(User::where('email', 'emailonly@example.com')->exists())->toBeTrue();
+});
+
+// ---------------------------------------------------------------------------
+// app:operator command — non-interactive guard
+// ---------------------------------------------------------------------------
+
+it('fails cleanly under --no-interaction when --email is missing', function () {
+    $this->artisan('app:operator', ['--no-interaction' => true])
+        ->assertFailed();
+
+    expect(User::count())->toBe(0);
+});
+
+it('fails cleanly under --no-interaction when --password is missing', function () {
+    $this->artisan('app:operator', [
+        '--email' => 'op@example.com',
+        '--no-interaction' => true,
+    ])->assertFailed();
+
+    expect(User::count())->toBe(0);
 });
