@@ -59,11 +59,7 @@ final class OperatorCommand extends Command
             ['email' => $email],
             array_filter([
                 // Preserve the name on update; apply default only on create.
-                'name' => $existing === null
-                    ? (is_string($this->option('name')) && $this->option('name') !== ''
-                        ? $this->option('name')
-                        : 'Operator')
-                    : null,
+                'name' => $existing === null ? $this->resolveName() : null,
                 'password' => Hash::make($password),
             ], fn (mixed $v): bool => $v !== null),
         );
@@ -72,6 +68,14 @@ final class OperatorCommand extends Command
         $this->info("Operator account {$action}: {$email}");
 
         return self::SUCCESS;
+    }
+
+    /** Resolve the display name for a new operator (--name option or default 'Operator'). */
+    private function resolveName(): string
+    {
+        $name = $this->option('name');
+
+        return is_string($name) && $name !== '' ? $name : 'Operator';
     }
 
     /** Resolve the e-mail from option or interactive prompt. Returns null on failure. */
