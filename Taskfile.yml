@@ -9,6 +9,10 @@ vars:
   RUN: docker compose run --rm --no-deps app
   # `run` starts the profiled `node` service on demand — no `--profile tools` needed.
   RUN_NODE: docker compose run --rm --no-deps node
+  # Test runner: force the testing env so the dev container's APP_ENV=local (and the
+  # dev DB path) can never shadow phpunit.xml — keeps the suite hermetic locally and
+  # in CI (where task check runs in the same container).
+  RUN_TEST: 'docker compose run --rm --no-deps -e APP_ENV=testing -e QUEUE_CONNECTION=sync -e CACHE_STORE=array -e SESSION_DRIVER=array -e MAIL_MAILER=array app'
 
 tasks:
   default:
@@ -85,7 +89,7 @@ tasks:
   test:
     desc: 'Run the Pest test suite — e.g. task test -- --filter=Smoke'
     cmds:
-      - "{{.RUN}} ./vendor/bin/pest {{.CLI_ARGS}}"
+      - "{{.RUN_TEST}} ./vendor/bin/pest {{.CLI_ARGS}}"
 
   pint:
     desc: 'Run Laravel Pint (fixes) — use: task pint -- --test to only check'
@@ -115,6 +119,57 @@ tasks:
     dotenv: ['.env']
     cmds:
       - '{{.RUN}} php artisan app:operator --email="$OPERATOR_EMAIL" --password="$OPERATOR_PASSWORD"'
+
+  smoke:
+    desc: "Smoke-test the production image: build → boot → curl / → 200 → teardown"
+    vars:
+      SMOKE_IMAGE: ghcr.io/local/revoco:smoke
+      SMOKE_PROJECT: revoco-smoke
+    cmds:
+      # 1. Build the prod image (target: prod) with the name used by the smoke stack.
+      - docker build --target prod -t {{.SMOKE_IMAGE}} -f docker/Dockerfile .
+      # 2. Generate a throwaway APP_KEY and boot the generic prod stack.
+      #    Uses the explicit -f flag so the dev override is NOT loaded.
+      - |
+        SMOKE_KEY="base64:$(openssl rand -base64 32)"
+        APP_KEY="$SMOKE_KEY" \
+        APP_PORT=18580 \
+        REVOCO_IMAGE_OWNER=local \
+        REVOCO_IMAGE_TAG=smoke \
+        docker compose \
+          -f docker-compose.yml \
+          -p {{.SMOKE_PROJECT}} \
+          up -d --no-build
+      # 3. Wait for the app container to finish bootstrapping (migrations + caches).
+      #    Poll until nginx responds or we timeout.
+      - |
+        echo "Waiting for prod stack to become ready..."
+        for i in $(seq 1 20); do
+          STATUS=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:18580/ 2>/dev/null || true)
+          if [ "$STATUS" = "200" ]; then
+            echo "Stack is ready (HTTP 200)."
+            break
+          fi
+          echo "  attempt $i/20 — status='$STATUS', waiting 3s..."
+          sleep 3
+        done
+      # 4. Assert HTTP 200 on the form route (/).
+      - |
+        STATUS=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:18580/ 2>/dev/null)
+        echo "HTTP status: $STATUS"
+        if [ "$STATUS" != "200" ]; then
+          echo "SMOKE FAILED: expected 200, got $STATUS" >&2
+          docker compose -f docker-compose.yml -p {{.SMOKE_PROJECT}} logs
+          docker compose -f docker-compose.yml -p {{.SMOKE_PROJECT}} down -v
+          exit 1
+        fi
+        echo "SMOKE PASSED: HTTP 200 received from the prod stack."
+      # 5. Teardown.
+      - >
+        docker compose
+          -f docker-compose.yml
+          -p {{.SMOKE_PROJECT}}
+          down -v
 
   init:
     desc: One-time bootstrap on a fresh checkout — build image, install deps, build assets

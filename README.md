@@ -1,58 +1,142 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="docs/revoco-logo.svg" alt="Revoco" width="280">
 </p>
 
-## About Laravel
+<p align="center">
+  A self-hosted, single-merchant electronic withdrawal form implementing the<br>
+  § 356a BGB statutory right of withdrawal (mandatory from 2026-06-19).<br>
+  Neutral by default, configurable per <code>.env</code>, open-source (AGPL-3.0).
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Docker (Engine 25+) and Docker Compose (v2.24+)
+- [Task](https://taskfile.dev) (go-task) — optional, but used for all
+  convenience commands
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Development
 
 ```bash
-composer require laravel/boost --dev
+# First run — build image, install deps, build assets, generate key, migrate
+task init
 
-php artisan boost:install
+# Start the dev stack (http://localhost:8580)
+task up
+
+# Run the quality gate (Pint + PHPStan + Pest)
+task check
+
+# Start the Vite dev server (HMR) — separate terminal
+task dev
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+The dev stack uses a source bind-mount so every local edit is reflected immediately.
+`task up` auto-merges `docker-compose.override.yml` (the dev overlay) with the base
+`docker-compose.yml`.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Production deployment
 
-## Code of Conduct
+### 1. Generate an application key (once, before first boot)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+docker run --rm ghcr.io/<your-org>/revoco:latest \
+    php artisan key:generate --show
+```
 
-## Security Vulnerabilities
+Copy the output (`base64:...`) — this becomes `APP_KEY` in your environment.
+**Never** let the container generate its own key on boot; see the entrypoint.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 2. Prepare your environment file
+
+```bash
+cp .env.example .env
+# Edit .env: set APP_KEY, APP_URL, MAIL_*, OPERATOR_EMAIL, OPERATOR_PASSWORD, …
+```
+
+### 3. Boot the prod stack
+
+```bash
+docker compose -f docker-compose.yml up -d
+```
+
+The `app` container:
+1. Fails fast if `APP_KEY` is missing (exits non-zero — never auto-generates).
+2. Creates storage directories and the SQLite file on the persistent volume.
+3. Runs `migrate --force`.
+4. Warms config/route/view caches.
+5. Starts `php-fpm`.
+
+nginx (`web`) serves static files from the `app_public` shared volume and
+proxies PHP requests to `app:9000`.
+
+### 4. Provision the operator account (once)
+
+```bash
+docker compose -f docker-compose.yml exec app \
+    php artisan app:operator --email=admin@example.com --password=changeme
+```
+
+Or set `OPERATOR_EMAIL` / `OPERATOR_PASSWORD` in `.env` and run `task operator`.
+
+### 5. Optional: ntfy push notifications
+
+```bash
+# Start with the bundled ntfy service
+docker compose -f docker-compose.yml --profile ntfy up -d
+```
+
+Configure `NTFY_ENABLED=true`, `NTFY_SERVER`, `NTFY_TOPIC` (and optionally
+`NTFY_TOKEN`) in `.env`.
+
+---
+
+## Smoke test
+
+Build the prod image and run a local end-to-end smoke test (HTTP 200 on `/`):
+
+```bash
+task smoke
+```
+
+Runs locally and in the release CI workflow.
+
+---
+
+## Configuration reference
+
+All configuration is via environment variables. See [`.env.example`](.env.example)
+for the full list with inline documentation. Key variables:
+
+| Variable | Required | Default | Notes |
+|---|---|---|---|
+| `APP_KEY` | Yes | — | Generate with `key:generate --show`. Fail-fast if missing. |
+| `APP_URL` | Yes | `http://localhost` | Full public URL incl. scheme. |
+| `APP_TIMEZONE` | No | `UTC` | Consumer-local time for withdrawal timestamps. |
+| `APP_THEME` | No | `neutral` | Visual theme token set (`data-theme`). |
+| `DB_DATABASE` | No | `/var/www/html/storage/database/database.sqlite` | SQLite path inside container. |
+| `QUEUE_CONNECTION` | No | `database` | Use `database` for the bundled SQLite queue. |
+| `MAIL_MAILER` | No | `log` (safe) | Set to `smtp` in prod and configure `MAIL_*`. |
+| `NTFY_ENABLED` | No | `false` | Opt-in ntfy push (no PII sent). |
+
+---
+
+## CI / Release
+
+GitHub Actions are configured in [`.github/workflows/`](.github/workflows/):
+
+- **`ci.yml`** — runs `Pint --test` + PHPStan (max) + Pest on every PR and
+  push to `main`.
+- **`release.yml`** — on a `v*` SemVer tag: builds the prod image, runs the
+  smoke test, and pushes to `ghcr.io/<owner>/revoco` (SemVer + `latest`).
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+AGPL-3.0-or-later. See [LICENSE](LICENSE).
