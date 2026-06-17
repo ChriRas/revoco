@@ -61,21 +61,15 @@ jobs:
       # Run the full quality gate via Task (Pint --test, PHPStan max, Pest).
       # `task check` uses `docker compose run --rm --no-deps app` internally;
       # in CI we call each tool directly to avoid spinning up compose services.
-      - name: Set up .env for tests
+      # Provide an APP_KEY via the .env file (Laravel's Dotenv loads it but respects
+      # values already set, so it never shadows phpunit.xml). Test-behaviour drivers
+      # are pinned on the Pest run below via -e — NOT here and NOT via --env-file,
+      # because real env vars (unlike a .env file) WOULD shadow phpunit.
+      - name: Provide APP_KEY for tests
         run: |
           cp .env.example .env
           APP_KEY=$(docker run --rm revoco-app:dev php artisan key:generate --show 2>/dev/null | tail -1)
           echo "APP_KEY=$APP_KEY" >> .env
-          echo "DB_CONNECTION=sqlite" >> .env
-          echo "DB_DATABASE=:memory:" >> .env
-          # Pin the test-behaviour drivers so .env.example's prod values
-          # (QUEUE_CONNECTION=database, APP_ENV, etc.) can't shadow the suite.
-          # docker --env-file is last-wins, so these override the prod defaults.
-          echo "APP_ENV=testing" >> .env
-          echo "QUEUE_CONNECTION=sync" >> .env
-          echo "CACHE_STORE=array" >> .env
-          echo "SESSION_DRIVER=array" >> .env
-          echo "MAIL_MAILER=array" >> .env
 
       - name: Run Pint (style check)
         run: |
@@ -93,14 +87,19 @@ jobs:
             revoco-app:dev \
             ./vendor/bin/phpstan analyse --no-progress --memory-limit=1G
 
+      # Pin only the behaviour drivers (mirrors the local `RUN_TEST` Taskfile var).
+      # DB is left to phpunit.xml (:memory:) — passing DB_DATABASE=:memory: as a real
+      # env var breaks the in-memory connection sharing. No --env-file (it would
+      # inject .env.example's prod drivers as real env and shadow the suite).
       - name: Run Pest
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/var/www/html \
             -w /var/www/html \
-            -e APP_KEY \
-            -e DB_CONNECTION=sqlite \
-            -e DB_DATABASE=:memory: \
-            --env-file .env \
+            -e APP_ENV=testing \
+            -e QUEUE_CONNECTION=sync \
+            -e CACHE_STORE=array \
+            -e SESSION_DRIVER=array \
+            -e MAIL_MAILER=array \
             revoco-app:dev \
             ./vendor/bin/pest
