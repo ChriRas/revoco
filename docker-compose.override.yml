@@ -9,6 +9,20 @@
 # containers use the host filesystem instead of the app_storage/app_public
 # volumes.
 
+# Shared dev-worker definition (queue + scheduler both use the dev image,
+# no prod entrypoint, source bind-mounted). Anchored here; merged via <<.
+x-dev-worker: &dev-worker
+  build:
+    context: .
+    dockerfile: docker/Dockerfile
+    target: dev
+  image: revoco-app:dev
+  profiles: ["tools"]
+  entrypoint: []
+  volumes:
+    - .:/var/www/html
+    - ./storage:/var/www/html/storage
+
 services:
   app:
     build:
@@ -43,30 +57,12 @@ services:
       # Shadow the app_public volume mount with the host build dir.
       - ./public/build:/var/www/html/public/build:ro
 
-  # queue and scheduler are not started in dev — put them behind the "tools" profile.
+  # queue and scheduler are not started in dev — profiled "tools", dev image only.
   queue:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-      target: dev
-    image: revoco-app:dev
-    profiles: ["tools"]
-    entrypoint: []
-    volumes:
-      - .:/var/www/html
-      - ./storage:/var/www/html/storage
+    <<: *dev-worker
 
   scheduler:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-      target: dev
-    image: revoco-app:dev
-    profiles: ["tools"]
-    entrypoint: []
-    volumes:
-      - .:/var/www/html
-      - ./storage:/var/www/html/storage
+    <<: *dev-worker
 
   node:
     image: node:24-alpine
