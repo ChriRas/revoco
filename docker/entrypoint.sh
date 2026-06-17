@@ -5,10 +5,11 @@
 # Order:
 #   1. Fail fast if APP_KEY is missing (never generate in prod — invalidates sessions).
 #   2. Populate the app_public shared volume with the baked public/ directory.
-#   3. Ensure storage directories and SQLite file exist with correct ownership.
-#   4. Run migrations (--force required in production environment).
-#   5. Warm Laravel caches (config, routes, views).
-#   6. exec the container command (php-fpm by default).
+#   3. Ensure storage directories and SQLite file exist.
+#   4. Run migrations as root (--force required in production environment).
+#   5. chown storage/ + bootstrap/cache/ to www-data (AFTER migrate, so DB file is included).
+#   6. Warm Laravel caches (config, routes, views).
+#   7. exec the container command (php-fpm); its workers drop to www-data via Pool config.
 
 set -e
 
@@ -38,7 +39,15 @@ PUBLIC_SRC=/var/www/html/_public_src
 PUBLIC_DST=/var/www/html/public
 
 if [ -d "${PUBLIC_SRC}" ]; then
-    # Sync baked public/ files into the shared volume (overwrite on upgrade).
+    # Wipe then sync: ensure the volume mirrors the image exactly.
+    # Without the wipe, renamed/removed Vite content-hashed chunks from a prior
+    # deploy accumulate in the persistent volume and are never cleaned up.
+    # Guard against an unset or empty PUBLIC_DST before the destructive delete.
+    if [ -z "${PUBLIC_DST}" ]; then
+        echo "ERROR: PUBLIC_DST is not set. Refusing to wipe." >&2
+        exit 1
+    fi
+    find "${PUBLIC_DST}" -mindepth 1 -delete
     cp -a "${PUBLIC_SRC}/." "${PUBLIC_DST}/"
 fi
 
@@ -59,22 +68,40 @@ mkdir -p \
 # Create the SQLite file if it does not exist yet.
 touch /var/www/html/storage/database/database.sqlite
 
-# Fix permissions (www-data owns everything inside storage).
-chown -R www-data:www-data /var/www/html/storage
-
 # ---------------------------------------------------------------------------
 # 4. Run database migrations (app service only; queue/scheduler skip this).
 # ---------------------------------------------------------------------------
+# Runs as root. The SQLite file (and containing directory) may be root-owned
+# after creation above; we chown AFTER migrate so the final DB file is
+# www-data-owned before php-fpm takes over.
 php artisan migrate --force --no-interaction
 
 # ---------------------------------------------------------------------------
-# 5. Warm Laravel caches
+# 5. Fix ownership AFTER migrate (migrate may create or modify the DB file).
+# ---------------------------------------------------------------------------
+# storage/  — framework dirs, logs, DB file and directory.
+# bootstrap/cache/ — config/route/view cache files (written next).
+# Both must be writable by www-data after the privilege drop below.
+chown -R www-data:www-data \
+    /var/www/html/storage \
+    /var/www/html/bootstrap/cache
+
+# ---------------------------------------------------------------------------
+# 6. Warm Laravel caches (still running as root — files land in bootstrap/cache,
+#    which is now www-data-owned so php-fpm can overwrite them at runtime).
 # ---------------------------------------------------------------------------
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
 # ---------------------------------------------------------------------------
-# 6. Hand off to the container command (php-fpm by default).
+# 7. Hand off to the container command (php-fpm by default).
+#
+#    php-fpm's master process must remain root so it can spawn and manage
+#    worker children. The worker pool itself drops to www-data via the
+#    `user = www-data / group = www-data` directives in www.conf (the default
+#    for the official php-fpm Alpine image). Passing php-fpm through su-exec
+#    would prevent it from opening its error_log fd and break FPM initialization.
+#    The privilege drop is therefore php-fpm-internal, not entrypoint-level.
 # ---------------------------------------------------------------------------
 exec "$@"

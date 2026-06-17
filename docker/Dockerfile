@@ -76,9 +76,15 @@ RUN npm run build
 # prod — runtime image. FROM base => no Composer, no Node, no dev deps, no tests.
 # Carries only application code, the optimized --no-dev vendor, and built assets.
 # The entrypoint script handles storage perms, migrations, and cache warming on
-# every container start. It also fails fast if APP_KEY is missing.
+# every container start (running as root), then drops to www-data via su-exec
+# before exec-ing the container command (php-fpm). It also fails fast if APP_KEY
+# is missing.
 # ---------------------------------------------------------------------------
 FROM base AS prod
+
+# su-exec: lightweight setuid helper used to drop from root to www-data in the
+# entrypoint after root-only setup steps (mkdir, chown, migrate, cp) are done.
+RUN apk add --no-cache su-exec
 
 COPY . .
 COPY --from=build /var/www/html/vendor ./vendor
