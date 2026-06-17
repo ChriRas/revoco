@@ -69,7 +69,10 @@ jobs:
         run: |
           cp .env.example .env
           APP_KEY=$(docker run --rm revoco-app:dev php artisan key:generate --show 2>/dev/null | tail -1)
-          echo "APP_KEY=$APP_KEY" >> .env
+          # Export as a real env var (passed via -e below). A .env line wouldn't win:
+          # .env.example already has an empty APP_KEY= first, and Laravel's Dotenv is
+          # immutable (first occurrence wins), so the key must come from the real env.
+          echo "APP_KEY=$APP_KEY" >> "$GITHUB_ENV"
 
       - name: Run Pint (style check)
         run: |
@@ -96,6 +99,7 @@ jobs:
           docker run --rm \
             -v ${{ github.workspace }}:/var/www/html \
             -w /var/www/html \
+            -e APP_KEY="$APP_KEY" \
             -e APP_ENV=testing \
             -e QUEUE_CONNECTION=sync \
             -e CACHE_STORE=array \
