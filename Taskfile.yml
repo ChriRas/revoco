@@ -165,11 +165,7 @@ tasks:
         fi
         echo "SMOKE PASSED: HTTP 200 received from the prod stack."
       # 5. Teardown.
-      - >
-        docker compose
-          -f docker-compose.yml
-          -p {{.SMOKE_PROJECT}}
-          down -v
+      - docker compose -f docker-compose.yml -p {{.SMOKE_PROJECT}} down -v
 
   init:
     desc: One-time bootstrap on a fresh checkout — build image, install deps, build assets
