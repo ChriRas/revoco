@@ -129,14 +129,13 @@ final class OperatorCommand extends Command
     {
         $validator = Validator::make(
             ['email' => $email, 'password' => $password],
-            ['email' => ['required', 'email'], 'password' => ['required', 'min:1']],
+            ['email' => ['required', 'email'], 'password' => ['required']],
             [
                 // Explicit messages so the CLI shows readable text regardless of the
                 // active locale (no validation lang file is published for the backend).
                 'email.required' => 'An e-mail address is required.',
                 'email.email' => 'A valid e-mail address is required.',
                 'password.required' => 'A password is required.',
-                'password.min' => 'A password is required.',
             ],
         );
 

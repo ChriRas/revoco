@@ -111,7 +111,7 @@ tasks:
       - "{{.RUN_NODE}} npm run build"
 
   operator:
-    desc: Provision or update the operator account from OPERATOR_EMAIL / OPERATOR_PASSWORD in .env
+    desc: Provision or update the operator account from OPERATOR_EMAIL / OPERATOR_PASSWORD in .env (both must be set; for interactive use run `php artisan app:operator` directly)
     dotenv: ['.env']
     cmds:
       - '{{.RUN}} php artisan app:operator --email="$OPERATOR_EMAIL" --password="$OPERATOR_PASSWORD"'
