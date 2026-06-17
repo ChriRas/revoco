@@ -55,6 +55,7 @@
 - User-facing strings as translation keys — no hardcoded German in markup.
 - Branding (logo, copy, theme) via config/env, not hardcoded.
 - Compact comments; multi-line as `/** … */` (PHP), `{{-- … --}}` in Blade. No references to non-committed paths (`research/`).
+- CLI commands are parameter/prompt-driven: take explicit options, prompt only on a TTY, and **fail cleanly under `--no-interaction`** (never hang). Env→params bridging lives in a `task` wrapper, not in the command. (slice-008)
 
 ## Tabus (Anti-Patterns)
 
