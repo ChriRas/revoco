@@ -61,18 +61,11 @@ jobs:
       # Run the full quality gate via Task (Pint --test, PHPStan max, Pest).
       # `task check` uses `docker compose run --rm --no-deps app` internally;
       # in CI we call each tool directly to avoid spinning up compose services.
-      # Provide an APP_KEY via the .env file (Laravel's Dotenv loads it but respects
-      # values already set, so it never shadows phpunit.xml). Test-behaviour drivers
-      # are pinned on the Pest run below via -e — NOT here and NOT via --env-file,
-      # because real env vars (unlike a .env file) WOULD shadow phpunit.
-      - name: Provide APP_KEY for tests
-        run: |
-          cp .env.example .env
-          APP_KEY=$(docker run --rm revoco-app:dev php artisan key:generate --show 2>/dev/null | tail -1)
-          # Export as a real env var (passed via -e below). A .env line wouldn't win:
-          # .env.example already has an empty APP_KEY= first, and Laravel's Dotenv is
-          # immutable (first occurrence wins), so the key must come from the real env.
-          echo "APP_KEY=$APP_KEY" >> "$GITHUB_ENV"
+      # Provide a complete config base; Laravel's Dotenv loads .env but respects
+      # values already set (phpunit.xml + the -e flags on the Pest run), so the
+      # prod defaults here never shadow the test suite.
+      - name: Set up .env for tests
+        run: cp .env.example .env
 
       - name: Run Pint (style check)
         run: |
@@ -90,16 +83,17 @@ jobs:
             revoco-app:dev \
             ./vendor/bin/phpstan analyse --no-progress --memory-limit=1G
 
-      # Pin only the behaviour drivers (mirrors the local `RUN_TEST` Taskfile var).
-      # DB is left to phpunit.xml (:memory:) — passing DB_DATABASE=:memory: as a real
-      # env var breaks the in-memory connection sharing. No --env-file (it would
-      # inject .env.example's prod drivers as real env and shadow the suite).
+      # Pin only the behaviour drivers (mirrors the local `RUN_TEST` Taskfile var) +
+      # a fixed throwaway APP_KEY (CI-only test key — encrypts nothing real, not a
+      # secret). DB is left to phpunit.xml (:memory:) — passing DB_DATABASE=:memory:
+      # as a real env var breaks in-memory connection sharing. No --env-file (it
+      # would inject .env.example's prod drivers as real env and shadow the suite).
       - name: Run Pest
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/var/www/html \
             -w /var/www/html \
-            -e APP_KEY="$APP_KEY" \
+            -e APP_KEY=base64:WOLvb9Kx9cPdHWDlWu9PM0p8gzFfpRPeUE8UC/0nXys= \
             -e APP_ENV=testing \
             -e QUEUE_CONNECTION=sync \
             -e CACHE_STORE=array \
