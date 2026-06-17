@@ -31,17 +31,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # Install Composer dependencies inside the dev image.
+      # Install all Composer dependencies (incl. dev: Pint, PHPStan, Pest).
       - name: Install Composer dependencies
-        run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/var/www/html \
-            -w /var/www/html \
-            revoco-app:dev \
-            composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
-
-      # Install dev tools (Pint, PHPStan, Pest) — these are dev dependencies.
-      - name: Install dev Composer dependencies
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/var/www/html \
