@@ -16,6 +16,8 @@
                 {{-- Neutral: reserved, empty logo slot — brand logos are mounted per deployment. --}}
                 <div class="wf-logo" aria-hidden="true"></div>
             @endif
+
+            <x-language-switcher />
         </div>
 
         <section class="wf-panel wf-panel--form">
