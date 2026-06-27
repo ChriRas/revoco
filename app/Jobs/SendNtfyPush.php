@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Config;
 
 /**
  * Publishes the data-minimal operator push for a new withdrawal.
@@ -33,9 +34,14 @@ final class SendNtfyPush implements ShouldQueue
 
     public function handle(Ntfy $ntfy): void
     {
+        // Operator-facing push — pinned to the FROZEN default locale (not
+        // config('app.locale'), which app()->setLocale() rewrites to the
+        // consumer's choice), so it never follows a consumer's language switch.
+        $locale = Config::string('app.default_locale');
+
         $ntfy->publish(
-            message: $this->spam ? __('push.body_spam') : __('push.body'),
-            title: __('push.title'),
+            message: $this->spam ? __('push.body_spam', [], $locale) : __('push.body', [], $locale),
+            title: __('push.title', [], $locale),
             tags: $this->spam ? ['warning'] : ['envelope'],
         );
     }
