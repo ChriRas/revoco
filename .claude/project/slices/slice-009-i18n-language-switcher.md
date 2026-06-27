@@ -1,7 +1,7 @@
 # Slice 009 — i18n Language Switcher
 
 > Completed: 2026-06-27
-> Commits: 171d2c3..63f4c9a (branch slice-009-i18n-language-switcher)
+> Commits: 171d2c3..63f4c9a (PR #5)
 
 ## What
 
