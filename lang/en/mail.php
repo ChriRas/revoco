@@ -13,10 +13,17 @@ declare(strict_types=1);
 
 return [
 
-    // English 24h time takes no "o'clock" suffix; the timezone parenthetical
-    // already conveys clock time. Empty by design (HTML collapses the gap).
+    // English 24h time takes no "o'clock" suffix; the timezone abbreviation
+    // conveys the zone. Empty by design (HTML collapses the gap).
     'uhr' => '',
-    'timezone' => 'Europe/Berlin',
+    // US-style receipt date for the English acknowledgment ("Jun 27, 2026, 14:30");
+    // the German default uses 'd.m.Y, H:i'. Plain date() suffices — the month
+    // abbreviation is already English, so no Carbon translatedFormat() is needed.
+    'datetime_format' => 'M j, Y, H:i',
+    // Timezone label: the neutral abbreviation from PHP's `T` token (CET/CEST),
+    // appended without parentheses ("14:30 CEST").
+    'timezone_format' => ':tz',
+    'tz' => ['CET' => 'CET', 'CEST' => 'CEST'],
 
     'field' => [
         'name' => 'Name',

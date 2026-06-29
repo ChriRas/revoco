@@ -7,6 +7,7 @@ use App\Mail\WithdrawalNotification;
 use App\Models\Withdrawal;
 use Illuminate\Events\CallQueuedListener;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
@@ -99,12 +100,50 @@ it('renders the § 356a acknowledgment with receipt confirmation, content and ti
     $mailable->assertSeeInHtml('Schlauchboot Modell X');
     $mailable->assertSeeInHtml('A-12345');
     $mailable->assertSeeInHtml($withdrawal->created_at->format('d.m.Y'));
-    $mailable->assertSeeInHtml('Europe/Berlin');
+    // The IANA identifier is no longer shown — the timezone now renders as the
+    // MEZ/MESZ abbreviation (exact label asserted in the DST-aware test below).
+    $mailable->assertDontSeeInHtml('Europe/Berlin');
     // No advertising in the acknowledgment (§ 356a Abs. 4).
     $mailable->assertDontSeeInHtml('Rabatt');
     $mailable->assertDontSeeInHtml('Gutschein');
     $mailable->assertDontSeeInHtml('Newsletter');
     $mailable->assertDontSeeInHtml('Angebot');
+});
+
+it('formats the acknowledgment date and timezone per consumer locale (DST-aware)', function () {
+    // Summer: Europe/Berlin is on CEST, i.e. German MESZ.
+    $this->travelTo(Carbon::create(2026, 6, 27, 14, 30, 0, 'Europe/Berlin'));
+    $summer = makeWithdrawal();
+
+    (new WithdrawalAcknowledgment($summer))->locale('de')
+        ->assertSeeInHtml('27.06.2026, 14:30 Uhr (MESZ)');
+
+    $en = (new WithdrawalAcknowledgment($summer))->locale('en');
+    $en->assertSeeInHtml('Jun 27, 2026, 14:30');
+    $en->assertSeeInHtml('CEST');
+    $en->assertDontSeeInHtml('27.06.2026');     // no German date notation in the English mail
+    $en->assertDontSeeInHtml('Europe/Berlin');  // IANA id replaced by the abbreviation
+    $en->assertDontSeeInHtml('MESZ');           // German abbreviation absent in the English mail
+
+    // Winter: the same code path yields CET / MEZ — the label tracks the timestamp.
+    $this->travelTo(Carbon::create(2026, 1, 15, 9, 5, 0, 'Europe/Berlin'));
+    $winter = makeWithdrawal();
+    (new WithdrawalAcknowledgment($winter))->locale('de')->assertSeeInHtml('(MEZ)');
+    (new WithdrawalAcknowledgment($winter))->locale('en')->assertSeeInHtml('CET');
+
+    $this->travelBack();
+});
+
+it('renders the de-pinned timezone label in the operator notification', function () {
+    // The operator notification gained the timezone label in this slice. It is
+    // pinned to the default locale, so it always shows the German MEZ/MESZ — never
+    // a consumer's CET/CEST — regardless of who triggered the withdrawal.
+    $this->travelTo(Carbon::create(2026, 6, 27, 14, 30, 0, 'Europe/Berlin'));
+
+    (new WithdrawalNotification(makeWithdrawal()))->locale('de')
+        ->assertSeeInHtml('27.06.2026, 14:30 Uhr (MESZ)');
+
+    $this->travelBack();
 });
 
 it('reflects the spam status in the merchant notification', function () {

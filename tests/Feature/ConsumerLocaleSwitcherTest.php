@@ -99,7 +99,9 @@ it('renders the acknowledgment e-mail in English for an en withdrawal', function
     $mailable->assertSeeInHtml('Receipt of your withdrawal confirmed');
     $mailable->assertSeeInHtml('Your details');
     $mailable->assertSeeInHtml('Inflatable boat model X');
-    $mailable->assertSeeInHtml('Europe/Berlin');
+    // Timezone shown as the CET/CEST abbreviation, not the IANA identifier.
+    $mailable->assertSeeInHtml($withdrawal->created_at->format('T'));
+    $mailable->assertDontSeeInHtml('Europe/Berlin');
     $mailable->assertDontSeeInHtml('Eingang Ihres Widerrufs bestätigt');
 });
 
