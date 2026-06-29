@@ -37,7 +37,8 @@ Status: planned
 ### Phase 7 — i18n expansion (post-launch)
 More languages (en/…) as lang files + a language switcher in the form.
 
-Status: planned (post-launch)
+Status: done — English consumer language + in-form flag switcher (slice-009),
+per-locale e-mail date format (slice-010).
 
 ### Phase 8 — Public release
 Finalize license (AGPL-3.0), neutral default docs, public repo.
