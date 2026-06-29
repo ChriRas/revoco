@@ -10,6 +10,7 @@ use App\Mail\WithdrawalAcknowledgment;
 use App\Mail\WithdrawalNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 
 /**
@@ -34,9 +35,13 @@ final class SendWithdrawalNotifications implements ShouldQueue
             ->send((new WithdrawalAcknowledgment($withdrawal))->locale($withdrawal->locale)));
 
         // Merchant notification — always, when an operator address is configured.
+        // Pinned to the FROZEN default locale (not config('app.locale'), which
+        // app()->setLocale() rewrites to the consumer's choice): the merchant is a
+        // single operator whose notifications must not follow a consumer's switch.
         $merchant = config('revoco.merchant_email');
         if (is_string($merchant) && $merchant !== '') {
-            rescue(fn () => Mail::to($merchant)->send(new WithdrawalNotification($withdrawal)));
+            $appLocale = Config::string('app.default_locale');
+            rescue(fn () => Mail::to($merchant)->send((new WithdrawalNotification($withdrawal))->locale($appLocale)));
         }
 
         // ntfy push — opt-in, data-minimal (no PII).

@@ -86,6 +86,38 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Default (Frozen) Locale
+    |--------------------------------------------------------------------------
+    |
+    | A snapshot of APP_LOCALE that runtime locale switching never mutates.
+    | app()->setLocale() rewrites config('app.locale'), so the consumer language
+    | switcher would otherwise drag operator-facing output (merchant notification,
+    | ntfy push) along with it. Those channels pin to this frozen value instead.
+    |
+    */
+
+    'default_locale' => env('APP_LOCALE', 'de'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Available Consumer Locales
+    |--------------------------------------------------------------------------
+    |
+    | The locales the consumer-facing withdrawal form offers in its language
+    | switcher, as a comma-separated APP_AVAILABLE_LOCALES list. The
+    | SetConsumerLocale middleware validates the chosen locale against this
+    | list; the switcher is hidden when only one is listed. Should include
+    | APP_LOCALE; defaults to APP_LOCALE when unset.
+    |
+    */
+
+    'available_locales' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', (string) env('APP_AVAILABLE_LOCALES', (string) env('APP_LOCALE', 'de')))
+    ))),
+
+    /*
+    |--------------------------------------------------------------------------
     | Encryption Key
     |--------------------------------------------------------------------------
     |

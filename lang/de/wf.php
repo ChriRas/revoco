@@ -38,6 +38,15 @@ return [
         'optional' => 'optional',
     ],
 
+    'language' => [
+        'label' => 'Sprache wählen',
+        // Autonyms — each language in its own name, identical across locales.
+        'names' => [
+            'de' => 'Deutsch',
+            'en' => 'English',
+        ],
+    ],
+
     'submit' => 'Widerruf bestätigen',
     'hint' => 'Mit »Pflichtfeld« markierte Felder sind erforderlich.',
 

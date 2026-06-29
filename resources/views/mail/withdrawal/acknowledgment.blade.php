@@ -20,7 +20,7 @@
                 <tr><td style="padding:6px 0;color:#5d6776;">{{ __('mail.field.order') }}</td><td style="padding:6px 0;">{{ $withdrawal->order_number }}</td></tr>
             @endif
             <tr><td style="padding:6px 0;color:#5d6776;vertical-align:top;">{{ __('mail.field.subject') }}</td><td style="padding:6px 0;">{{ $withdrawal->subject }}</td></tr>
-            <tr><td style="padding:6px 0;color:#5d6776;">{{ __('mail.field.datetime') }}</td><td style="padding:6px 0;">{{ $withdrawal->created_at?->format('d.m.Y, H:i') }} {{ __('mail.uhr') }} ({{ __('mail.timezone') }})</td></tr>
+            <tr><td style="padding:6px 0;color:#5d6776;">{{ __('mail.field.datetime') }}</td><td style="padding:6px 0;">@include('mail.withdrawal.received-at', ['at' => $withdrawal->created_at])</td></tr>
         </table>
 
         <p style="margin:20px 0 0;color:#5d6776;font-size:.95rem;">{{ __('mail.ack.outro') }}</p>

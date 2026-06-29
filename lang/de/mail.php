@@ -11,7 +11,15 @@ declare(strict_types=1);
 return [
 
     'uhr' => 'Uhr',
-    'timezone' => 'Europe/Berlin',
+    // Per-locale receipt date format (PHP date()). The consumer acknowledgment
+    // follows the consumer locale; the merchant notification stays on this
+    // default locale, so its rendered date is always this German format.
+    'datetime_format' => 'd.m.Y, H:i',
+    // Timezone label. The abbreviation is derived from the timestamp via PHP's
+    // `T` token (CET in winter, CEST in summer) and mapped to the German
+    // MEZ/MESZ; `timezone_format` adds the surrounding parentheses.
+    'timezone_format' => '(:tz)',
+    'tz' => ['CET' => 'MEZ', 'CEST' => 'MESZ'],
 
     'field' => [
         'name' => 'Name',

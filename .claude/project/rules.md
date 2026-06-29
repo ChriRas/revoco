@@ -55,6 +55,7 @@
 - Domain/business logic in Services/Actions, not in controllers.
 - E-mail sending and push run in queue jobs, never inline in the request.
 - User-facing strings as translation keys — no hardcoded German in markup.
+- Operator-facing output (merchant mail, ntfy push) renders in the frozen `config('app.default_locale')`, never the live `config('app.locale')` / `app()->getLocale()`: the consumer language switcher rewrites the live locale via `app()->setLocale()`, so only consumer-facing output may follow the request locale. (slice-009)
 - Branding (logo, copy, theme) via config/env, not hardcoded.
 - Compact comments; multi-line as `/** … */` (PHP), `{{-- … --}}` in Blade. No references to non-committed paths (`research/`).
 - CLI commands are parameter/prompt-driven: take explicit options, prompt only on a TTY, and **fail cleanly under `--no-interaction`** (never hang). Env→params bridging lives in a `task` wrapper, not in the command. (slice-008)

@@ -9,6 +9,8 @@
             @else
                 <div class="wf-logo" aria-hidden="true"></div>
             @endif
+
+            <x-language-switcher />
         </div>
 
         <section class="wf-panel">
