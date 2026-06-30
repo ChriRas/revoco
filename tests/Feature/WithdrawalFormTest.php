@@ -41,3 +41,14 @@ it('applies the configured theme to the form card', function () {
         ->assertOk()
         ->assertSee('data-theme="foo"', false);
 });
+
+it('links to the AGPL source from the footer (§ 13 network notice)', function () {
+    // The source link must point at the configured corresponding source and carry
+    // the translated label — satisfying the AGPL-3.0 network-use offer.
+    config()->set('revoco.source_url', 'https://example.test/src');
+
+    $this->withoutVite()->get(route('withdrawal.form'))
+        ->assertOk()
+        ->assertSee('href="https://example.test/src"', false)
+        ->assertSee('Quelltext'); // de footer label (default consumer locale)
+});

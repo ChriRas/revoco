@@ -1,10 +1,18 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "chriras/revoco",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
-    "license": "MIT",
+    "description": "Self-hosted, single-merchant electronic withdrawal form for the German § 356a BGB statutory right of withdrawal — neutral by default, configurable per .env.",
+    "version": "0.5.0",
+    "keywords": ["withdrawal", "widerruf", "bgb", "356a", "gdpr", "self-hosted", "laravel"],
+    "license": "AGPL-3.0-or-later",
+    "homepage": "https://github.com/ChriRas/revoco",
+    "authors": [
+        {
+            "name": "Christoph Raschke",
+            "email": "craschke@chrido.net"
+        }
+    ],
     "require": {
         "php": "^8.3",
         "filament/filament": "^5.0",

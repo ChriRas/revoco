@@ -109,6 +109,11 @@ tasks:
       - task: stan
       - task: test
 
+  audit:
+    desc: 'Scan Composer dependencies for known security advisories (composer audit)'
+    cmds:
+      - "{{.RUN}} composer audit {{.CLI_ARGS}}"
+
   assets:
     desc: Build front-end assets with Vite
     cmds:

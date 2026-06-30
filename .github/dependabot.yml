@@ -1,0 +1,19 @@
+version: 2
+
+# Native, continuous dependency maintenance. Security *alerts* (real-time advisory
+# notifications) are a separate repository setting — enable them under
+# Settings → Code security → Dependabot alerts + security updates.
+updates:
+  # PHP / Composer dependencies — weekly PRs for outdated or vulnerable packages.
+  - package-ecosystem: composer
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  # Keep the GitHub Actions pinned in the workflows current.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
