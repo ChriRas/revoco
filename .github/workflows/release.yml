@@ -8,7 +8,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/revoco
 
 jobs:
   build-and-push:
@@ -33,10 +32,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Derive SemVer tag (strip leading 'v') and 'latest'.
-      - name: Compute image tags
+      # Compute the image name and tags. GHCR namespaces must be lowercase, but
+      # github.repository_owner preserves the login's case — so lowercase it here.
+      - name: Compute image name and tags
         id: meta
         run: |
+          IMAGE_NAME="${REGISTRY}/${GITHUB_REPOSITORY_OWNER,,}/revoco"   # e.g. ghcr.io/chriras/revoco
           RAW_TAG="${GITHUB_REF_NAME}"          # e.g. v1.2.3
           SEMVER="${RAW_TAG#v}"                 # e.g. 1.2.3
           echo "semver=$SEMVER" >> "$GITHUB_OUTPUT"
