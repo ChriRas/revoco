@@ -130,10 +130,13 @@ for the full list with inline documentation. Key variables:
 
 GitHub Actions are configured in [`.github/workflows/`](.github/workflows/):
 
-- **`ci.yml`** — runs `Pint --test` + PHPStan (max) + Pest on every PR and
-  push to `main`.
+- **`ci.yml`** — runs `composer audit` (security) + `Pint --test` + PHPStan (max)
+  + Pest on every PR and push to `main`.
 - **`release.yml`** — on a `v*` SemVer tag: builds the prod image, runs the
   smoke test, and pushes to `ghcr.io/<owner>/revoco` (SemVer + `latest`).
+- **`security-audit.yml`** — scheduled `composer audit` (~every 2 days) that opens
+  an issue if a locked dependency has a known advisory. Dependabot
+  (`.github/dependabot.yml`) complements it with weekly update PRs.
 
 ---
 

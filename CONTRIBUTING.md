@@ -25,6 +25,8 @@ task check    # the quality gate: Pint + PHPStan (level max) + Pest
 ## Before you open a PR
 
 - `task check` must be green (Pint, PHPStan level max, Pest).
+- `task audit` should be clean (no dependency with a known security advisory) — CI
+  enforces this on every PR.
 - Add tests for any behavior change.
 - Use [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`,
   `docs:`, `refactor:`, `test:`, `chore:`).

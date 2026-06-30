@@ -40,6 +40,16 @@ jobs:
             revoco-app:dev \
             composer install --no-interaction --no-progress --prefer-dist
 
+      # Fail the build on any known security advisory in the locked dependencies.
+      # Runs before the slower npm/build/test steps so a vulnerable lock fails fast.
+      - name: Audit Composer dependencies (security)
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/var/www/html \
+            -w /var/www/html \
+            revoco-app:dev \
+            composer audit --no-interaction
+
       # Install Node dependencies and build front-end assets (needed for view cache).
       - name: Install npm dependencies and build assets
         run: |

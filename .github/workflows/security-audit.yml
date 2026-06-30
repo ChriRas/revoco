@@ -1,0 +1,51 @@
+name: Security audit
+
+# Scheduled dependency vulnerability scan. Catches advisories published against
+# already-locked packages, independent of any pull request — the PR gate in ci.yml
+# only runs when there is a PR. Also runnable on demand.
+on:
+  schedule:
+    # Approximately every two days at 06:00 UTC.
+    - cron: '0 6 */2 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    name: composer audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # `composer audit` reads composer.lock against the advisory database — no
+      # install needed, so the official composer image keeps the job minimal.
+      - name: Audit locked dependencies
+        run: docker run --rm -v "${{ github.workspace }}":/app -w /app composer:2 audit --no-interaction
+
+      - name: Open a tracking issue when the audit fails
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = 'Security audit: vulnerable dependency detected';
+            const run = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = [
+              'The scheduled `composer audit` reported one or more advisories.',
+              '',
+              `- Workflow run: ${run}`,
+              '- Reproduce locally: `task audit`',
+              '',
+              'Bump the affected package(s) and confirm `composer audit` is clean.',
+            ].join('\n');
+            const open = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open',
+            });
+            if (!open.some((i) => i.title === title)) {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo, title, body,
+              });
+            }
