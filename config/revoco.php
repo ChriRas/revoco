@@ -47,6 +47,14 @@ return [
     'privacy_url' => env('REVOCO_PRIVACY_URL', '#'),
 
     /*
+    | AGPL-3.0 §13: a user interacting over the network must be offered the running
+    | source. Defaults to the upstream repository; an operator who MODIFIES the code
+    | must point this at their own corresponding source (their fork) to stay compliant.
+    */
+
+    'source_url' => env('REVOCO_SOURCE_URL', 'https://github.com/ChriRas/revoco'),
+
+    /*
     |--------------------------------------------------------------------------
     | Delivery — merchant notification + optional ntfy push
     |--------------------------------------------------------------------------

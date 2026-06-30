@@ -63,6 +63,7 @@ return [
     'footer' => [
         'imprint' => 'Imprint',
         'privacy' => 'Privacy Policy',
+        'source' => 'Source code',
     ],
 
 ];
