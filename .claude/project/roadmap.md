@@ -43,11 +43,14 @@ per-locale e-mail date format (slice-010).
 ### Phase 8 — Public release
 Finalize license (AGPL-3.0), neutral default docs, public repo.
 
-Status: planned (optional)
+Status: done — AGPL-3.0 LICENSE, package identity, AGPL §13 source link, CHANGELOG, neutral docs; released as v0.5.0.
 
 ## Releases (optional)
 
 | Version | Date | Highlights |
 |---|---|---|
-| 0.1.0 | tbd | Legal minimum: form + acknowledgment e-mail (Phases 1–4) |
-| 0.2.0 | tbd | Containerization + operator backend (Phases 5–6) |
+| 0.5.0 | 2026-06-30 | First public release (AGPL-3.0): full feature set — form, submit, async mails/push, operator backend, containerization/CI, DE/EN i18n + DST-aware mail timestamps. |
+
+> The earlier 0.1.0 / 0.2.0 entries (legal minimum; containerization + backend) were
+> development milestones, folded into the 0.5.0 public release rather than tagged
+> separately.
