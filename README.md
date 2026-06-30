@@ -45,9 +45,12 @@ The dev stack uses a source bind-mount so every local edit is reflected immediat
 ### 1. Generate an application key (once, before first boot)
 
 ```bash
-docker run --rm ghcr.io/<your-org>/revoco:latest \
+docker run --rm ghcr.io/chriras/revoco:latest \
     php artisan key:generate --show
 ```
+
+`ghcr.io/chriras/revoco` is the official published image. If you fork and build
+your own, substitute your (lowercase) GHCR owner.
 
 Copy the output (`base64:...`) — this becomes `APP_KEY` in your environment.
 **Never** let the container generate its own key on boot; see the entrypoint.
@@ -133,7 +136,8 @@ GitHub Actions are configured in [`.github/workflows/`](.github/workflows/):
 - **`ci.yml`** — runs `composer audit` (security) + `Pint --test` + PHPStan (max)
   + Pest on every PR and push to `main`.
 - **`release.yml`** — on a `v*` SemVer tag: builds the prod image, runs the
-  smoke test, and pushes to `ghcr.io/<owner>/revoco` (SemVer + `latest`).
+  smoke test, and pushes to `ghcr.io/chriras/revoco` (SemVer + `latest`). A fork
+  publishes under its own lowercased owner.
 - **`security-audit.yml`** — scheduled `composer audit` (~every 2 days) that opens
   an issue if a locked dependency has a known advisory. Dependabot
   (`.github/dependabot.yml`) complements it with weekly update PRs.

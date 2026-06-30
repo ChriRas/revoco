@@ -26,7 +26,7 @@
 
 services:
   app:
-    image: ghcr.io/${REVOCO_IMAGE_OWNER:-revoco}/revoco:${REVOCO_IMAGE_TAG:-latest}
+    image: ghcr.io/${REVOCO_IMAGE_OWNER:-chriras}/revoco:${REVOCO_IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -89,7 +89,7 @@ services:
     restart: unless-stopped
 
   queue:
-    image: ghcr.io/${REVOCO_IMAGE_OWNER:-revoco}/revoco:${REVOCO_IMAGE_TAG:-latest}
+    image: ghcr.io/${REVOCO_IMAGE_OWNER:-chriras}/revoco:${REVOCO_IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -127,7 +127,7 @@ services:
     restart: unless-stopped
 
   scheduler:
-    image: ghcr.io/${REVOCO_IMAGE_OWNER:-revoco}/revoco:${REVOCO_IMAGE_TAG:-latest}
+    image: ghcr.io/${REVOCO_IMAGE_OWNER:-chriras}/revoco:${REVOCO_IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: docker/Dockerfile
