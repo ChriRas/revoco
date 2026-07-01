@@ -10,9 +10,12 @@ vars:
   # `run` starts the profiled `node` service on demand — no `--profile tools` needed.
   RUN_NODE: docker compose run --rm --no-deps node
   # Test runner: force the testing env so the prod base env vars (inherited by the
-  # dev override) can never shadow phpunit.xml. Pins exactly the five behaviour
-  # drivers. Keep in sync with the Pest step in .github/workflows/ci.yml.
-  RUN_TEST: 'docker compose run --rm --no-deps -e APP_ENV=testing -e QUEUE_CONNECTION=sync -e CACHE_STORE=array -e SESSION_DRIVER=array -e MAIL_MAILER=array app'
+  # dev override) can never shadow phpunit.xml. Pins the five behaviour drivers AND
+  # DB_DATABASE=:memory: — the prod-base DB path (a file) would otherwise shadow
+  # phpunit.xml's :memory:, so DB-less tests silently hit the pre-migrated dev DB
+  # (green locally, red on CI's fresh :memory:). CI needs no DB flag: its `docker run`
+  # doesn't inherit the compose env. Keep the drivers in sync with ci.yml's Pest step.
+  RUN_TEST: 'docker compose run --rm --no-deps -e APP_ENV=testing -e QUEUE_CONNECTION=sync -e CACHE_STORE=array -e SESSION_DRIVER=array -e MAIL_MAILER=array -e DB_DATABASE=:memory: app'
 
 tasks:
   default:
