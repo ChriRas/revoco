@@ -1,6 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+{{-- Non-blocking setup notice (slice-015): shown when legal content is not yet
+     configured. Consumer-locale text. The form stays fully functional and
+     submittable regardless — § 356a is absolute (withdrawal is never blocked). --}}
+@if (! \App\Support\LegalContent::isComplete())
+    <div class="wf-setup-notice" role="status">
+        {{ __('wf.setup.pending') }}
+    </div>
+@endif
 <main class="wf-shell">
     {{-- data-theme drives the --wf-* token swap; resolved from APP_THEME (neutral default).
          novalidate: suppress the browser's native validation bubbles so the submit reaches

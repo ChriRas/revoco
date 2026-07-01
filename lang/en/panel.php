@@ -140,6 +140,13 @@ return [
         'unmark_handled' => 'Unmark handled',
     ],
 
+    'setup' => [
+        'warning' => 'Setup pending — the following pages are missing: :pages.',
+        'link' => 'Configure legal pages',
+        'page_imprint' => 'Imprint',
+        'page_privacy' => 'Privacy Policy',
+    ],
+
     'infolist' => [
         'section' => [
             'submitter' => 'Submitter details',

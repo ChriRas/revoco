@@ -80,6 +80,13 @@ return [
         'source' => 'Source code',
     ],
 
+    // Setup notice — shown on the consumer form when legal content is not yet
+    // configured. Non-blocking: the form stays functional and submittable.
+    // Operator-directed; self-heals once legal pages are configured.
+    'setup' => [
+        'pending' => 'This form has not been fully set up yet. Operator: please log in and configure the legal pages.',
+    ],
+
     'legal' => [
         'privacy' => [
             'title' => 'Privacy Policy',
