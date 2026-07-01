@@ -6,6 +6,7 @@ namespace App\Support;
 
 use App\Settings\LocaleSettings;
 use Illuminate\Support\Facades\File;
+use Spatie\LaravelSettings\Exceptions\MissingSettings;
 
 /**
  * Single source of truth for the locales the consumer-facing withdrawal form
@@ -17,19 +18,46 @@ use Illuminate\Support\Facades\File;
  */
 final class ConsumerLocales
 {
-    /** @return list<string> */
+    /**
+     * Locales offered in the consumer switcher. Reads the operator-managed
+     * LocaleSettings, but falls back to the framework base locale when that row
+     * is missing/unseeded — § 356a: the consumer form (both GET / and the submit
+     * POST run SetConsumerLocale) must never 500 on a misconfigured settings
+     * store; a misconfigured-but-live shop stays submittable.
+     *
+     * @return list<string>
+     */
     public static function available(): array
     {
-        return app(LocaleSettings::class)->available;
+        try {
+            $available = app(LocaleSettings::class)->available;
+        } catch (MissingSettings) {
+            return [self::baseLocale()];
+        }
+
+        return $available !== [] ? $available : [self::baseLocale()];
     }
 
     /**
      * Default consumer locale (the operator-configured fallback when no valid
-     * locale cookie is present). Always one of self::available().
+     * locale cookie is present). Always one of self::available(); falls back to
+     * the framework base locale if LocaleSettings is missing (see available()).
      */
     public static function default(): string
     {
-        return app(LocaleSettings::class)->default;
+        try {
+            return app(LocaleSettings::class)->default;
+        } catch (MissingSettings) {
+            return self::baseLocale();
+        }
+    }
+
+    /** Laravel's configured base locale (APP_LOCALE) — the § 356a fallback. */
+    private static function baseLocale(): string
+    {
+        $locale = config('app.locale');
+
+        return is_string($locale) ? $locale : 'de';
     }
 
     /**

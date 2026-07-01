@@ -56,7 +56,20 @@ final class ManageLocalization extends SettingsPage
             Select::make('default')
                 ->label(__('panel.settings.localization.default.label'))
                 ->helperText(__('panel.settings.localization.default.help'))
-                ->options($options)
+                // Offer only the locales the operator has currently enabled (the
+                // available CheckboxList is ->live()), so the default can't name a
+                // disabled language; the ->in() rule still enforces this on save.
+                ->options(function (Get $get) use ($options): array {
+                    $available = $get('available');
+
+                    return is_array($available)
+                        ? array_filter(
+                            $options,
+                            static fn (string $code): bool => in_array($code, $available, true),
+                            ARRAY_FILTER_USE_KEY,
+                        )
+                        : [];
+                })
                 ->required()
                 ->in(fn (Get $get): array => is_array($available = $get('available')) ? array_values($available) : [])
                 ->validationMessages([
