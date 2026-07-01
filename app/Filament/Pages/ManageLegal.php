@@ -18,6 +18,8 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\HtmlString;
 
 /**
  * Operator settings page for the legal pages. Organized in two tabs:
@@ -244,7 +246,7 @@ final class ManageLegal extends SettingsPage
 
         foreach ($this->localeOptions() as $code => $label) {
             $editors[] = RichEditor::make('privacy_content.'.$code)
-                ->label($label)
+                ->label($this->localeFlagLabel($code, $label))
                 ->toolbarButtons([
                     ['bold', 'italic', 'underline', 'strike', 'link'],
                     ['h2', 'h3'],
@@ -268,7 +270,7 @@ final class ManageLegal extends SettingsPage
 
         foreach ($this->localeOptions() as $code => $label) {
             $editors[] = Textarea::make('imprint_address.'.$code)
-                ->label($label)
+                ->label($this->localeFlagLabel($code, $label))
                 ->rows(3)
                 ->maxLength(1024);
         }
@@ -287,7 +289,7 @@ final class ManageLegal extends SettingsPage
 
         foreach ($this->localeOptions() as $code => $label) {
             $editors[] = RichEditor::make('imprint_addendum.'.$code)
-                ->label($label)
+                ->label($this->localeFlagLabel($code, $label))
                 ->toolbarButtons([
                     ['bold', 'italic', 'underline', 'strike', 'link'],
                     ['h2', 'h3'],
@@ -310,11 +312,44 @@ final class ManageLegal extends SettingsPage
         $options = [];
 
         foreach (ConsumerLocales::available() as $code) {
-            $key = 'wf.language.names.'.$code;
-            $name = __($key);
-            $options[$code] = $name === $key ? strtoupper($code) : $name;
+            $options[$code] = $this->localeName($code);
         }
 
         return $options;
+    }
+
+    /** Autonym for a locale (its own language name), falling back to the upper-cased code. */
+    private function localeName(string $code): string
+    {
+        $key = 'wf.language.names.'.$code;
+        $name = __($key);
+
+        return $name === $key ? strtoupper($code) : $name;
+    }
+
+    /**
+     * A per-locale field label prefixed with the locale's flag, so the operator
+     * sees at a glance which language a field edits. Reuses the consumer flag
+     * partials (resources/views/components/flags/<code>); a locale that ships no
+     * flag falls back to the plain autonym — mirroring the consumer switcher.
+     * The flag is decorative (aria-hidden); the autonym carries the meaning.
+     */
+    private function localeFlagLabel(string $code, string $name): string|Htmlable
+    {
+        if (! view()->exists('components.flags.'.$code)) {
+            return $name;
+        }
+
+        // The shared flag SVG carries no dimensions (the consumer sizes it via CSS
+        // that is not loaded in the panel), so size it inline here.
+        $flag = str_replace(
+            '<svg ',
+            '<svg width="20" height="13" style="flex:none;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.12)" ',
+            view('components.flags.'.$code)->render(),
+        );
+
+        return new HtmlString(
+            '<span style="display:inline-flex;align-items:center;gap:.45em">'.$flag.'<span>'.e($name).'</span></span>',
+        );
     }
 }
