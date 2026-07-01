@@ -363,6 +363,19 @@ a.wf-flag:focus-visible { outline: 3px solid var(--wf-focus-ring); outline-offse
 
 .wf-legal-empty { margin: 0; color: var(--wf-muted); font-size: 1rem; line-height: 1.55; }
 
+/* Structured imprint (§ 5 DDG): label/value rows in a definition list.
+   pre-line keeps line breaks in multi-line operator fields (postal address,
+   notes). Collapses to a stacked layout on narrow screens. */
+.wf-imprint-dl { margin: .7em 0 1.4em; display: grid; gap: .55em; }
+.wf-imprint-row { display: grid; grid-template-columns: minmax(9rem, 15rem) 1fr; gap: .2em 1.4em; align-items: baseline; }
+.wf-imprint-dt { margin: 0; color: var(--wf-muted); font-size: .9rem; font-weight: 600; }
+.wf-imprint-dd { margin: 0; color: var(--wf-fg); white-space: pre-line; }
+.wf-imprint-addendum { margin-top: .3em; }
+@media (max-width: 460px) {
+    .wf-imprint-row { grid-template-columns: 1fr; gap: .1em; }
+    .wf-imprint-dt { font-size: .82rem; }
+}
+
 /* Legal pages stack a sticky "back to form" pill above the card (the card is
    overflow:hidden, so a sticky child would be clipped). The pill pins to the top
    as the reader scrolls a long policy, styled to match the card. */

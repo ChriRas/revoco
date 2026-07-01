@@ -45,6 +45,8 @@ return [
         'legal' => [
             'navigation_label' => 'Rechtstexte',
             'title' => 'Rechtstexte',
+            'tab_privacy' => 'Datenschutzerklärung',
+            'tab_imprint' => 'Impressum',
             'privacy_content' => [
                 'label' => 'Datenschutzerklärung',
                 'help' => 'Der eigene Datenschutztext je Sprache. Revoco liefert keine vorgefertigten Rechtstexte — für den Inhalt sind Sie als Verantwortlicher zuständig.',
@@ -57,6 +59,50 @@ return [
                 'label' => 'Ersatzsprachen-Reihenfolge',
                 'help' => 'Sprachen, die der Reihe nach herangezogen werden, wenn die angeforderte Sprache keinen Text hat.',
             ],
+            'imprint_link' => [
+                'label' => 'Externe Impressum-URL (überschreibt)',
+                'help' => 'Wenn gesetzt, verweist der Fußzeilen-Link dorthin und die interne Seite leitet dorthin weiter. Leer lassen, um die Angaben unten zu verwenden.',
+            ],
+            'imprint_entity' => [
+                'label' => 'Angaben zum Unternehmen',
+                'help' => 'Name, Rechtsform und gesetzlicher Vertreter gemäß § 5 Abs. 1 Nr. 1 DDG.',
+            ],
+            'imprint_contact' => [
+                'label' => 'Kontakt',
+                'help' => 'E-Mail-Adresse und ein zweiter schneller Kontaktweg (§ 5 Abs. 1 Nr. 2 DDG, EuGH C-298/07).',
+            ],
+            'imprint_register' => [
+                'label' => 'Handelsregister',
+                'help' => 'Registergericht und Registernummer, sofern eingetragen (§ 5 Abs. 1 Nr. 4 DDG).',
+            ],
+            'imprint_tax' => [
+                'label' => 'Steuerliche Angaben',
+                'help' => 'Umsatzsteuer-ID (§ 27a UStG) und/oder Wirtschafts-IdNr. (§ 139c AO), sofern vorhanden (§ 5 Abs. 1 Nr. 6 DDG).',
+            ],
+            'imprint_professional' => [
+                'label' => 'Berufsrechtliche Angaben (optional)',
+                'help' => 'Nur für reglementierte Berufe und genehmigungspflichtige Tätigkeiten (§ 5 Abs. 1 Nr. 3 u. 5 DDG).',
+            ],
+            'imprint_addendum' => [
+                'label' => 'Freier Zusatz',
+                'help' => 'Freitextfeld je Sprache für weitere Pflichtangaben oder Hinweise (z. B. VSBG-Hinweis auf Anraten des Anwalts).',
+            ],
+            'imprint_name' => ['label' => 'Name / Firma'],
+            'imprint_legal_form' => ['label' => 'Rechtsform'],
+            'imprint_represented_by' => ['label' => 'Vertreten durch'],
+            'imprint_address' => ['label' => 'Anschrift (keine Postfachadresse)'],
+            'imprint_email' => ['label' => 'E-Mail-Adresse'],
+            'imprint_phone' => ['label' => 'Telefonnummer'],
+            'imprint_contact_note' => ['label' => 'Weiterer Kontakthinweis'],
+            'imprint_register_court' => ['label' => 'Registergericht'],
+            'imprint_register_number' => ['label' => 'Registernummer'],
+            'imprint_vat_id' => ['label' => 'Umsatzsteuer-Identifikationsnummer'],
+            'imprint_business_id' => ['label' => 'Wirtschafts-Identifikationsnummer'],
+            'imprint_supervisory_authority' => ['label' => 'Aufsichtsbehörde'],
+            'imprint_chamber' => ['label' => 'Kammer'],
+            'imprint_job_title' => ['label' => 'Berufsbezeichnung und Verleihungsstaat'],
+            'imprint_professional_rules' => ['label' => 'Berufsrechtliche Regelungen und Fundstelle'],
+            'imprint_liquidation_note' => ['label' => 'Abwicklungs-/Insolvenzhinweis (§ 5 Nr. 7 DDG)'],
         ],
     ],
 
