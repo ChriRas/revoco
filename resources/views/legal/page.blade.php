@@ -3,7 +3,7 @@
 {{-- Generic legal page (privacy now, imprint later): title + safe-rendered rich
      content, or a neutral "not configured yet" placeholder when the operator has
      supplied neither content nor an override link. $content is a pre-rendered,
-     sanitized HtmlString (Filament RichContentRenderer) or null. --}}
+     sanitized HtmlString (Str::sanitizeHtml) or null. --}}
 @section('content')
 <main class="wf-shell">
     <div class="wf-card" data-theme="{{ config('revoco.theme') }}">

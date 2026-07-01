@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Settings\LegalSettings;
 use App\Settings\LocaleSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\LaravelSettings\Exceptions\MissingSettings;
 
 uses(RefreshDatabase::class);
 
@@ -125,4 +126,24 @@ it('points the footer privacy link at the external override URL when set', funct
         ->assertOk()
         ->assertSee('href="https://shop.example/datenschutz"', false)
         ->assertDontSee('href="'.route('legal.privacy').'"', false);
+});
+
+it('never 500s and shows the placeholder when LegalSettings is unseeded (§ 356a)', function (): void {
+    // Spatie loads settings lazily; simulate a missing row via a throwing binding.
+    // The consumer pages must stay up: the form + success render (footer falls back
+    // to the internal route), and /datenschutz shows the neutral placeholder.
+    app()->bind(LegalSettings::class, fn () => throw new MissingSettings('unseeded'));
+
+    $internal = 'href="'.route('legal.privacy').'"';
+
+    $this->withoutVite()->get(route('withdrawal.form'))
+        ->assertOk()
+        ->assertSee($internal, false);
+
+    $this->withoutVite()->get(route('withdrawal.success'))
+        ->assertOk();
+
+    $this->withoutVite()->get(route('legal.privacy'))
+        ->assertOk()
+        ->assertSee(__('wf.legal.placeholder'));
 });

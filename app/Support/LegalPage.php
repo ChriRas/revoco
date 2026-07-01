@@ -10,8 +10,9 @@ namespace App\Support;
  * content (raw HTML for the winning locale), or empty (neither configured).
  *
  * The raw HTML is intentionally NOT rendered here — the consumer controller
- * safe-renders it via Filament's RichContentRenderer so unsafe markup is
- * stripped. This value object stays a pure carrier the imprint page reuses.
+ * safe-renders it via Str::sanitizeHtml() (Filament's Symfony-backed sanitizer)
+ * so unsafe markup is stripped. This value object stays a pure carrier the
+ * imprint page reuses.
  */
 final readonly class LegalPage
 {

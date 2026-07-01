@@ -64,3 +64,34 @@ it('rejects an invalid override URL', function (): void {
         ->call('save')
         ->assertHasFormErrors(['privacy_link']);
 });
+
+it('preserves stored content for a locale that is later disabled', function (): void {
+    $this->actingAs(User::factory()->create());
+
+    // Operator authors both locales.
+    livewire(ManageLegal::class)
+        ->fillForm([
+            'privacy_content' => ['de' => '<p>DE Original</p>', 'en' => '<p>EN Original</p>'],
+            'privacy_link' => null,
+            'fallback_order' => ['de'],
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    // en is disabled → the page now renders only the de editor; a save must NOT wipe
+    // the stored en text (disabling a locale can be temporary).
+    LocaleSettings::fake(['available' => ['de'], 'default' => 'de']);
+
+    livewire(ManageLegal::class)
+        ->fillForm([
+            'privacy_content' => ['de' => '<p>DE Aktualisiert</p>'],
+            'privacy_link' => null,
+            'fallback_order' => ['de'],
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $settings = app(LegalSettings::class)->refresh();
+    expect($settings->privacy_content['de'])->toContain('DE Aktualisiert');       // enabled-locale edit applied
+    expect($settings->privacy_content['en'] ?? null)->toContain('EN Original');   // disabled-locale text preserved
+});

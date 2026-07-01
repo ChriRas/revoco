@@ -69,6 +69,29 @@ final class ManageLegal extends SettingsPage
     }
 
     /**
+     * Preserve privacy content for locales that are not currently enabled. The form
+     * renders an editor only per enabled locale, so on save Filament prunes
+     * privacy_content to the enabled keys — which would wipe a disabled locale's
+     * stored legal text. Disabling a locale can be temporary, so we never drop
+     * authored legal text: submitted (enabled) entries win, stored entries for
+     * absent locales are kept.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $submitted = $data['privacy_content'] ?? [];
+
+        // Submitted (enabled-locale) entries win; stored entries for locales absent
+        // from the form (currently disabled) are preserved.
+        $data['privacy_content'] = (is_array($submitted) ? $submitted : [])
+            + app(LegalSettings::class)->privacy_content;
+
+        return $data;
+    }
+
+    /**
      * A rich editor per enabled consumer locale, each bound to the matching
      * privacy_content.<locale> key and labelled with the language autonym. The
      * toolbar excludes file attachments — legal text needs no image uploads, and
