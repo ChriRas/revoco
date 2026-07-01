@@ -31,7 +31,7 @@ function legalFake(array $override = []): void
         'imprint_name' => null,
         'imprint_legal_form' => null,
         'imprint_represented_by' => null,
-        'imprint_address' => null,
+        'imprint_address' => [],
         'imprint_email' => null,
         'imprint_phone' => null,
         'imprint_contact_note' => null,
@@ -57,24 +57,27 @@ beforeEach(function (): void {
 it('renders structured imprint fields in the consumer locale (de)', function (): void {
     legalFake([
         'imprint_name' => 'Muster GmbH',
-        'imprint_address' => 'Musterstraße 1, 12345 Berlin',
+        'imprint_address' => ['de' => 'Musterstraße 1, 12345 Berlin, Deutschland'],
         'imprint_email' => 'kontakt@example.com',
     ]);
 
     $this->withoutVite()->get(route('legal.imprint'))
         ->assertOk()
-        ->assertSee('Impressum')                    // German page title
+        ->assertSee('Impressum')                             // German page title
         ->assertSee('Muster GmbH')
-        ->assertSee('Musterstraße 1, 12345 Berlin')
+        ->assertSee('Musterstraße 1, 12345 Berlin, Deutschland')
         ->assertSee('kontakt@example.com')
-        ->assertSee('Anschrift')                    // German field label for address
-        ->assertSee('E-Mail');                      // German field label for email
+        ->assertSee('Anschrift')                             // German field label for address
+        ->assertSee('E-Mail');                               // German field label for email
 });
 
 it('renders imprint with English labels when the consumer locale is en', function (): void {
     legalFake([
         'imprint_name' => 'Muster GmbH',
-        'imprint_address' => 'Musterstraße 1, 12345 Berlin',
+        'imprint_address' => [
+            'de' => 'Musterstraße 1, 12345 Berlin, Deutschland',
+            'en' => 'Musterstrasse 1, 12345 Berlin, Germany',
+        ],
         'imprint_email' => 'kontakt@example.com',
     ]);
 
@@ -82,16 +85,17 @@ it('renders imprint with English labels when the consumer locale is en', functio
         ->withoutVite()
         ->get(route('legal.imprint'))
         ->assertOk()
-        ->assertSee('Imprint')                      // English page title
-        ->assertSee('Muster GmbH')                  // data is locale-independent
-        ->assertSee('Address')                      // English field label
-        ->assertSee('Email');                       // English field label
+        ->assertSee('Imprint')                           // English page title
+        ->assertSee('Muster GmbH')                       // name is locale-independent
+        ->assertSee('Musterstrasse 1, 12345 Berlin, Germany') // EN address resolved
+        ->assertSee('Address')                           // English field label
+        ->assertSee('Email');                            // English field label
 });
 
 it('omits empty optional fields from the rendered imprint', function (): void {
     legalFake([
         'imprint_name' => 'Muster GmbH',
-        'imprint_address' => 'Musterstraße 1, 12345 Berlin',
+        'imprint_address' => ['de' => 'Musterstraße 1, 12345 Berlin, Deutschland'],
         'imprint_email' => 'kontakt@example.com',
         // No phone, no register, no VAT — these must not produce empty rows.
     ]);
@@ -106,7 +110,7 @@ it('omits empty optional fields from the rendered imprint', function (): void {
 it('shows the de addendum by default and falls back when only de is configured', function (): void {
     legalFake([
         'imprint_name' => 'Muster GmbH',
-        'imprint_address' => 'Musterstraße 1, 12345 Berlin',
+        'imprint_address' => ['de' => 'Musterstraße 1, 12345 Berlin, Deutschland'],
         'imprint_email' => 'kontakt@example.com',
         'imprint_addendum' => ['de' => '<p>Hinweis nur auf Deutsch</p>'],
         'fallback_order' => ['de'],
@@ -199,7 +203,7 @@ it('points the footer imprint link at the external override URL when imprint_lin
 it('reports the imprint as configured when name, address and email are all non-empty', function (): void {
     legalFake([
         'imprint_name' => 'Muster GmbH',
-        'imprint_address' => 'Musterstraße 1, 12345 Berlin',
+        'imprint_address' => ['de' => 'Musterstraße 1, 12345 Berlin, Deutschland'],
         'imprint_email' => 'kontakt@example.com',
     ]);
 
@@ -228,7 +232,7 @@ it('renders the Impressum tab with its form fields', function (): void {
     livewire(ManageLegal::class)
         ->assertOk()
         ->assertFormFieldExists('imprint_name')
-        ->assertFormFieldExists('imprint_address')
+        ->assertFormFieldExists('imprint_address.de') // per-locale textarea (de enabled by default)
         ->assertFormFieldExists('imprint_email')
         ->assertFormFieldExists('imprint_link');
 });
@@ -239,7 +243,7 @@ it('persists imprint fields and the override link', function (): void {
     livewire(ManageLegal::class)
         ->fillForm([
             'imprint_name' => 'Muster GmbH',
-            'imprint_address' => 'Musterstraße 1, 12345 Berlin',
+            'imprint_address' => ['de' => 'Musterstraße 1, 12345 Berlin, Deutschland'],
             'imprint_email' => 'kontakt@example.com',
             'imprint_phone' => '+49 30 123456',
             'imprint_vat_id' => 'DE123456789',
@@ -249,7 +253,7 @@ it('persists imprint fields and the override link', function (): void {
 
     $settings = app(LegalSettings::class)->refresh();
     expect($settings->imprint_name)->toBe('Muster GmbH');
-    expect($settings->imprint_address)->toBe('Musterstraße 1, 12345 Berlin');
+    expect($settings->imprint_address['de'])->toBe('Musterstraße 1, 12345 Berlin, Deutschland');
     expect($settings->imprint_email)->toBe('kontakt@example.com');
     expect($settings->imprint_vat_id)->toBe('DE123456789');
 });
@@ -261,7 +265,10 @@ it('persists the imprint addendum per locale and preserves disabled-locale conte
     livewire(ManageLegal::class)
         ->fillForm([
             'imprint_name' => 'Muster GmbH',
-            'imprint_address' => 'Musterstraße 1, 12345 Berlin',
+            'imprint_address' => [
+                'de' => 'Musterstraße 1, 12345 Berlin, Deutschland',
+                'en' => 'Musterstrasse 1, 12345 Berlin, Germany',
+            ],
             'imprint_email' => 'kontakt@example.com',
             'imprint_addendum' => [
                 'de' => '<p>Zusatz DE</p>',
@@ -271,13 +278,13 @@ it('persists the imprint addendum per locale and preserves disabled-locale conte
         ->call('save')
         ->assertHasNoFormErrors();
 
-    // Disable the en locale — the next save must NOT wipe the stored en addendum.
+    // Disable the en locale — the next save must NOT wipe the stored en address / addendum.
     LocaleSettings::fake(['available' => ['de'], 'default' => 'de']);
 
     livewire(ManageLegal::class)
         ->fillForm([
             'imprint_name' => 'Muster GmbH',
-            'imprint_address' => 'Musterstraße 1, 12345 Berlin',
+            'imprint_address' => ['de' => 'Musterstraße 1, 12345 Berlin, Deutschland'],
             'imprint_email' => 'kontakt@example.com',
             'imprint_addendum' => ['de' => '<p>Zusatz DE aktualisiert</p>'],
         ])
@@ -285,6 +292,8 @@ it('persists the imprint addendum per locale and preserves disabled-locale conte
         ->assertHasNoFormErrors();
 
     $settings = app(LegalSettings::class)->refresh();
+    expect($settings->imprint_address['de'])->toBe('Musterstraße 1, 12345 Berlin, Deutschland');
+    expect($settings->imprint_address['en'] ?? null)->toBe('Musterstrasse 1, 12345 Berlin, Germany');
     expect($settings->imprint_addendum['de'])->toContain('Zusatz DE aktualisiert');
     expect($settings->imprint_addendum['en'] ?? null)->toContain('Addendum EN');
 });
@@ -296,4 +305,85 @@ it('rejects an invalid override imprint URL', function (): void {
         ->fillForm(['imprint_link' => 'not-a-valid-url'])
         ->call('save')
         ->assertHasFormErrors(['imprint_link']);
+});
+
+// ---------------------------------------------------------------------------
+// Per-locale address resolution — proving locale-specific content, not just labels
+// ---------------------------------------------------------------------------
+
+it('renders the German address for a de request and the English address for an en request', function (): void {
+    legalFake([
+        'imprint_name' => 'Muster GmbH',
+        'imprint_address' => [
+            'de' => 'Musterstraße 1, 12345 Berlin, Deutschland',
+            'en' => 'Musterstrasse 1, 12345 Berlin, Germany',
+        ],
+        'imprint_email' => 'kontakt@example.com',
+        'fallback_order' => ['de'],
+    ]);
+
+    // DE request — ß and "Deutschland" must appear.
+    $this->withoutVite()->get(route('legal.imprint'))
+        ->assertOk()
+        ->assertSee('Musterstraße 1, 12345 Berlin, Deutschland')
+        ->assertDontSee('Musterstrasse 1, 12345 Berlin, Germany');
+
+    // EN request — ß→ss and "Germany" must appear instead.
+    $this->withUnencryptedCookie('locale', 'en')
+        ->withoutVite()
+        ->get(route('legal.imprint'))
+        ->assertOk()
+        ->assertSee('Musterstrasse 1, 12345 Berlin, Germany')
+        ->assertDontSee('Musterstraße 1, 12345 Berlin, Deutschland');
+});
+
+it('falls back to the de address when an en request finds no en address', function (): void {
+    legalFake([
+        'imprint_name' => 'Muster GmbH',
+        'imprint_address' => ['de' => 'Musterstraße 1, 12345 Berlin, Deutschland'],
+        'imprint_email' => 'kontakt@example.com',
+        'fallback_order' => ['de'],
+    ]);
+
+    // EN request — no en address is set, must fall back to de.
+    $this->withUnencryptedCookie('locale', 'en')
+        ->withoutVite()
+        ->get(route('legal.imprint'))
+        ->assertOk()
+        ->assertSee('Musterstraße 1, 12345 Berlin, Deutschland');
+});
+
+// ---------------------------------------------------------------------------
+// Completeness helper — per-locale address rules
+// ---------------------------------------------------------------------------
+
+it('reports not configured when the address map is empty for the default locale', function (): void {
+    legalFake([
+        'imprint_name' => 'Muster GmbH',
+        'imprint_address' => [], // default locale (de) has no entry
+        'imprint_email' => 'kontakt@example.com',
+    ]);
+
+    expect(LegalPages::imprintIsConfigured())->toBeFalse();
+});
+
+it('reports not configured when only a non-default locale has an address', function (): void {
+    legalFake([
+        'imprint_name' => 'Muster GmbH',
+        'imprint_address' => ['en' => 'Musterstrasse 1, 12345 Berlin, Germany'], // de missing
+        'imprint_email' => 'kontakt@example.com',
+    ]);
+
+    // Default locale is 'de' (from beforeEach LocaleSettings::fake); 'de' key absent.
+    expect(LegalPages::imprintIsConfigured())->toBeFalse();
+});
+
+it('reports configured when the default locale has a non-empty address', function (): void {
+    legalFake([
+        'imprint_name' => 'Muster GmbH',
+        'imprint_address' => ['de' => 'Musterstraße 1, 12345 Berlin, Deutschland'],
+        'imprint_email' => 'kontakt@example.com',
+    ]);
+
+    expect(LegalPages::imprintIsConfigured())->toBeTrue();
 });

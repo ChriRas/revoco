@@ -44,8 +44,10 @@ final class LegalSettings extends Settings
 
     // -----------------------------------------------------------------------
     // § 5 DDG imprint fields (slice-014)
-    // Operator data is locale-independent; labels are i18n keys; only the
-    // free-form addendum is per language (resolved via the fallback chain).
+    // Operator data is locale-independent; labels are i18n keys.
+    // Exception: imprint_address is per-locale (country name, ß→ss etc.);
+    // all other structured fields are plain ?string.
+    // The free-form addendum is also per language (resolved via the fallback chain).
     // -----------------------------------------------------------------------
 
     /** Trading name or legal name of the entity (§ 5 Abs. 1 Nr. 1). */
@@ -57,8 +59,16 @@ final class LegalSettings extends Settings
     /** Name of the authorized representative(s) (required for legal entities). */
     public ?string $imprint_represented_by = null;
 
-    /** Full postal address incl. street + house number (no P.O. box — § 5 Nr. 1). */
-    public ?string $imprint_address = null;
+    /**
+     * Full postal address per consumer locale (no P.O. box — § 5 Nr. 1).
+     * Keyed by locale code, e.g. ['de' => 'Musterstraße 1 …', 'en' => 'Musterstrasse 1 …'].
+     * Resolved via the same fallback chain as the addendum ($fallback_order).
+     * The deployment DEFAULT locale must be populated for the imprint to be considered
+     * configured (see App\Support\LegalPages::imprintIsConfigured()).
+     *
+     * @var array<string, string>
+     */
+    public array $imprint_address = [];
 
     /** E-mail address for fast contact (§ 5 Abs. 1 Nr. 2 / post-EuGH C-298/07). */
     public ?string $imprint_email = null;

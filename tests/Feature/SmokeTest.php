@@ -14,7 +14,7 @@ beforeEach(function () {
         // Imprint fields (slice-014) — empty defaults so the DB-less smoke test
         // requires no settings table.
         'imprint_name' => null, 'imprint_legal_form' => null, 'imprint_represented_by' => null,
-        'imprint_address' => null, 'imprint_email' => null, 'imprint_phone' => null,
+        'imprint_address' => [], 'imprint_email' => null, 'imprint_phone' => null,
         'imprint_contact_note' => null, 'imprint_register_court' => null,
         'imprint_register_number' => null, 'imprint_vat_id' => null, 'imprint_business_id' => null,
         'imprint_supervisory_authority' => null, 'imprint_chamber' => null,

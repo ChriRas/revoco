@@ -90,7 +90,10 @@ return [
             'imprint_name' => ['label' => 'Name / Firma'],
             'imprint_legal_form' => ['label' => 'Rechtsform'],
             'imprint_represented_by' => ['label' => 'Vertreten durch'],
-            'imprint_address' => ['label' => 'Anschrift (keine Postfachadresse)'],
+            'imprint_address' => [
+                'label' => 'Anschrift',
+                'help' => 'Vollständige Postanschrift (keine Postfachadresse) nach § 5 Abs. 1 Nr. 1 DDG. Je Sprache eintragen, damit Landesbezeichnung oder andere Angaben lokalisiert werden können.',
+            ],
             'imprint_email' => ['label' => 'E-Mail-Adresse'],
             'imprint_phone' => ['label' => 'Telefonnummer'],
             'imprint_contact_note' => ['label' => 'Weiterer Kontakthinweis'],

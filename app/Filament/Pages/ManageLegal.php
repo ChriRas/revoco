@@ -17,6 +17,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Width;
 
 /**
  * Operator settings page for the legal pages. Organized in two tabs:
@@ -33,6 +34,9 @@ final class ManageLegal extends SettingsPage
     protected static string $settings = LegalSettings::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-scale';
+
+    /** Widen the form to the full available width (BasePage API — Width enum, vendor-verified). */
+    protected Width|string|null $maxContentWidth = Width::Full;
 
     public static function getNavigationLabel(): string
     {
@@ -80,6 +84,11 @@ final class ManageLegal extends SettingsPage
         $submittedPrivacy = $data['privacy_content'] ?? [];
         $data['privacy_content'] = (is_array($submittedPrivacy) ? $submittedPrivacy : [])
             + $settings->privacy_content;
+
+        // Preserve imprint address for disabled locales.
+        $submittedAddress = $data['imprint_address'] ?? [];
+        $data['imprint_address'] = (is_array($submittedAddress) ? $submittedAddress : [])
+            + $settings->imprint_address;
 
         // Preserve imprint addendum for disabled locales.
         $submittedAddendum = $data['imprint_addendum'] ?? [];
@@ -145,12 +154,11 @@ final class ManageLegal extends SettingsPage
                     TextInput::make('imprint_represented_by')
                         ->label(__('panel.settings.legal.imprint_represented_by.label'))
                         ->maxLength(512),
-                    Textarea::make('imprint_address')
-                        ->label(__('panel.settings.legal.imprint_address.label'))
-                        ->rows(3)
-                        ->maxLength(1024)
-                        ->columnSpanFull(),
                 ]),
+
+            Section::make(__('panel.settings.legal.imprint_address.label'))
+                ->description(__('panel.settings.legal.imprint_address.help'))
+                ->schema($this->imprintAddressEditors()),
 
             Section::make(__('panel.settings.legal.imprint_contact.label'))
                 ->description(__('panel.settings.legal.imprint_contact.help'))
@@ -243,6 +251,26 @@ final class ManageLegal extends SettingsPage
                     ['blockquote', 'bulletList', 'orderedList'],
                     ['undo', 'redo'],
                 ]);
+        }
+
+        return $editors;
+    }
+
+    /**
+     * A textarea per enabled consumer locale for the postal address.
+     * One entry per language (address differs e.g. in country name: Deutschland / Germany).
+     *
+     * @return list<Textarea>
+     */
+    private function imprintAddressEditors(): array
+    {
+        $editors = [];
+
+        foreach ($this->localeOptions() as $code => $label) {
+            $editors[] = Textarea::make('imprint_address.'.$code)
+                ->label($label)
+                ->rows(3)
+                ->maxLength(1024);
         }
 
         return $editors;

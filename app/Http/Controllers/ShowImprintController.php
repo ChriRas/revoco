@@ -68,6 +68,9 @@ final class ShowImprintController extends Controller
      * Only non-blank values are included so the template can iterate without
      * conditional checks per field (the "omit empty optional fields" rule).
      *
+     * imprint_address is a per-locale map; it is resolved here via the same
+     * [requested locale, ...fallback_order] chain as the addendum.
+     *
      * Returns a list of groups, each with a heading key and a list of
      * [label_key, value] rows.
      *
@@ -77,12 +80,19 @@ final class ShowImprintController extends Controller
     {
         $groups = [];
 
+        // Resolve the per-locale address map to a single string for this request.
+        $address = $this->resolveAddressForLocale(
+            $settings->imprint_address,
+            $settings->fallback_order,
+            app()->getLocale()
+        );
+
         // Entity group — § 5 Abs. 1 Nr. 1 DDG.
         $entityRows = $this->filterRows([
             ['label' => 'wf.legal.imprint.field.name',           'value' => $settings->imprint_name],
             ['label' => 'wf.legal.imprint.field.legal_form',     'value' => $settings->imprint_legal_form],
             ['label' => 'wf.legal.imprint.field.represented_by', 'value' => $settings->imprint_represented_by],
-            ['label' => 'wf.legal.imprint.field.address',        'value' => $settings->imprint_address],
+            ['label' => 'wf.legal.imprint.field.address',        'value' => $address],
         ]);
         if ($entityRows !== []) {
             $groups[] = ['heading' => 'wf.legal.imprint.heading.entity', 'rows' => $entityRows];
@@ -129,6 +139,31 @@ final class ShowImprintController extends Controller
         }
 
         return $groups;
+    }
+
+    /**
+     * Resolves the per-locale address map to the first non-blank value along the
+     * fallback chain [requested, ...fallbackOrder] (de-duplicated). Returns null
+     * when no locale in the chain has a non-blank address (filterRows then omits
+     * the row, matching the "omit empty optional fields" rule).
+     *
+     * @param  array<string, string>  $map
+     * @param  list<string>  $fallbackOrder
+     */
+    private function resolveAddressForLocale(array $map, array $fallbackOrder, string $requested): ?string
+    {
+        /** @var list<string> $chain */
+        $chain = array_values(array_unique([$requested, ...$fallbackOrder]));
+
+        foreach ($chain as $locale) {
+            $value = trim($map[$locale] ?? '');
+
+            if ($value !== '') {
+                return $value;
+            }
+        }
+
+        return null;
     }
 
     /**

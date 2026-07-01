@@ -61,8 +61,9 @@ final class LegalPages
      * Applies the same override > internal > empty precedence as privacy:
      * - externalUrl is set when imprint_link is configured → route 302-redirects.
      * - html is the resolved addendum (per-locale rich text via fallback chain).
-     *   The structured § 5 fields are locale-independent and are read separately
-     *   by the controller; they are NOT packed into html.
+     *   The structured § 5 fields are read separately by the controller; most are
+     *   locale-independent, except imprint_address which is per-locale (resolved
+     *   there via the same fallback chain). None are packed into html.
      */
     public static function imprint(?string $locale = null): LegalPage
     {
@@ -91,10 +92,13 @@ final class LegalPages
 
     /**
      * Returns true when the mandatory § 5 DDG core fields are non-empty:
-     * name, address, and email. Used by the S4 missing-content-warning slice.
+     * name, address (for the deployment DEFAULT locale), and email.
+     * Used by the S4 missing-content-warning slice.
      *
-     * legal_form and represented_by depend on the entity type (not universally
-     * required), so they are excluded from the mandatory-completion signal.
+     * Address is per-locale; the default locale is the always-required baseline
+     * (ConsumerLocales::default() — falls back gracefully when LocaleSettings
+     * is unseeded). legal_form and represented_by depend on the entity type
+     * (not universally required) and are excluded from the completion signal.
      */
     public static function imprintIsConfigured(): bool
     {
@@ -102,14 +106,16 @@ final class LegalPages
             $settings = app(LegalSettings::class);
             // Properties are read inside the try block so MissingSettings is caught.
             $name = $settings->imprint_name;
-            $address = $settings->imprint_address;
+            $addressMap = $settings->imprint_address;
             $email = $settings->imprint_email;
         } catch (MissingSettings) {
             return false;
         }
 
+        $defaultLocale = ConsumerLocales::default();
+
         return trim($name ?? '') !== ''
-            && trim($address ?? '') !== ''
+            && trim($addressMap[$defaultLocale] ?? '') !== ''
             && trim($email ?? '') !== '';
     }
 }

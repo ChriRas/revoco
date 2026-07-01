@@ -16,7 +16,7 @@ return new class extends SettingsMigration
         $this->migrator->add('legal.imprint_name', null);
         $this->migrator->add('legal.imprint_legal_form', null);
         $this->migrator->add('legal.imprint_represented_by', null);
-        $this->migrator->add('legal.imprint_address', null);
+        $this->migrator->add('legal.imprint_address', []);
         $this->migrator->add('legal.imprint_email', null);
         $this->migrator->add('legal.imprint_phone', null);
         $this->migrator->add('legal.imprint_contact_note', null);

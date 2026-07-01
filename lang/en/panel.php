@@ -90,7 +90,10 @@ return [
             'imprint_name' => ['label' => 'Name / company name'],
             'imprint_legal_form' => ['label' => 'Legal form'],
             'imprint_represented_by' => ['label' => 'Represented by'],
-            'imprint_address' => ['label' => 'Postal address (no P.O. box)'],
+            'imprint_address' => [
+                'label' => 'Postal address',
+                'help' => 'Full postal address (no P.O. box) as required by § 5 Abs. 1 Nr. 1 DDG. Enter per language when the country name or other details differ by locale.',
+            ],
             'imprint_email' => ['label' => 'E-mail address'],
             'imprint_phone' => ['label' => 'Phone number'],
             'imprint_contact_note' => ['label' => 'Additional contact note'],
