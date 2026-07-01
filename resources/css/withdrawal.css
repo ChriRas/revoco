@@ -11,7 +11,7 @@
    Every visible property reads from these variables.
    --------------------------------------------------------------------------- */
 .wf-card,
-.wf-card[data-theme="neutral"] {
+[data-theme="neutral"] {
     --wf-font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
     --wf-font-display: var(--wf-font);
 
@@ -63,7 +63,7 @@
    live in the private infra repo and are mounted at deploy time — never here.
    --------------------------------------------------------------------------- */
 /*
-.wf-card[data-theme="example"] {
+[data-theme="example"] {
     --wf-rail: linear-gradient(90deg, #6d28d9 0%, #a78bfa 100%);
     --wf-accent: #6d28d9;
     --wf-accent-hover: #5b21b6;
@@ -362,6 +362,37 @@ a.wf-flag:focus-visible { outline: 3px solid var(--wf-focus-ring); outline-offse
 }
 
 .wf-legal-empty { margin: 0; color: var(--wf-muted); font-size: 1rem; line-height: 1.55; }
+
+/* Legal pages stack a sticky "back to form" pill above the card (the card is
+   overflow:hidden, so a sticky child would be clipped). The pill pins to the top
+   as the reader scrolls a long policy, styled to match the card. */
+.wf-shell--legal { flex-direction: column; align-items: stretch; gap: clamp(10px, 2vw, 14px); }
+.wf-back {
+    position: sticky;
+    top: clamp(10px, 2.5vw, 18px);
+    z-index: 20;
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 15px 9px 11px;
+    background: var(--wf-card-bg);
+    border: 1px solid var(--wf-card-border);
+    border-radius: 999px;
+    box-shadow: var(--wf-shadow);
+    color: var(--wf-fg);
+    text-decoration: none;
+    font-family: var(--wf-font);
+    font-weight: 600;
+    font-size: .92rem;
+    line-height: 1;
+    white-space: nowrap;
+    transition: color .15s, border-color .15s, transform .08s, box-shadow .15s;
+}
+.wf-back:hover { color: var(--wf-accent); border-color: color-mix(in srgb, var(--wf-accent) 40%, var(--wf-card-border)); }
+.wf-back:active { transform: translateY(1px); }
+.wf-back:focus-visible { outline: 3px solid var(--wf-focus-ring); outline-offset: 3px; }
+.wf-back svg { width: 18px; height: 18px; flex: none; }
 
 /* ---------------------------------------------------------------------------
    9) RESPONSIVE + MOTION
