@@ -66,4 +66,15 @@ return [
         'source' => 'Quelltext',
     ],
 
+    'legal' => [
+        'privacy' => [
+            'title' => 'Datenschutzerklärung',
+        ],
+        // Neutral hint shown when the operator has not configured the page yet —
+        // deliberately NOT legal text (no Lorem Ipsum, nothing that could read as valid).
+        'placeholder' => 'Diese Seite wurde noch nicht eingerichtet.',
+        // Sticky control on the (long) legal pages — returns to the withdrawal form.
+        'back' => 'Zurück zum Formular',
+    ],
+
 ];
