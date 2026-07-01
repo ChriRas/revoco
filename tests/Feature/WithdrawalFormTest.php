@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
+use App\Settings\LegalSettings;
 use App\Settings\LocaleSettings;
 
-// The form reads the offered locales from LocaleSettings; fake the shipped default
-// (de only, switcher hidden) so these DB-less tests need no settings table.
-beforeEach(fn () => LocaleSettings::fake(['available' => ['de'], 'default' => 'de']));
+// The form reads LocaleSettings (offered locales) and LegalSettings (footer privacy
+// link); fake both so these DB-less tests need no settings table.
+beforeEach(function () {
+    LocaleSettings::fake(['available' => ['de'], 'default' => 'de']);
+    LegalSettings::fake(['privacy_content' => [], 'privacy_link' => null, 'fallback_order' => ['de']]);
+});
 
 it('renders the neutral withdrawal form', function () {
     $response = $this->withoutVite()->get(route('withdrawal.form'));
