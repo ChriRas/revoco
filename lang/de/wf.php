@@ -33,6 +33,20 @@ return [
         ],
     ],
 
+    // Operator-configurable withdrawal scope (App\Support\WithdrawalScope). The
+    // category labels are grounded in the § 312g / § 355 f. BGB categories.
+    // Display only — this copy never gates the submit; :categories is the joined
+    // list of enabled labels, or the generic sentence when none are enabled.
+    'scope' => [
+        'goods' => 'Waren',
+        'services' => 'Dienstleistungen',
+        'digital' => 'digitale Inhalte',
+        'conjunction' => 'und',
+        'intro' => 'Hier können Sie Verträge über :categories widerrufen.',
+        'intro_generic' => 'Hier können Sie Ihren Vertrag widerrufen.',
+        'subject_label' => 'Betreffende :categories',
+    ],
+
     'badge' => [
         'required' => 'Pflichtfeld',
         'optional' => 'optional',

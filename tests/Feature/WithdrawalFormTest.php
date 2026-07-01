@@ -3,10 +3,15 @@
 declare(strict_types=1);
 
 use App\Settings\LocaleSettings;
+use App\Settings\WithdrawalScopeSettings;
 
-// The form reads the offered locales from LocaleSettings; fake the shipped default
-// (de only, switcher hidden) so these DB-less tests need no settings table.
-beforeEach(fn () => LocaleSettings::fake(['available' => ['de'], 'default' => 'de']));
+// The form reads LocaleSettings (offered locales) and WithdrawalScopeSettings
+// (scope copy); fake both so these DB-less tests need no settings table. Scope all
+// off → the generic copy these assertions rely on.
+beforeEach(function () {
+    LocaleSettings::fake(['available' => ['de'], 'default' => 'de']);
+    WithdrawalScopeSettings::fake(['offers_goods' => false, 'offers_services' => false, 'offers_digital' => false]);
+});
 
 it('renders the neutral withdrawal form', function () {
     $response = $this->withoutVite()->get(route('withdrawal.form'));

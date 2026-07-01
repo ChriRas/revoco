@@ -23,6 +23,10 @@
         <section class="wf-panel wf-panel--form">
             <header class="wf-head">
                 <h1 class="wf-title">{{ __('wf.title') }}</h1>
+                {{-- Scope intro: names the operator-declared contract categories, or a
+                     generic fallback when none are enabled. Display only (§ 356a) —
+                     see App\Support\WithdrawalScope; never gates the submit. --}}
+                <p class="wf-sub">{{ \App\Support\WithdrawalScope::intro() }}</p>
                 <p class="wf-sub">{{ __('wf.subtitle') }}</p>
             </header>
 
@@ -74,8 +78,11 @@
 
                 {{-- Subject — affected goods / digital content / service (required) --}}
                 <div class="wf-field wf-field--full @error('subject') is-invalid @enderror" data-field="subject">
+                    {{-- Label names the enabled categories (or the generic three-way
+                         label when none). Display only — the field name/validation/
+                         required state are unchanged (§ 356a). --}}
                     <label class="wf-label" for="wf-subject">
-                        {{ __('wf.field.subject.label') }}
+                        {{ \App\Support\WithdrawalScope::subjectLabel() }}
                         <span class="wf-req">{{ __('wf.badge.required') }}</span>
                     </label>
                     <input class="wf-input" type="text" id="wf-subject" name="subject" value="{{ old('subject') }}"
