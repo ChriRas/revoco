@@ -121,3 +121,15 @@ it('rejects an empty set of offered locales', function () {
         ->call('save')
         ->assertHasFormErrors(['available']);
 });
+
+it('auto-selects the sole remaining language as the default when the current default is unchecked', function () {
+    $this->actingAs(User::factory()->create());
+
+    // Start from de,en / default de, then uncheck de — the default (de) is no
+    // longer offered, so it should jump to the only language left (en) instead
+    // of leaving the operator to re-pick it.
+    livewire(ManageLocalization::class)
+        ->fillForm(['available' => ['de', 'en'], 'default' => 'de'])
+        ->set('data.available', ['en'])
+        ->assertFormSet(['default' => 'en']);
+});

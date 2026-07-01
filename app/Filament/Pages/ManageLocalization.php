@@ -11,6 +11,7 @@ use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 
 /**
@@ -52,7 +53,18 @@ final class ManageLocalization extends SettingsPage
                 ->bulkToggleable()
                 ->required()
                 ->minItems(1)
-                ->live(),
+                ->live()
+                // Convenience: when the operator removes the language that was the
+                // default, auto-select the sole remaining one so they don't have to
+                // re-pick it. With several left, leave it cleared (the operator
+                // chooses); ->in() still guards the invalid case on save.
+                ->afterStateUpdated(function ($state, Set $set, Get $get): void {
+                    $available = is_array($state) ? array_values($state) : [];
+
+                    if (! in_array($get('default'), $available, true)) {
+                        $set('default', count($available) === 1 ? ($available[0] ?? null) : null);
+                    }
+                }),
             Select::make('default')
                 ->label(__('panel.settings.localization.default.label'))
                 ->helperText(__('panel.settings.localization.default.help'))
