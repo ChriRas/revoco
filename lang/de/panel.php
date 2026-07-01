@@ -42,6 +42,22 @@ return [
                 'help' => 'Der Shop bietet digitale Inhalte an, etwa Downloads oder Streaming.',
             ],
         ],
+        'legal' => [
+            'navigation_label' => 'Rechtstexte',
+            'title' => 'Rechtstexte',
+            'privacy_content' => [
+                'label' => 'Datenschutzerklärung',
+                'help' => 'Der eigene Datenschutztext je Sprache. Revoco liefert keine vorgefertigten Rechtstexte — für den Inhalt sind Sie als Verantwortlicher zuständig.',
+            ],
+            'privacy_link' => [
+                'label' => 'Externe Datenschutz-URL (überschreibt)',
+                'help' => 'Wenn gesetzt, verweist der Fußzeilen-Link dorthin und die interne Seite leitet dorthin weiter. Leer lassen, um den Text oben zu verwenden.',
+            ],
+            'fallback_order' => [
+                'label' => 'Ersatzsprachen-Reihenfolge',
+                'help' => 'Sprachen, die der Reihe nach herangezogen werden, wenn die angeforderte Sprache keinen Text hat.',
+            ],
+        ],
     ],
 
     'resource' => [

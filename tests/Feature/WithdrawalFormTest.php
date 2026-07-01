@@ -2,14 +2,17 @@
 
 declare(strict_types=1);
 
+use App\Settings\LegalSettings;
 use App\Settings\LocaleSettings;
 use App\Settings\WithdrawalScopeSettings;
 
-// The form reads LocaleSettings (offered locales) and WithdrawalScopeSettings
-// (scope copy); fake both so these DB-less tests need no settings table. Scope all
-// off → the generic copy these assertions rely on.
+// The form reads LocaleSettings (offered locales), LegalSettings (footer privacy
+// link) and WithdrawalScopeSettings (scope copy); fake all three so these DB-less
+// tests need no settings table. Scope all off → the generic copy these assertions
+// rely on.
 beforeEach(function () {
     LocaleSettings::fake(['available' => ['de'], 'default' => 'de']);
+    LegalSettings::fake(['privacy_content' => [], 'privacy_link' => null, 'fallback_order' => ['de']]);
     WithdrawalScopeSettings::fake(['offers_goods' => false, 'offers_services' => false, 'offers_digital' => false]);
 });
 

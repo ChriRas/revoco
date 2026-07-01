@@ -37,14 +37,14 @@ return [
     | Legal Footer Links
     |--------------------------------------------------------------------------
     |
-    | Imprint / privacy policy URLs. Default to a neutral '#' placeholder so the
-    | links render structurally; operators point them at their own pages.
+    | Imprint URL. Defaults to a neutral '#' placeholder so the link renders
+    | structurally; operators point it at their own page. (The privacy policy
+    | moved to DB/Filament settings in slice-013 — see App\Support\LegalPages;
+    | the imprint follows in its own slice.)
     |
     */
 
     'imprint_url' => env('REVOCO_IMPRINT_URL', '#'),
-
-    'privacy_url' => env('REVOCO_PRIVACY_URL', '#'),
 
     /*
     | AGPL-3.0 §13: a user interacting over the network must be offered the running
