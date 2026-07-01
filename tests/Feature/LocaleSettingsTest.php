@@ -133,3 +133,25 @@ it('auto-selects the sole remaining language as the default when the current def
         ->set('data.available', ['en'])
         ->assertFormSet(['default' => 'en']);
 });
+
+it('keeps the default when a non-default language is unchecked', function () {
+    $this->actingAs(User::factory()->create());
+
+    // Default en, uncheck de (not the default) → the default must stay en.
+    livewire(ManageLocalization::class)
+        ->fillForm(['available' => ['de', 'en'], 'default' => 'en'])
+        ->set('data.available', ['en'])
+        ->assertFormSet(['default' => 'en']);
+});
+
+it('clears the default (rather than guessing) when its language is removed but several remain', function () {
+    $this->actingAs(User::factory()->create());
+
+    // 'fr' is a synthetic third entry only to exercise the "several remain"
+    // branch (the app ships de,en). Remove the default (de) leaving two → the
+    // default is cleared to null so the operator picks, not auto-guessed.
+    livewire(ManageLocalization::class)
+        ->fillForm(['available' => ['de', 'en'], 'default' => 'de'])
+        ->set('data.available', ['en', 'fr'])
+        ->assertFormSet(['default' => null]);
+});
