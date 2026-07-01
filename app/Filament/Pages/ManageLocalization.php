@@ -68,6 +68,10 @@ final class ManageLocalization extends SettingsPage
             Select::make('default')
                 ->label(__('panel.settings.localization.default.label'))
                 ->helperText(__('panel.settings.localization.default.help'))
+                // Render Filament's styled dropdown (option list panel below the
+                // field) instead of the plain native OS <select>, so it matches the
+                // rest of the panel. Non-searchable is fine for a short locale list.
+                ->native(false)
                 // Offer only the locales the operator has currently enabled (the
                 // available CheckboxList is ->live()), so the default can't name a
                 // disabled language; the ->in() rule still enforces this on save.
