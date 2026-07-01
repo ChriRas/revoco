@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+{{-- Generic legal page (privacy now, imprint later): title + safe-rendered rich
+     content, or a neutral "not configured yet" placeholder when the operator has
+     supplied neither content nor an override link. $content is a pre-rendered,
+     sanitized HtmlString (Filament RichContentRenderer) or null. --}}
 @section('content')
 <main class="wf-shell">
     <div class="wf-card" data-theme="{{ config('revoco.theme') }}">
@@ -14,14 +18,15 @@
         </div>
 
         <section class="wf-panel">
-            <div class="wf-success">
-                <div class="wf-check" aria-hidden="true">
-                    <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                </div>
-                <h1 class="wf-success-title">{{ __('wf.success.title') }}</h1>
-                <p class="wf-success-text">{{ __('wf.success.body') }}</p>
-                <p class="wf-success-text">{{ __('wf.success.note') }}</p>
-            </div>
+            <header class="wf-head">
+                <h1 class="wf-title">{{ $title }}</h1>
+            </header>
+
+            @if ($content !== null)
+                <div class="wf-prose">{!! $content !!}</div>
+            @else
+                <p class="wf-legal-empty">{{ __('wf.legal.placeholder') }}</p>
+            @endif
         </section>
     </div>
 </main>

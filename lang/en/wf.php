@@ -66,4 +66,13 @@ return [
         'source' => 'Source code',
     ],
 
+    'legal' => [
+        'privacy' => [
+            'title' => 'Privacy Policy',
+        ],
+        // Neutral hint shown when the operator has not configured the page yet —
+        // deliberately NOT legal text (no Lorem Ipsum, nothing that could read as valid).
+        'placeholder' => 'This page has not been set up yet.',
+    ],
+
 ];

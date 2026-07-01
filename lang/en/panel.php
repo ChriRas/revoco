@@ -25,6 +25,22 @@ return [
                 'not_available' => 'The default language must be one of the offered languages.',
             ],
         ],
+        'legal' => [
+            'navigation_label' => 'Legal',
+            'title' => 'Legal',
+            'privacy_content' => [
+                'label' => 'Privacy policy',
+                'help' => 'Your own privacy text per language. Revoco ships no ready-made legal text — as the controller, you are responsible for the content.',
+            ],
+            'privacy_link' => [
+                'label' => 'External privacy-policy URL (override)',
+                'help' => 'When set, the footer links here and the internal page redirects here. Leave empty to use the content above.',
+            ],
+            'fallback_order' => [
+                'label' => 'Fallback language order',
+                'help' => 'Languages tried, in order, when the requested language has no content.',
+            ],
+        ],
     ],
 
     'resource' => [
