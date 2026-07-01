@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\SetConsumerLocaleController;
+use App\Http\Controllers\ShowImprintController;
 use App\Http\Controllers\ShowPrivacyPolicyController;
 use App\Http\Controllers\ShowWithdrawalFormController;
 use App\Http\Controllers\ShowWithdrawalSuccessController;
@@ -24,7 +25,8 @@ Route::middleware(SetConsumerLocale::class)->group(function (): void {
         ->name('locale.set')
         ->where('locale', '[A-Za-z_-]+');
 
-    // Internal legal page (privacy). Rendered in the consumer's locale, or a
+    // Internal legal pages. Each is rendered in the consumer's locale, or a
     // 302-redirect to the operator's external override URL when one is set.
     Route::get('/datenschutz', ShowPrivacyPolicyController::class)->name('legal.privacy');
+    Route::get('/impressum', ShowImprintController::class)->name('legal.imprint');
 });

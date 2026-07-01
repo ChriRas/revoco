@@ -84,6 +84,37 @@ return [
         'privacy' => [
             'title' => 'Privacy Policy',
         ],
+        'imprint' => [
+            'title' => 'Imprint',
+            // Section headings (grouped display of the § 5 DDG fields).
+            'heading' => [
+                'entity' => 'Company details',
+                'contact' => 'Contact',
+                'register' => 'Commercial register',
+                'tax' => 'Tax information',
+                'professional' => 'Professional regulations',
+                'addendum' => 'Additional information',
+            ],
+            // Field labels rendered on the consumer-facing imprint page.
+            'field' => [
+                'name' => 'Name',
+                'legal_form' => 'Legal form',
+                'represented_by' => 'Represented by',
+                'address' => 'Address',
+                'email' => 'Email',
+                'phone' => 'Phone',
+                'contact_note' => 'Contact note',
+                'register_court' => 'Register court',
+                'register_number' => 'Register number',
+                'vat_id' => 'VAT identification number',
+                'business_id' => 'Economic identification number',
+                'supervisory_authority' => 'Supervisory authority',
+                'chamber' => 'Chamber',
+                'job_title' => 'Job title',
+                'professional_rules' => 'Professional rules',
+                'liquidation_note' => 'Liquidation / insolvency note',
+            ],
+        ],
         // Neutral hint shown when the operator has not configured the page yet —
         // deliberately NOT legal text (no Lorem Ipsum, nothing that could read as valid).
         'placeholder' => 'This page has not been set up yet.',

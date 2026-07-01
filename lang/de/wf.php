@@ -84,6 +84,37 @@ return [
         'privacy' => [
             'title' => 'Datenschutzerklärung',
         ],
+        'imprint' => [
+            'title' => 'Impressum',
+            // Section headings (grouped display of the § 5 DDG fields).
+            'heading' => [
+                'entity' => 'Angaben zum Unternehmen',
+                'contact' => 'Kontakt',
+                'register' => 'Handelsregister',
+                'tax' => 'Steuerliche Angaben',
+                'professional' => 'Berufsrechtliche Angaben',
+                'addendum' => 'Weitere Angaben',
+            ],
+            // Field labels rendered on the consumer-facing imprint page.
+            'field' => [
+                'name' => 'Name',
+                'legal_form' => 'Rechtsform',
+                'represented_by' => 'Vertreten durch',
+                'address' => 'Anschrift',
+                'email' => 'E-Mail',
+                'phone' => 'Telefon',
+                'contact_note' => 'Kontakthinweis',
+                'register_court' => 'Registergericht',
+                'register_number' => 'Registernummer',
+                'vat_id' => 'Umsatzsteuer-Identifikationsnummer',
+                'business_id' => 'Wirtschafts-Identifikationsnummer',
+                'supervisory_authority' => 'Zuständige Aufsichtsbehörde',
+                'chamber' => 'Kammer',
+                'job_title' => 'Berufsbezeichnung',
+                'professional_rules' => 'Berufsrechtliche Regelungen',
+                'liquidation_note' => 'Angaben zur Abwicklung / Insolvenz',
+            ],
+        ],
         // Neutral hint shown when the operator has not configured the page yet —
         // deliberately NOT legal text (no Lorem Ipsum, nothing that could read as valid).
         'placeholder' => 'Diese Seite wurde noch nicht eingerichtet.',
