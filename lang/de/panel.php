@@ -25,6 +25,23 @@ return [
                 'not_available' => 'Die Standardsprache muss eine der angebotenen Sprachen sein.',
             ],
         ],
+        'scope' => [
+            'navigation_label' => 'Widerrufsumfang',
+            'title' => 'Widerrufsumfang',
+            'description' => 'Legt fest, welche Vertragsarten das Formular benennt. Diese Auswahl gestaltet nur die Formulartexte — sie schränkt den Widerruf niemals ein. Verbraucher können immer per Freitext angeben, was sie widerrufen möchten.',
+            'goods' => [
+                'label' => 'Waren',
+                'help' => 'Der Shop verkauft körperliche Waren.',
+            ],
+            'services' => [
+                'label' => 'Dienstleistungen',
+                'help' => 'Der Shop bietet Dienstleistungen an.',
+            ],
+            'digital' => [
+                'label' => 'Digitale Inhalte',
+                'help' => 'Der Shop bietet digitale Inhalte an, etwa Downloads oder Streaming.',
+            ],
+        ],
         'legal' => [
             'navigation_label' => 'Rechtstexte',
             'title' => 'Rechtstexte',

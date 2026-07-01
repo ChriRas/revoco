@@ -33,6 +33,20 @@ return [
         ],
     ],
 
+    // Operator-configurable withdrawal scope (App\Support\WithdrawalScope). The
+    // category labels are grounded in the § 312g / § 355 f. BGB categories.
+    // Display only — this copy never gates the submit; :categories is the joined
+    // list of enabled labels, or the generic sentence when none are enabled.
+    'scope' => [
+        'goods' => 'goods',
+        'services' => 'services',
+        'digital' => 'digital content',
+        'conjunction' => 'and',
+        'intro' => 'Here you can withdraw from contracts for :categories.',
+        'intro_generic' => 'Here you can withdraw from your contract.',
+        'subject_label' => 'Affected :categories',
+    ],
+
     'badge' => [
         'required' => 'Required',
         'optional' => 'optional',

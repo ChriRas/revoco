@@ -1,6 +1,8 @@
 <?php
 
+use App\Settings\LegalSettings;
 use App\Settings\LocaleSettings;
+use App\Settings\WithdrawalScopeSettings;
 use Spatie\LaravelSettings\SettingsCasts\DateTimeInterfaceCast;
 use Spatie\LaravelSettings\SettingsCasts\DateTimeZoneCast;
 use Spatie\LaravelSettings\SettingsRepositories\DatabaseSettingsRepository;
@@ -14,6 +16,8 @@ return [
      */
     'settings' => [
         LocaleSettings::class,
+        LegalSettings::class,
+        WithdrawalScopeSettings::class,
     ],
 
     /*

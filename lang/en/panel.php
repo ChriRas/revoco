@@ -25,6 +25,23 @@ return [
                 'not_available' => 'The default language must be one of the offered languages.',
             ],
         ],
+        'scope' => [
+            'navigation_label' => 'Withdrawal scope',
+            'title' => 'Withdrawal scope',
+            'description' => 'Declares which contract types the form names. This selection only shapes the form wording — it never restricts what can be withdrawn. Consumers can always describe their case in free text.',
+            'goods' => [
+                'label' => 'Goods',
+                'help' => 'The shop sells physical goods.',
+            ],
+            'services' => [
+                'label' => 'Services',
+                'help' => 'The shop offers services.',
+            ],
+            'digital' => [
+                'label' => 'Digital content',
+                'help' => 'The shop offers digital content, such as downloads or streaming.',
+            ],
+        ],
         'legal' => [
             'navigation_label' => 'Legal',
             'title' => 'Legal',
