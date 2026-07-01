@@ -31,26 +31,30 @@ final class WithdrawalScope
     public static function enabledCategories(): array
     {
         try {
+            // Spatie loads settings lazily: app() returns an unloaded object and
+            // MissingSettings is thrown on the FIRST property read, not on resolution.
+            // So the reads must sit INSIDE the try for the § 356a fallback to fire on
+            // an unseeded/misconfigured store (mirrors App\Support\ConsumerLocales).
             $settings = app(WithdrawalScopeSettings::class);
+
+            $enabled = [];
+
+            if ($settings->offers_goods) {
+                $enabled[] = 'goods';
+            }
+
+            if ($settings->offers_services) {
+                $enabled[] = 'services';
+            }
+
+            if ($settings->offers_digital) {
+                $enabled[] = 'digital';
+            }
+
+            return $enabled;
         } catch (MissingSettings) {
             return [];
         }
-
-        $enabled = [];
-
-        if ($settings->offers_goods) {
-            $enabled[] = 'goods';
-        }
-
-        if ($settings->offers_services) {
-            $enabled[] = 'services';
-        }
-
-        if ($settings->offers_digital) {
-            $enabled[] = 'digital';
-        }
-
-        return $enabled;
     }
 
     /**

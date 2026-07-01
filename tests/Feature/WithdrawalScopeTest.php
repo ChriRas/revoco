@@ -6,7 +6,9 @@ use App\Filament\Pages\ManageWithdrawalScope;
 use App\Models\User;
 use App\Settings\LocaleSettings;
 use App\Settings\WithdrawalScopeSettings;
+use App\Support\WithdrawalScope;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\LaravelSettings\Exceptions\MissingSettings;
 
 use function Pest\Livewire\livewire;
 
@@ -104,6 +106,19 @@ it('introduces no new required field — the three mandated fields still suffice
     ])->assertRedirect(route('withdrawal.success'));
 
     $this->assertDatabaseCount('withdrawals', 1);
+});
+
+it('falls back to generic copy and never 500s when the settings row is unseeded (§ 356a)', function () {
+    // Spatie loads settings lazily, so a missing row surfaces as MissingSettings on
+    // the first property read; simulate that with a throwing binding. The withdrawal
+    // form must stay up (200) with the generic copy — never obstruct the submit.
+    app()->bind(WithdrawalScopeSettings::class, fn () => throw new MissingSettings('unseeded'));
+
+    expect(WithdrawalScope::enabledCategories())->toBe([]);
+
+    $this->withoutVite()->get(route('withdrawal.form'))
+        ->assertOk()
+        ->assertSee('Hier können Sie Ihren Vertrag widerrufen.');
 });
 
 // ---------------------------------------------------------------------------
