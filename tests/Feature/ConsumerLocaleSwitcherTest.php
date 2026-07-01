@@ -7,6 +7,7 @@ use App\Mail\WithdrawalAcknowledgment;
 use App\Mail\WithdrawalNotification;
 use App\Models\Withdrawal;
 use App\Services\Ntfy;
+use App\Settings\LocaleSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -20,7 +21,7 @@ uses(RefreshDatabase::class);
 // ---------------------------------------------------------------------------
 
 it('hides the switcher when only one locale is available', function () {
-    config(['app.available_locales' => ['de']]);
+    LocaleSettings::fake(['available' => ['de'], 'default' => 'de']);
 
     $this->withoutVite()->get(route('withdrawal.form'))
         ->assertOk()
@@ -30,7 +31,7 @@ it('hides the switcher when only one locale is available', function () {
 });
 
 it('renders the switcher with the available locales and a11y attributes', function () {
-    config(['app.available_locales' => ['de', 'en']]);
+    LocaleSettings::fake(['available' => ['de', 'en'], 'default' => 'de']);
 
     $this->withoutVite()->get(route('withdrawal.form'))
         ->assertOk()
@@ -45,7 +46,7 @@ it('renders the switcher with the available locales and a11y attributes', functi
 });
 
 it('renders the form in English when the locale cookie selects en', function () {
-    config(['app.available_locales' => ['de', 'en']]);
+    LocaleSettings::fake(['available' => ['de', 'en'], 'default' => 'de']);
 
     $this->withUnencryptedCookie('locale', 'en')
         ->withoutVite()
@@ -60,7 +61,7 @@ it('renders the form in English when the locale cookie selects en', function () 
 
 it('persists the en locale on submit and routes delivery languages correctly', function () {
     Mail::fake();
-    config(['app.available_locales' => ['de', 'en']]);
+    LocaleSettings::fake(['available' => ['de', 'en'], 'default' => 'de']);
     config(['revoco.merchant_email' => 'merchant@example.com']);
 
     $this->withUnencryptedCookie('locale', 'en')
@@ -122,7 +123,7 @@ it('pins the operator ntfy push to the app default locale regardless of the acti
 });
 
 it('ignores a cross-origin referer when redirecting back', function () {
-    config(['app.available_locales' => ['de', 'en']]);
+    LocaleSettings::fake(['available' => ['de', 'en'], 'default' => 'de']);
 
     // A forged Referer must not become an open redirect — fall back to the form.
     $this->get(route('locale.set', 'en'), ['referer' => 'https://evil.example/phish'])
@@ -130,7 +131,7 @@ it('ignores a cross-origin referer when redirecting back', function () {
 });
 
 it('sets a locale cookie for a supported language and redirects back', function () {
-    config(['app.available_locales' => ['de', 'en']]);
+    LocaleSettings::fake(['available' => ['de', 'en'], 'default' => 'de']);
 
     $this->get(route('locale.set', 'en'), ['referer' => route('withdrawal.form')])
         ->assertRedirect(route('withdrawal.form'))
@@ -138,7 +139,7 @@ it('sets a locale cookie for a supported language and redirects back', function 
 });
 
 it('ignores an unsupported language and writes no cookie', function () {
-    config(['app.available_locales' => ['de', 'en']]);
+    LocaleSettings::fake(['available' => ['de', 'en'], 'default' => 'de']);
 
     $this->get(route('locale.set', 'fr'), ['referer' => route('withdrawal.form')])
         ->assertRedirect(route('withdrawal.form'))

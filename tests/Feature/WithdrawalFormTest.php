@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Settings\LocaleSettings;
+
+// The form reads the offered locales from LocaleSettings; fake the shipped default
+// (de only, switcher hidden) so these DB-less tests need no settings table.
+beforeEach(fn () => LocaleSettings::fake(['available' => ['de'], 'default' => 'de']));
+
 it('renders the neutral withdrawal form', function () {
     $response = $this->withoutVite()->get(route('withdrawal.form'));
 

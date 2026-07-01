@@ -100,24 +100,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Available Consumer Locales
-    |--------------------------------------------------------------------------
-    |
-    | The locales the consumer-facing withdrawal form offers in its language
-    | switcher, as a comma-separated APP_AVAILABLE_LOCALES list. The
-    | SetConsumerLocale middleware validates the chosen locale against this
-    | list; the switcher is hidden when only one is listed. Should include
-    | APP_LOCALE; defaults to APP_LOCALE when unset.
-    |
-    */
-
-    'available_locales' => array_values(array_filter(array_map(
-        'trim',
-        explode(',', (string) env('APP_AVAILABLE_LOCALES', (string) env('APP_LOCALE', 'de')))
-    ))),
-
-    /*
-    |--------------------------------------------------------------------------
     | Encryption Key
     |--------------------------------------------------------------------------
     |

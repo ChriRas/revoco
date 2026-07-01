@@ -10,6 +10,23 @@ declare(strict_types=1);
 
 return [
 
+    'settings' => [
+        'navigation_group' => 'Settings',
+        'localization' => [
+            'navigation_label' => 'Localization',
+            'title' => 'Localization',
+            'available' => [
+                'label' => 'Offered languages',
+                'help' => 'Languages the consumer form offers in its switcher. The switcher is hidden when only one is offered.',
+            ],
+            'default' => [
+                'label' => 'Default language',
+                'help' => 'Applied when the consumer has not chosen a language.',
+                'not_available' => 'The default language must be one of the offered languages.',
+            ],
+        ],
+    ],
+
     'resource' => [
         'navigation_label' => 'Withdrawals',
         'model_label' => 'Withdrawal',

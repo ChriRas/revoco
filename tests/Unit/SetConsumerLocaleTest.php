@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Middleware\SetConsumerLocale;
+use App\Settings\LocaleSettings;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
@@ -14,20 +15,22 @@ uses(TestCase::class);
 // SetConsumerLocale middleware — unit tests for the cookie / allow-list logic.
 //
 // The middleware reads the raw request cookie (decrypted upstream by the web
-// group's EncryptCookies in real requests) and only overrides the app locale
-// when the value is a shipped, available locale. An unknown or absent cookie
-// leaves the app default locale untouched.
+// group's EncryptCookies in real requests) and only honours the value when it is
+// a shipped, available locale. An unknown or absent cookie falls back to the
+// operator-configured default (LocaleSettings), which may diverge from APP_LOCALE.
 // ---------------------------------------------------------------------------
 
 /**
  * Run the middleware with the given locale cookie (null = no cookie) and return
- * the locale that was active when $next ran. Baseline app locale is 'de'.
+ * the locale that was active when $next ran. APP_LOCALE is pinned to 'de'; the
+ * operator-configured default is $default (also 'de' unless overridden).
  *
  * @param  array<string, string>  $cookies
  */
-function runConsumerLocaleMiddleware(array $cookies): string
+function runConsumerLocaleMiddleware(array $cookies, string $default = 'de'): string
 {
-    config(['app.locale' => 'de', 'app.available_locales' => ['de', 'en']]);
+    config(['app.locale' => 'de']);
+    LocaleSettings::fake(['available' => ['de', 'en'], 'default' => $default]);
     app()->setLocale('de');
 
     $middleware = new SetConsumerLocale;
@@ -55,16 +58,24 @@ it('applies a valid de locale cookie', function (): void {
     expect(runConsumerLocaleMiddleware([SetConsumerLocale::COOKIE_NAME => 'de']))->toBe('de');
 });
 
-it('ignores an unsupported locale cookie and keeps the app default', function (): void {
+it('ignores an unsupported locale cookie and falls back to the configured default', function (): void {
     expect(runConsumerLocaleMiddleware([SetConsumerLocale::COOKIE_NAME => 'fr']))->toBe('de');
 });
 
-it('keeps the app default when no locale cookie is present', function (): void {
+it('applies the configured default when no locale cookie is present', function (): void {
     expect(runConsumerLocaleMiddleware([]))->toBe('de');
 });
 
+it('applies a divergent operator default (en) over APP_LOCALE (de) when no cookie is present', function (): void {
+    expect(runConsumerLocaleMiddleware([], default: 'en'))->toBe('en');
+});
+
+it('honours a valid cookie over a divergent operator default', function (): void {
+    expect(runConsumerLocaleMiddleware([SetConsumerLocale::COOKIE_NAME => 'de'], default: 'en'))->toBe('de');
+});
+
 it('returns the $next response untouched', function (): void {
-    config(['app.available_locales' => ['de', 'en']]);
+    LocaleSettings::fake(['available' => ['de', 'en'], 'default' => 'de']);
 
     $middleware = new SetConsumerLocale;
     $request = Request::create('/', 'GET', [], [SetConsumerLocale::COOKIE_NAME => 'en']);

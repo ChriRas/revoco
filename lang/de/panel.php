@@ -10,6 +10,23 @@ declare(strict_types=1);
 
 return [
 
+    'settings' => [
+        'navigation_group' => 'Einstellungen',
+        'localization' => [
+            'navigation_label' => 'Sprachen',
+            'title' => 'Sprachen',
+            'available' => [
+                'label' => 'Angebotene Sprachen',
+                'help' => 'Sprachen, die das Widerrufsformular in der Sprachauswahl anbietet. Die Auswahl wird ausgeblendet, wenn nur eine Sprache angeboten wird.',
+            ],
+            'default' => [
+                'label' => 'Standardsprache',
+                'help' => 'Wird verwendet, wenn der Verbraucher keine Sprache gewählt hat.',
+                'not_available' => 'Die Standardsprache muss eine der angebotenen Sprachen sein.',
+            ],
+        ],
+    ],
+
     'resource' => [
         'navigation_label' => 'Widerrufe',
         'model_label' => 'Widerruf',
