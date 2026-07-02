@@ -55,6 +55,17 @@ final class ManageLegal extends SettingsPage
         return __('panel.settings.legal.title');
     }
 
+    /**
+     * Redirect back to this page after a successful save so the top-bar
+     * legal-content warning banner (a layout render hook, outside this Livewire
+     * component's tree) re-evaluates immediately — otherwise it lingers until the
+     * operator manually reloads. The "Saved" notification survives the redirect.
+     */
+    public function getRedirectUrl(): string
+    {
+        return self::getUrl();
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema->components([
