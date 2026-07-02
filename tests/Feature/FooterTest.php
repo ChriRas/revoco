@@ -6,10 +6,11 @@ use App\Settings\LegalSettings;
 use App\Settings\LocaleSettings;
 use App\Settings\WithdrawalScopeSettings;
 
-// The shared <x-wf-footer> (Design-16, slice-011) renders on both consumer pages:
-// the form (/) and the success page (/success). It reads LegalPages (imprint /
-// privacy hrefs) and, on the form, WithdrawalScope + LegalContent — fake all the
-// settings so these DB-less tests need no settings table.
+// The shared <x-wf-footer> (Design-16) renders on all four consumer pages: the
+// form (/), the success page (/success), and — after slice-017 — the imprint
+// (/impressum) and privacy (/datenschutz) legal pages. It reads LegalPages
+// (imprint / privacy hrefs) and, on the form, WithdrawalScope + LegalContent —
+// fake all the settings so these DB-less tests need no settings table.
 beforeEach(function () {
     LocaleSettings::fake(['available' => ['de'], 'default' => 'de']);
     LegalSettings::fake([
@@ -25,11 +26,13 @@ beforeEach(function () {
     WithdrawalScopeSettings::fake(['offers_goods' => false, 'offers_services' => false, 'offers_digital' => false]);
 });
 
-// Both consumer pages share the one footer component — the assertions below hold
-// identically on each, proving the form/success duplication is gone.
+// All four consumer pages share the one footer component — the assertions below
+// hold identically on each, proving the footer duplication is gone project-wide.
 dataset('consumer pages', [
     'form' => ['withdrawal.form'],
     'success' => ['withdrawal.success'],
+    'imprint' => ['legal.imprint'],
+    'privacy' => ['legal.privacy'],
 ]);
 
 it('renders the GitHub source mark carrying the AGPL § 13 corresponding-source link', function (string $route) {
@@ -69,14 +72,17 @@ it('renders exactly one shared footer component per page (no duplicated markup)'
         ->and($html)->not->toContain('class="wf-page-foot"');
 })->with('consumer pages');
 
-it('keeps the legacy footer on the still-out-of-scope legal pages', function () {
-    // Scope-split guard (slice-011): only the form + success pages adopted the
-    // Design-16 <x-wf-footer>. The legal pages deliberately keep the legacy
-    // .wf-page-foot row with the "Quelltext" link — hence wf.footer.source is
-    // retained. This pins that coexistence until they migrate too.
-    $this->withoutVite()->get(route('legal.imprint'))
+it('has migrated the legal pages off the legacy footer', function (string $route) {
+    // Migration (slice-017): the legal pages now render the shared Design-16
+    // <x-wf-footer>, not the old .wf-page-foot row with its "Quelltext" link.
+    // This is the inverse of the slice-011 coexistence guard, which held only
+    // until this migration.
+    $this->withoutVite()->get(route($route))
         ->assertOk()
-        ->assertSee('class="wf-page-foot"', false)
-        ->assertSee('Quelltext')
-        ->assertDontSee('class="wf-foot"', false);
-});
+        ->assertSee('class="wf-foot"', false)
+        ->assertDontSee('class="wf-page-foot"', false)
+        ->assertDontSee('Quelltext');
+})->with([
+    'imprint' => ['legal.imprint'],
+    'privacy' => ['legal.privacy'],
+]);

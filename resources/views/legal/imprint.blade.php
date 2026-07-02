@@ -55,9 +55,5 @@
     </div>
 </main>
 
-<footer class="wf-page-foot">
-    <a href="{{ \App\Support\LegalPages::imprintUrl() }}">{{ __('wf.footer.imprint') }}</a>
-    <a href="{{ \App\Support\LegalPages::privacyUrl() }}">{{ __('wf.footer.privacy') }}</a>
-    <a href="{{ config('revoco.source_url') }}" target="_blank" rel="noopener noreferrer">{{ __('wf.footer.source') }}</a>
-</footer>
+<x-wf-footer />
 @endsection

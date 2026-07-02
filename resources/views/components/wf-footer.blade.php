@@ -1,4 +1,4 @@
-{{-- Shared consumer-page footer (form + success). Two centered rows:
+{{-- Shared consumer-page footer (form, success, imprint, privacy). Two centered rows:
        Row 1 — the legal links "Impressum · Datenschutzerklärung", normal weight.
        Row 2 — the Design-16 double-mark: a blue ring-tile + the GitHub Octocat.
      On hover or keyboard focus the accessible name "Revoco App on GitHub" expands
