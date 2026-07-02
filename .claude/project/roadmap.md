@@ -50,7 +50,11 @@ Replace the "Quelltext" text link with the hover-expand double-mark (ring-tile +
 Octocat); centered two-row footer, normal-weight legal links, shared Blade
 component, AGPL §13 preserved via `aria-label`; mobile/responsive check.
 
-Status: planned — slice-011 (footer-design16). Standalone, no dependencies.
+Status: done — hover-expand Design-16 footer (ring-tile + Octocat), centered two-row
+layout, normal-weight legal links, shared `<x-wf-footer>` Blade component, AGPL §13 via
+`aria-label` (slice-011, form + success); legacy footer retired and the legal pages
+migrated to the shared component (slice-017). Inline SVGs also extracted into reusable
+`components/icons/` components along the way.
 
 ### Phase 10 — Operator self-service configuration & legal pages
 Move operator-editable **legal & operational content** from `.env` to **DB/Filament**
@@ -65,7 +69,11 @@ fallback chain) · legal-content (Impressum + Datenschutz: multilingual + fallba
 (DDG imprint fields; BGB withdrawal categories). Intent ratified (env→DB, 2026-07-01).
 See `design/configuration.md` + `design/legal-compliance.md`.
 
-Status: planned — epic-001 shaped; refine each slice via `/craft:plan`, then `/craft:execute`.
+Status: done — epic-001 (operator-configuration) shipped: locale-settings (slice-012),
+legal-content privacy (slice-013) + imprint § 5 DDG (slice-014), missing-content-warning
+(slice-015), withdrawal-scope (slice-016). Operator-editable legal & operational content
+now lives in DB/Filament via `spatie/laravel-settings`; `.env` keeps infra, secrets and
+visual identity.
 
 ### Phase 11 — Authoring skills (AI) — separate epic
 Deploy-time Claude-Code skills (not app runtime): (a) website/design adoption →
@@ -73,7 +81,8 @@ a per-deployment design document; (b) privacy-policy scrape + translate → an
 operator-reviewed draft. AI output is always operator-reviewed, never
 auto-published.
 
-Status: backlog — separate epic, planned after the Phase 10 app slices land.
+Status: backlog — separate epic. Its precondition (the Phase 10 app slices) has landed,
+so this is now ready to plan via `/craft:epic`.
 
 ## Releases (optional)
 
