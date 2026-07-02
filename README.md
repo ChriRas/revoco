@@ -129,6 +129,45 @@ for the full list with inline documentation. Key variables:
 
 ---
 
+## Branding the form
+
+The form is neutral by default. Its whole appearance is driven by one `--wf-*` CSS
+token contract, switched via `data-theme` (`APP_THEME`). Concrete brand overlays —
+real colours, fonts and logos — never ship in this public repo; they live in your
+private infra repo / deployment mount (see
+[`.claude/project/design/theming.md`](.claude/project/design/theming.md)).
+
+### The `design-adoption` skill
+
+To match a shop's look without hand-writing CSS, this repo ships a **deploy-time
+Claude-Code skill**, `design-adoption` (in
+[`.claude/skills/design-adoption/`](.claude/skills/design-adoption/SKILL.md)) — an
+authoring tool, not an app-runtime feature. Run it inside a Claude Code session:
+give it the shop's URL and it scans the site, extracts the corporate identity
+(colours, fonts, logo), and produces a ready-to-place brand overlay plus a
+placement report.
+
+Under the hood it calls a deterministic Artisan command you can also run directly:
+
+```bash
+task artisan -- revoco:make-theme \
+  --slug=myshop \
+  --accent='#009eaa' --fg='#26262e' \
+  --font='"Barlow", sans-serif' \
+  --logo-url='https://myshop.example/logo.svg' \
+  --brand-name='My Shop' \
+  --output=./myshop-theme.css
+```
+
+The command validates every value against the `--wf-*` contract, rejects malformed
+input, and never overrides accessibility-critical tokens (the focus ring stays
+intact). The result is **operator-reviewed and operator-placed**: move the overlay
+into your deployment, set `APP_THEME=<slug>`, wire the logo via `REVOCO_LOGO_URL`,
+and review the rendered form before going live. Nothing is auto-published, and
+brand assets are never committed to this repo.
+
+---
+
 ## CI / Release
 
 GitHub Actions are configured in [`.github/workflows/`](.github/workflows/):
