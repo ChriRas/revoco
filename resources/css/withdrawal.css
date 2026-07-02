@@ -332,20 +332,7 @@ a.wf-flag:focus-visible { outline: 3px solid var(--wf-focus-ring); outline-offse
    8) PAGE FOOTER
    --------------------------------------------------------------------------- */
 
-/* Legacy single-row footer — still used by the legal pages (imprint / privacy).
-   The consumer form + success page use the Design-16 .wf-foot below; the legal
-   pages migrate to <x-wf-footer> in a later slice, at which point this block goes. */
-.wf-page-foot { display: flex; gap: 26px; justify-content: center; flex-wrap: wrap; padding-top: 6px; }
-.wf-page-foot a {
-    color: var(--wf-page-foot-fg);
-    text-decoration: none;
-    font-size: .92rem;
-    font-weight: 500;
-    transition: color .15s;
-}
-.wf-page-foot a:hover { text-decoration: underline; }
-
-/* Design-16 footer (shared <x-wf-footer>, form + success). Two centered rows:
+/* Design-16 footer (shared <x-wf-footer>, all consumer pages). Two centered rows:
    the legal links, then the hover/focus-expand GitHub double-mark on its own row. */
 .wf-foot { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 6px; }
 

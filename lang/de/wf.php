@@ -77,7 +77,6 @@ return [
     'footer' => [
         'imprint' => 'Impressum',
         'privacy' => 'Datenschutzerklärung',
-        'source' => 'Quelltext',
     ],
 
     // Setup notice — shown on the consumer form when legal content is not yet
