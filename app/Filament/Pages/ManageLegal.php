@@ -55,6 +55,17 @@ final class ManageLegal extends SettingsPage
         return __('panel.settings.legal.title');
     }
 
+    /**
+     * Redirect back to this page after a successful save so the top-bar
+     * legal-content warning banner (a layout render hook, outside this Livewire
+     * component's tree) re-evaluates immediately — otherwise it lingers until the
+     * operator manually reloads. The "Saved" notification survives the redirect.
+     */
+    public function getRedirectUrl(): string
+    {
+        return self::getUrl();
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema->components([
@@ -149,6 +160,10 @@ final class ManageLegal extends SettingsPage
                     TextInput::make('imprint_name')
                         ->label(__('panel.settings.legal.imprint_name.label'))
                         ->maxLength(512)
+                        // Visual required marker only (§ 5 DDG core); not hard-validated,
+                        // so the external-link path and partial saves still work. The red
+                        // completeness warning (slice-015) enforces it softly.
+                        ->markAsRequired()
                         ->columnSpanFull(),
                     TextInput::make('imprint_legal_form')
                         ->label(__('panel.settings.legal.imprint_legal_form.label'))
@@ -169,7 +184,8 @@ final class ManageLegal extends SettingsPage
                     TextInput::make('imprint_email')
                         ->label(__('panel.settings.legal.imprint_email.label'))
                         ->email()
-                        ->maxLength(512),
+                        ->maxLength(512)
+                        ->markAsRequired(),
                     TextInput::make('imprint_phone')
                         ->label(__('panel.settings.legal.imprint_phone.label'))
                         ->tel()
@@ -272,7 +288,11 @@ final class ManageLegal extends SettingsPage
             $editors[] = Textarea::make('imprint_address.'.$code)
                 ->label($this->localeFlagLabel($code, $label))
                 ->rows(3)
-                ->maxLength(1024);
+                ->maxLength(1024)
+                // Mark only the default locale's address as required (visual only):
+                // completeness keys on the default-locale address; other languages
+                // are optional translations.
+                ->markAsRequired($code === ConsumerLocales::default());
         }
 
         return $editors;

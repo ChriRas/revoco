@@ -91,6 +91,29 @@ final class LegalPages
     }
 
     /**
+     * Returns true when at least one locale has non-empty privacy-policy content.
+     * Composed by App\Support\LegalContent (slice-015) — do not call directly from
+     * views; use LegalContent::privacyComplete() which also accepts the link override.
+     */
+    public static function privacyIsConfigured(): bool
+    {
+        try {
+            $settings = app(LegalSettings::class);
+            $content = $settings->privacy_content;
+        } catch (MissingSettings) {
+            return false;
+        }
+
+        foreach ($content as $html) {
+            if (trim($html) !== '') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Returns true when the mandatory § 5 DDG core fields are non-empty:
      * name, address (for the deployment DEFAULT locale), and email.
      * Used by the S4 missing-content-warning slice.

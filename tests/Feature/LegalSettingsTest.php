@@ -56,6 +56,23 @@ it('persists the privacy content, override link and fallback order', function ()
     expect($settings->fallback_order)->toBe(['de']);
 });
 
+it('redirects back to the Legal page after a successful save so the warning banner clears', function (): void {
+    // The top-bar completeness banner is a layout render hook, not part of this
+    // page's Livewire tree — a redirect-to-self after save is what makes it
+    // re-evaluate immediately instead of lingering until a manual reload.
+    $this->actingAs(User::factory()->create());
+
+    livewire(ManageLegal::class)
+        ->fillForm([
+            'privacy_content' => ['de' => '<p>Datenschutz</p>'],
+            'privacy_link' => null,
+            'fallback_order' => ['de'],
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors()
+        ->assertRedirect(ManageLegal::getUrl());
+});
+
 it('rejects an invalid override URL', function (): void {
     $this->actingAs(User::factory()->create());
 

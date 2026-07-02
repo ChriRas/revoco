@@ -80,6 +80,13 @@ return [
         'source' => 'Quelltext',
     ],
 
+    // Setup notice — shown on the consumer form when legal content is not yet
+    // configured. Non-blocking: the form stays functional and submittable.
+    // Operator-directed; self-heals once legal pages are configured.
+    'setup' => [
+        'pending' => 'Dieses Formular ist noch nicht vollständig eingerichtet. Operator: Bitte melden Sie sich an und richten Sie die Rechtstexte ein.',
+    ],
+
     'legal' => [
         'privacy' => [
             'title' => 'Datenschutzerklärung',

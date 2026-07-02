@@ -140,6 +140,13 @@ return [
         'unmark_handled' => 'Markierung aufheben',
     ],
 
+    'setup' => [
+        'warning' => 'Einrichtung ausstehend — folgende Seiten fehlen noch: :pages.',
+        'link' => 'Rechtstexte einrichten',
+        'page_imprint' => 'Impressum',
+        'page_privacy' => 'Datenschutzerklärung',
+    ],
+
     'infolist' => [
         'section' => [
             'submitter' => 'Angaben zum Einreicher',
