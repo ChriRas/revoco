@@ -10,7 +10,7 @@
          sticks to the top as the reader scrolls. It sits ABOVE the card because the
          card is overflow:hidden (rounded accent rail) and would clip a sticky child. --}}
     <a class="wf-back" href="{{ route('withdrawal.form') }}" data-theme="{{ config('revoco.theme') }}">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        <x-icons.arrow-left />
         <span>{{ __('wf.legal.back') }}</span>
     </a>
 

@@ -331,6 +331,10 @@ a.wf-flag:focus-visible { outline: 3px solid var(--wf-focus-ring); outline-offse
 /* ---------------------------------------------------------------------------
    8) PAGE FOOTER
    --------------------------------------------------------------------------- */
+
+/* Legacy single-row footer — still used by the legal pages (imprint / privacy).
+   The consumer form + success page use the Design-16 .wf-foot below; the legal
+   pages migrate to <x-wf-footer> in a later slice, at which point this block goes. */
 .wf-page-foot { display: flex; gap: 26px; justify-content: center; flex-wrap: wrap; padding-top: 6px; }
 .wf-page-foot a {
     color: var(--wf-page-foot-fg);
@@ -340,6 +344,67 @@ a.wf-flag:focus-visible { outline: 3px solid var(--wf-focus-ring); outline-offse
     transition: color .15s;
 }
 .wf-page-foot a:hover { text-decoration: underline; }
+
+/* Design-16 footer (shared <x-wf-footer>, form + success). Two centered rows:
+   the legal links, then the hover/focus-expand GitHub double-mark on its own row. */
+.wf-foot { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 6px; }
+
+/* Row 1 — legal links: normal weight (400), middot-separated, centered, wrapping. */
+.wf-foot-legal { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.wf-foot-legal a {
+    color: var(--wf-page-foot-fg, #5d6776);
+    text-decoration: none;
+    font-size: .92rem;
+    font-weight: 400;
+    padding: 4px 6px;
+    transition: color .15s;
+}
+.wf-foot-legal a:hover { text-decoration: underline; }
+.wf-foot-sep { color: var(--wf-page-foot-fg, #5d6776); opacity: .5; user-select: none; }
+
+/* Row 2 — the double-mark (blue ring-tile + Octocat). The label expands to the
+   side on hover / keyboard focus, on this row only, so row 1 never shifts.
+   padding widens the tap target on touch screens. */
+.wf-foot-mark-row { display: flex; justify-content: center; }
+.wf-gh {
+    display: inline-flex;
+    align-items: center;
+    overflow: hidden;
+    padding: 6px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: transform .08s;
+}
+.wf-gh:active { transform: translateY(.5px); }
+/* The footer renders OUTSIDE .wf-card, where the --wf-* token contract is defined,
+   so these var()s carry the neutral literal as a fallback (else the unresolved
+   token would invalidate the whole outline shorthand → no focus ring at all). */
+.wf-gh:focus-visible { outline: 2px solid var(--wf-accent, #33576f); outline-offset: 3px; }
+.wf-gh-mark { display: inline-flex; align-items: center; gap: 9px; }
+.wf-gh-tile { display: block; width: 20px; height: 20px; }
+.wf-gh-cat { display: block; width: 18px; height: 18px; }
+.wf-gh-label {
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: .92rem;
+    font-weight: 400;
+    color: var(--wf-page-foot-fg, #5d6776);
+    transition: max-width .34s cubic-bezier(.5, .05, .2, 1), opacity .26s, margin .34s;
+}
+.wf-gh:hover .wf-gh-label,
+.wf-gh:focus-visible .wf-gh-label,
+.wf-gh:focus-within .wf-gh-label {
+    max-width: 260px;
+    opacity: 1;
+    margin-left: 9px;
+}
+
+/* Reduced motion: the label still appears on hover/focus, just without the grow. */
+@media (prefers-reduced-motion: reduce) {
+    .wf-gh-label { transition: none; }
+}
 
 /* ---------------------------------------------------------------------------
    8b) LEGAL PAGE — rendered operator rich text + neutral empty state

@@ -9,7 +9,7 @@
 <main class="wf-shell wf-shell--legal">
     {{-- Sticky back-link above the card so it is not clipped by overflow:hidden. --}}
     <a class="wf-back" href="{{ route('withdrawal.form') }}" data-theme="{{ config('revoco.theme') }}">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        <x-icons.arrow-left />
         <span>{{ __('wf.legal.back') }}</span>
     </a>
 

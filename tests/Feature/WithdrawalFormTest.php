@@ -67,13 +67,17 @@ it('applies the configured theme to the form card', function () {
         ->assertSee('data-theme="foo"', false);
 });
 
-it('links to the AGPL source from the footer (§ 13 network notice)', function () {
-    // The source link must point at the configured corresponding source and carry
-    // the translated label — satisfying the AGPL-3.0 network-use offer.
+it('links to the AGPL source from the footer via the GitHub mark (§ 13 network notice)', function () {
+    // Design-16 (slice-011): the standalone "Quelltext" text link is gone; the
+    // corresponding-source URL now rides on the GitHub double-mark anchor, whose
+    // fixed English accessible name keeps the AGPL-3.0 network-use offer reachable
+    // for assistive tech even before the label hover-expands.
     config()->set('revoco.source_url', 'https://example.test/src');
 
     $this->withoutVite()->get(route('withdrawal.form'))
         ->assertOk()
         ->assertSee('href="https://example.test/src"', false)
-        ->assertSee('Quelltext'); // de footer label (default consumer locale)
+        ->assertSee('aria-label="Revoco App on GitHub"', false)
+        ->assertSee('rel="noopener noreferrer"', false)
+        ->assertDontSee('Quelltext'); // the retired standalone text link
 });
