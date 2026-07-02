@@ -12,9 +12,10 @@ use Illuminate\Http\RedirectResponse;
  * Sets the consumer form locale via a long-lived cookie, then redirects back to
  * the page the switcher was clicked from.
  *
- * The requested locale is validated against APP_AVAILABLE_LOCALES; an unknown
- * value is ignored (no cookie written), so only shipped languages can ever be
- * selected. SetConsumerLocale reads this cookie on subsequent consumer requests.
+ * The requested locale is validated against the operator-configured available
+ * locales (App\Support\ConsumerLocales); an unknown value is ignored (no cookie
+ * written), so only offered languages can ever be selected. SetConsumerLocale
+ * reads this cookie on subsequent consumer requests.
  */
 final class SetConsumerLocaleController extends Controller
 {

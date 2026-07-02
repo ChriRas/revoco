@@ -10,6 +10,105 @@ declare(strict_types=1);
 
 return [
 
+    'settings' => [
+        'navigation_group' => 'Einstellungen',
+        'localization' => [
+            'navigation_label' => 'Sprachen',
+            'title' => 'Sprachen',
+            'available' => [
+                'label' => 'Angebotene Sprachen',
+                'help' => 'Sprachen, die das Widerrufsformular in der Sprachauswahl anbietet. Die Auswahl wird ausgeblendet, wenn nur eine Sprache angeboten wird.',
+            ],
+            'default' => [
+                'label' => 'Standardsprache',
+                'help' => 'Wird verwendet, wenn der Verbraucher keine Sprache gewählt hat.',
+                'not_available' => 'Die Standardsprache muss eine der angebotenen Sprachen sein.',
+            ],
+        ],
+        'scope' => [
+            'navigation_label' => 'Widerrufsumfang',
+            'title' => 'Widerrufsumfang',
+            'description' => 'Legt fest, welche Vertragsarten das Formular benennt. Diese Auswahl gestaltet nur die Formulartexte — sie schränkt den Widerruf niemals ein. Verbraucher können immer per Freitext angeben, was sie widerrufen möchten.',
+            'goods' => [
+                'label' => 'Waren',
+                'help' => 'Der Shop verkauft körperliche Waren.',
+            ],
+            'services' => [
+                'label' => 'Dienstleistungen',
+                'help' => 'Der Shop bietet Dienstleistungen an.',
+            ],
+            'digital' => [
+                'label' => 'Digitale Inhalte',
+                'help' => 'Der Shop bietet digitale Inhalte an, etwa Downloads oder Streaming.',
+            ],
+        ],
+        'legal' => [
+            'navigation_label' => 'Rechtstexte',
+            'title' => 'Rechtstexte',
+            'tab_privacy' => 'Datenschutzerklärung',
+            'tab_imprint' => 'Impressum',
+            'privacy_content' => [
+                'label' => 'Datenschutzerklärung',
+                'help' => 'Der eigene Datenschutztext je Sprache. Revoco liefert keine vorgefertigten Rechtstexte — für den Inhalt sind Sie als Verantwortlicher zuständig.',
+            ],
+            'privacy_link' => [
+                'label' => 'Externe Datenschutz-URL (überschreibt)',
+                'help' => 'Wenn gesetzt, verweist der Fußzeilen-Link dorthin und die interne Seite leitet dorthin weiter. Leer lassen, um den Text oben zu verwenden.',
+            ],
+            'fallback_order' => [
+                'label' => 'Ersatzsprachen-Reihenfolge',
+                'help' => 'Sprachen, die der Reihe nach herangezogen werden, wenn die angeforderte Sprache keinen Text hat.',
+            ],
+            'imprint_link' => [
+                'label' => 'Externe Impressum-URL (überschreibt)',
+                'help' => 'Wenn gesetzt, verweist der Fußzeilen-Link dorthin und die interne Seite leitet dorthin weiter. Leer lassen, um die Angaben unten zu verwenden.',
+            ],
+            'imprint_entity' => [
+                'label' => 'Angaben zum Unternehmen',
+                'help' => 'Name, Rechtsform und gesetzlicher Vertreter gemäß § 5 Abs. 1 Nr. 1 DDG.',
+            ],
+            'imprint_contact' => [
+                'label' => 'Kontakt',
+                'help' => 'E-Mail-Adresse und ein zweiter schneller Kontaktweg (§ 5 Abs. 1 Nr. 2 DDG, EuGH C-298/07).',
+            ],
+            'imprint_register' => [
+                'label' => 'Handelsregister',
+                'help' => 'Registergericht und Registernummer, sofern eingetragen (§ 5 Abs. 1 Nr. 4 DDG).',
+            ],
+            'imprint_tax' => [
+                'label' => 'Steuerliche Angaben',
+                'help' => 'Umsatzsteuer-ID (§ 27a UStG) und/oder Wirtschafts-IdNr. (§ 139c AO), sofern vorhanden (§ 5 Abs. 1 Nr. 6 DDG).',
+            ],
+            'imprint_professional' => [
+                'label' => 'Berufsrechtliche Angaben (optional)',
+                'help' => 'Nur für reglementierte Berufe und genehmigungspflichtige Tätigkeiten (§ 5 Abs. 1 Nr. 3 u. 5 DDG).',
+            ],
+            'imprint_addendum' => [
+                'label' => 'Freier Zusatz',
+                'help' => 'Freitextfeld je Sprache für weitere Pflichtangaben oder Hinweise (z. B. VSBG-Hinweis auf Anraten des Anwalts).',
+            ],
+            'imprint_name' => ['label' => 'Name / Firma'],
+            'imprint_legal_form' => ['label' => 'Rechtsform'],
+            'imprint_represented_by' => ['label' => 'Vertreten durch'],
+            'imprint_address' => [
+                'label' => 'Anschrift',
+                'help' => 'Vollständige Postanschrift (keine Postfachadresse) nach § 5 Abs. 1 Nr. 1 DDG. Je Sprache eintragen, damit Landesbezeichnung oder andere Angaben lokalisiert werden können.',
+            ],
+            'imprint_email' => ['label' => 'E-Mail-Adresse'],
+            'imprint_phone' => ['label' => 'Telefonnummer'],
+            'imprint_contact_note' => ['label' => 'Weiterer Kontakthinweis'],
+            'imprint_register_court' => ['label' => 'Registergericht'],
+            'imprint_register_number' => ['label' => 'Registernummer'],
+            'imprint_vat_id' => ['label' => 'Umsatzsteuer-Identifikationsnummer'],
+            'imprint_business_id' => ['label' => 'Wirtschafts-Identifikationsnummer'],
+            'imprint_supervisory_authority' => ['label' => 'Aufsichtsbehörde'],
+            'imprint_chamber' => ['label' => 'Kammer'],
+            'imprint_job_title' => ['label' => 'Berufsbezeichnung und Verleihungsstaat'],
+            'imprint_professional_rules' => ['label' => 'Berufsrechtliche Regelungen und Fundstelle'],
+            'imprint_liquidation_note' => ['label' => 'Abwicklungs-/Insolvenzhinweis (§ 5 Nr. 7 DDG)'],
+        ],
+    ],
+
     'resource' => [
         'navigation_label' => 'Widerrufe',
         'model_label' => 'Widerruf',
@@ -39,6 +138,13 @@ return [
     'action' => [
         'mark_handled' => 'Als bearbeitet markieren',
         'unmark_handled' => 'Markierung aufheben',
+    ],
+
+    'setup' => [
+        'warning' => 'Einrichtung ausstehend — folgende Seiten fehlen noch: :pages.',
+        'link' => 'Rechtstexte einrichten',
+        'page_imprint' => 'Impressum',
+        'page_privacy' => 'Datenschutzerklärung',
     ],
 
     'infolist' => [

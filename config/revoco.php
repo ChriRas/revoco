@@ -33,20 +33,6 @@ return [
     'logo_url' => env('REVOCO_LOGO_URL'),
 
     /*
-    |--------------------------------------------------------------------------
-    | Legal Footer Links
-    |--------------------------------------------------------------------------
-    |
-    | Imprint / privacy policy URLs. Default to a neutral '#' placeholder so the
-    | links render structurally; operators point them at their own pages.
-    |
-    */
-
-    'imprint_url' => env('REVOCO_IMPRINT_URL', '#'),
-
-    'privacy_url' => env('REVOCO_PRIVACY_URL', '#'),
-
-    /*
     | AGPL-3.0 §13: a user interacting over the network must be offered the running
     | source. Defaults to the upstream repository; an operator who MODIFIES the code
     | must point this at their own corresponding source (their fork) to stay compliant.

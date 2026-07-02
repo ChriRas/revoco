@@ -33,6 +33,20 @@ return [
         ],
     ],
 
+    // Operator-configurable withdrawal scope (App\Support\WithdrawalScope). The
+    // category labels are grounded in the § 312g / § 355 f. BGB categories.
+    // Display only — this copy never gates the submit; :categories is the joined
+    // list of enabled labels, or the generic sentence when none are enabled.
+    'scope' => [
+        'goods' => 'Waren',
+        'services' => 'Dienstleistungen',
+        'digital' => 'digitale Inhalte',
+        'conjunction' => 'und',
+        'intro' => 'Hier können Sie Verträge über :categories widerrufen.',
+        'intro_generic' => 'Hier können Sie Ihren Vertrag widerrufen.',
+        'subject_label' => 'Betreffende :categories',
+    ],
+
     'badge' => [
         'required' => 'Pflichtfeld',
         'optional' => 'optional',
@@ -64,6 +78,55 @@ return [
         'imprint' => 'Impressum',
         'privacy' => 'Datenschutzerklärung',
         'source' => 'Quelltext',
+    ],
+
+    // Setup notice — shown on the consumer form when legal content is not yet
+    // configured. Non-blocking: the form stays functional and submittable.
+    // Operator-directed; self-heals once legal pages are configured.
+    'setup' => [
+        'pending' => 'Dieses Formular ist noch nicht vollständig eingerichtet. Operator: Bitte melden Sie sich an und richten Sie die Rechtstexte ein.',
+    ],
+
+    'legal' => [
+        'privacy' => [
+            'title' => 'Datenschutzerklärung',
+        ],
+        'imprint' => [
+            'title' => 'Impressum',
+            // Section headings (grouped display of the § 5 DDG fields).
+            'heading' => [
+                'entity' => 'Angaben zum Unternehmen',
+                'contact' => 'Kontakt',
+                'register' => 'Handelsregister',
+                'tax' => 'Steuerliche Angaben',
+                'professional' => 'Berufsrechtliche Angaben',
+                'addendum' => 'Weitere Angaben',
+            ],
+            // Field labels rendered on the consumer-facing imprint page.
+            'field' => [
+                'name' => 'Name',
+                'legal_form' => 'Rechtsform',
+                'represented_by' => 'Vertreten durch',
+                'address' => 'Anschrift',
+                'email' => 'E-Mail',
+                'phone' => 'Telefon',
+                'contact_note' => 'Kontakthinweis',
+                'register_court' => 'Registergericht',
+                'register_number' => 'Registernummer',
+                'vat_id' => 'Umsatzsteuer-Identifikationsnummer',
+                'business_id' => 'Wirtschafts-Identifikationsnummer',
+                'supervisory_authority' => 'Zuständige Aufsichtsbehörde',
+                'chamber' => 'Kammer',
+                'job_title' => 'Berufsbezeichnung',
+                'professional_rules' => 'Berufsrechtliche Regelungen',
+                'liquidation_note' => 'Angaben zur Abwicklung / Insolvenz',
+            ],
+        ],
+        // Neutral hint shown when the operator has not configured the page yet —
+        // deliberately NOT legal text (no Lorem Ipsum, nothing that could read as valid).
+        'placeholder' => 'Diese Seite wurde noch nicht eingerichtet.',
+        // Sticky control on the (long) legal pages — returns to the withdrawal form.
+        'back' => 'Zurück zum Formular',
     ],
 
 ];

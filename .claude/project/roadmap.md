@@ -45,6 +45,36 @@ Finalize license (AGPL-3.0), neutral default docs, public repo.
 
 Status: done — AGPL-3.0 LICENSE, package identity, AGPL §13 source link, CHANGELOG, neutral docs; released as v0.5.0.
 
+### Phase 9 — Footer attribution redesign (Design 16)
+Replace the "Quelltext" text link with the hover-expand double-mark (ring-tile +
+Octocat); centered two-row footer, normal-weight legal links, shared Blade
+component, AGPL §13 preserved via `aria-label`; mobile/responsive check.
+
+Status: planned — slice-011 (footer-design16). Standalone, no dependencies.
+
+### Phase 10 — Operator self-service configuration & legal pages
+Move operator-editable **legal & operational content** from `.env` to **DB/Filament**
+(`spatie/laravel-settings` + Filament plugin); `.env` keeps infra, secrets and visual
+identity (theme overlay, brand name, logo — content branding stays in `.env`). SMTP
+stays in `.env` (+ read-only panel status). Epic **operator-configuration** (epic-001),
+4 slices: locale-settings (bootstraps the settings foundation + offered languages /
+fallback chain) · legal-content (Impressum + Datenschutz: multilingual + fallback chain
++ per-page link override + internal routes; footer re-wire) · missing-content-warning
+(panel banner + fresh-install setup gate, gated on config completeness) · withdrawal-scope
+(toggles, display only, never gate the submit). Per-slice legal research at planning time
+(DDG imprint fields; BGB withdrawal categories). Intent ratified (env→DB, 2026-07-01).
+See `design/configuration.md` + `design/legal-compliance.md`.
+
+Status: planned — epic-001 shaped; refine each slice via `/craft:plan`, then `/craft:execute`.
+
+### Phase 11 — Authoring skills (AI) — separate epic
+Deploy-time Claude-Code skills (not app runtime): (a) website/design adoption →
+a per-deployment design document; (b) privacy-policy scrape + translate → an
+operator-reviewed draft. AI output is always operator-reviewed, never
+auto-published.
+
+Status: backlog — separate epic, planned after the Phase 10 app slices land.
+
 ## Releases (optional)
 
 | Version | Date | Highlights |

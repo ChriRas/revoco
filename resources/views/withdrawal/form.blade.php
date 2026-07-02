@@ -1,6 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+{{-- Non-blocking setup notice (slice-015): shown when legal content is not yet
+     configured. Consumer-locale text. The form stays fully functional and
+     submittable regardless — § 356a is absolute (withdrawal is never blocked). --}}
+@if (! \App\Support\LegalContent::isComplete())
+    <div class="wf-setup-notice" role="status">
+        <svg class="wf-setup-notice__icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>{{ __('wf.setup.pending') }}</span>
+    </div>
+@endif
 <main class="wf-shell">
     {{-- data-theme drives the --wf-* token swap; resolved from APP_THEME (neutral default).
          novalidate: suppress the browser's native validation bubbles so the submit reaches
@@ -23,6 +32,10 @@
         <section class="wf-panel wf-panel--form">
             <header class="wf-head">
                 <h1 class="wf-title">{{ __('wf.title') }}</h1>
+                {{-- Scope intro: names the operator-declared contract categories, or a
+                     generic fallback when none are enabled. Display only (§ 356a) —
+                     see App\Support\WithdrawalScope; never gates the submit. --}}
+                <p class="wf-sub">{{ \App\Support\WithdrawalScope::intro() }}</p>
                 <p class="wf-sub">{{ __('wf.subtitle') }}</p>
             </header>
 
@@ -74,8 +87,11 @@
 
                 {{-- Subject — affected goods / digital content / service (required) --}}
                 <div class="wf-field wf-field--full @error('subject') is-invalid @enderror" data-field="subject">
+                    {{-- Label names the enabled categories (or the generic three-way
+                         label when none). Display only — the field name/validation/
+                         required state are unchanged (§ 356a). --}}
                     <label class="wf-label" for="wf-subject">
-                        {{ __('wf.field.subject.label') }}
+                        {{ \App\Support\WithdrawalScope::subjectLabel() }}
                         <span class="wf-req">{{ __('wf.badge.required') }}</span>
                     </label>
                     <input class="wf-input" type="text" id="wf-subject" name="subject" value="{{ old('subject') }}"
@@ -109,8 +125,8 @@
 </main>
 
 <footer class="wf-page-foot">
-    <a href="{{ config('revoco.imprint_url') }}">{{ __('wf.footer.imprint') }}</a>
-    <a href="{{ config('revoco.privacy_url') }}">{{ __('wf.footer.privacy') }}</a>
+    <a href="{{ \App\Support\LegalPages::imprintUrl() }}">{{ __('wf.footer.imprint') }}</a>
+    <a href="{{ \App\Support\LegalPages::privacyUrl() }}">{{ __('wf.footer.privacy') }}</a>
     <a href="{{ config('revoco.source_url') }}" target="_blank" rel="noopener noreferrer">{{ __('wf.footer.source') }}</a>
 </footer>
 @endsection
