@@ -52,7 +52,7 @@ theme + the mechanism + one commented example hook **only**. Concrete brand
 themes (real colours, fonts, logos) and their assets live in the **private infra
 repo** and are mounted/selected per deployment. Never commit brand overlays or
 real logos here (see `rules.md` → Tabus). The prototype's base64 brand logos
-(MTC/MHZ/Lorenz) were deliberately not ported for this reason.
+were deliberately not ported for this reason.
 
 ## Logo slot
 

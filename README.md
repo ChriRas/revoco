@@ -152,8 +152,8 @@ Under the hood it calls a deterministic Artisan command you can also run directl
 ```bash
 task artisan -- revoco:make-theme \
   --slug=myshop \
-  --accent='#009eaa' --fg='#26262e' \
-  --font='"Barlow", sans-serif' \
+  --accent='#4f46e5' --fg='#1f2937' \
+  --font='"Inter", system-ui, sans-serif' \
   --logo-url='https://myshop.example/logo.svg' \
   --brand-name='My Shop' \
   --output=./myshop-theme.css
