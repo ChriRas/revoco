@@ -152,8 +152,8 @@ Under the hood it calls a deterministic Artisan command you can also run directl
 ```bash
 task artisan -- revoco:make-theme \
   --slug=myshop \
-  --accent='#009eaa' --fg='#26262e' \
-  --font='"Barlow", sans-serif' \
+  --accent='#4f46e5' --fg='#1f2937' \
+  --font='"Inter", system-ui, sans-serif' \
   --logo-url='https://myshop.example/logo.svg' \
   --brand-name='My Shop' \
   --output=./myshop-theme.css
@@ -165,6 +165,35 @@ intact). The result is **operator-reviewed and operator-placed**: move the overl
 into your deployment, set `APP_THEME=<slug>`, wire the logo via `REVOCO_LOGO_URL`,
 and review the rendered form before going live. Nothing is auto-published, and
 brand assets are never committed to this repo.
+
+---
+
+## Legal pages (Impressum & privacy)
+
+Revoco serves an Impressum (§ 5 DDG) and a privacy policy at `/impressum` and
+`/datenschutz`, backed by operator-editable settings in the Filament **Legal** panel
+(neutral "not configured yet" placeholders until filled). The operator is the data
+controller and authors the substantive text — Revoco ships only the mechanism.
+
+### The `legal-extraction` skill
+
+If the operator already publishes an Impressum and privacy policy elsewhere (their shop,
+a CMS), this repo ships a **deploy-time Claude-Code skill**, `legal-extraction` (in
+[`.claude/skills/legal-extraction/`](.claude/skills/legal-extraction/SKILL.md)), to
+import them instead of copying field by field. Give it the two URLs and the locale; it
+scrapes the pages, extracts the § 5 DDG fields and the privacy content, and hands a JSON
+payload to a deterministic Artisan command:
+
+```bash
+task artisan -- revoco:import-legal --locale=de --input=./legal-payload.json
+```
+
+The command validates the payload against the settings schema (unknown key or malformed
+e-mail → nothing written), sanitises scraped HTML, scopes per-locale fields to `--locale`,
+and **refuses to overwrite already-populated fields** unless `--overwrite` is given — your
+reviewed legal text is never silently replaced. The import is **operator-reviewed**: open
+Filament → Legal, correct every field, and check the rendered pages before relying on them.
+Revoco makes no legal-correctness guarantee.
 
 ---
 
