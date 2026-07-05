@@ -1,7 +1,7 @@
 # Slice 020 — Landing Page (GitHub Pages)
 
 > Completed: 2026-07-05
-> Commits: e2a123d..9ec850e (PR #27)
+> Commits: e2a123d..81c4603 (PR #27)
 
 ## What
 
@@ -86,12 +86,13 @@ only had the README in a still-private repo.
 - `e2a123d` — docs(screenshots): add curated landing-page screenshot set
 - `ef66026` — feat(docs): add bilingual GitHub Pages landing page
 - `9ec850e` — ci(docs): validate landing page HTML and links
+- `81c4603` — ci(docs): exclude gnu.org from the link check (timeouts on GitHub
+  runners, discovered on the first real CI run)
 
 ## Follow-ups
 
-- **Go-live steps (open sub-task 6):** make the repo public, enable Pages
-  (Settings → Pages → Deploy from a branch → `main` + `/docs`), then smoke-test
-  both live URLs and remove the two lychee `--exclude` lines in
-  `.github/workflows/docs.yml`.
+- ~~Go-live steps (sub-task 6)~~ **done 2026-07-05**: repo public, Pages enabled
+  (`main` + `/docs`, status `built`), live smoke green on both URLs (200, hero
+  content, CSS + images delivered), temporary lychee excludes removed.
 - Optionally re-capture `backend-settings-legal.png` in light mode for visual
   consistency with the other backend screenshots.
