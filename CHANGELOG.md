@@ -4,6 +4,41 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] — 2026-07-05
+
+Feature release ahead of the 1.0 stabilization. Building on the 0.5.0 legal-minimum
+baseline, an operator can now configure all legally required content in the panel — no
+code changes to go live — and the project is prepared for public, community use under
+AGPL-3.0. This release is intended for staging validation in a real environment before
+the stable 1.0.0.
+
+### Added
+
+- **Operator-managed legal content** — § 5 DDG imprint maintained as DB-backed Filament
+  settings and served at `/impressum`; imprint core fields (name, address, e-mail) are
+  required before the site is considered configured.
+- **Per-locale legal fields** — imprint address and legal texts are maintainable per
+  language, each field prefixed with its language flag, DST-aware.
+- **Unconfigured-content safeguards** — a loud panel banner and a public setup notice warn
+  when imprint/privacy content is missing; the banner clears immediately after saving.
+- **Operator-managed consumer locales** — the consumer-facing languages are enabled and
+  disabled via DB-backed settings.
+- **Bilingual landing page** — a GitHub Pages site (German + English) with a curated
+  screenshot set.
+
+### Changed
+
+- **Shared footer** — the consumer and legal pages now share one footer (the Design-16
+  GitHub source mark); the legacy footer was retired and inline SVGs were extracted into
+  reusable icon components.
+
+### Notes
+
+- Public-repository hardening accompanies this release: branch/tag rulesets (PR-only
+  `main`, maintainer-only `v*` releases), read-only default workflow permissions, a
+  `CONTRIBUTING.md` describing the fork/PR/release workflow, and a fixed scheduled
+  `composer audit` (now `--locked`, with auto-closing of its tracking issue).
+
 ## [0.5.0] — 2026-06-30
 
 First public release under **AGPL-3.0**. Implements the legal minimum of the § 356a BGB
@@ -38,4 +73,5 @@ operator notification are sent. Neutral by default, configurable per `.env`.
 - Operator deployment specifics (real domains, reverse proxy, secrets, brand assets)
   live in a separate private infrastructure repository, never in this public repo.
 
+[0.6.0]: https://github.com/ChriRas/revoco/releases/tag/v0.6.0
 [0.5.0]: https://github.com/ChriRas/revoco/releases/tag/v0.5.0

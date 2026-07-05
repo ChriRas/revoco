@@ -3,7 +3,7 @@
     "name": "chriras/revoco",
     "type": "project",
     "description": "Self-hosted, single-merchant electronic withdrawal form for the German § 356a BGB statutory right of withdrawal — neutral by default, configurable per .env.",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "keywords": ["withdrawal", "widerruf", "bgb", "356a", "gdpr", "self-hosted", "laravel"],
     "license": "AGPL-3.0-or-later",
     "homepage": "https://github.com/ChriRas/revoco",
