@@ -29,15 +29,10 @@ jobs:
           # 403/429 are accepted: bot-protected hosts and rate limits must not fail
           # the build. gnu.org is excluded permanently — it times out for GitHub
           # runners (CI-checker hostile); the AGPL text is also linked via the
-          # repo's LICENSE file. Self-referential URLs are excluded while they
-          # cannot resolve yet — github.com links 404 anonymously until the repo is
-          # public, and the canonical/hreflang Pages URLs 404 until Pages is
-          # enabled. Drop those two --exclude lines after go-live.
+          # repo's LICENSE file.
           args: >-
             --no-progress
             --accept '200..=204,403,429'
             --exclude 'www\.gnu\.org'
-            --exclude 'github\.com/ChriRas/revoco'
-            --exclude 'chriras\.github\.io/revoco'
             docs/index.html docs/de/index.html
           fail: true
