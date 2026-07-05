@@ -1,0 +1,40 @@
+name: Docs
+
+# Validate the GitHub Pages landing page (docs/) on every change:
+# HTML validity via html-validate, link integrity via lychee.
+on:
+  push:
+    branches: [main]
+    paths: ['docs/**', '.htmlvalidate.json', '.github/workflows/docs.yml']
+  pull_request:
+    paths: ['docs/**', '.htmlvalidate.json', '.github/workflows/docs.yml']
+
+jobs:
+  validate:
+    name: Validate landing page (html-validate · lychee)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Validate HTML
+        run: npx --yes html-validate "docs/**/*.html"
+
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # All in-page links are relative, so no --base-url/--root-dir is needed —
+          # lychee resolves them against the file location on disk.
+          # 403/429 are accepted: bot-protected hosts (e.g. gnu.org) and rate limits
+          # must not fail the build. Self-referential URLs are excluded while they
+          # cannot resolve yet — github.com links 404 anonymously until the repo is
+          # public, and the canonical/hreflang Pages URLs 404 until Pages is enabled.
+          # Drop both --exclude lines after go-live so they are checked again.
+          args: >-
+            --no-progress
+            --accept '200..=204,403,429'
+            --exclude 'github\.com/ChriRas/revoco'
+            --exclude 'chriras\.github\.io/revoco'
+            docs/index.html docs/de/index.html
+          fail: true
