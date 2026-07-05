@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Revoco — Self-hosted statutory withdrawal form (§ 356a BGB)</title>
+  <meta name="description" content="Revoco is a self-hosted, open-source statutory withdrawal form — mandatory for German online shops since 19 June 2026 (§ 356a BGB). Neutral by default, brandable per deployment, shipped as Docker containers.">
+  <link rel="canonical" href="https://chriras.github.io/revoco/">
+  <link rel="alternate" hreflang="en" href="https://chriras.github.io/revoco/">
+  <link rel="alternate" hreflang="de" href="https://chriras.github.io/revoco/de/">
+  <link rel="alternate" hreflang="x-default" href="https://chriras.github.io/revoco/">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/site.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Revoco — Self-hosted statutory withdrawal form (§ 356a BGB)">
+  <meta property="og:description" content="Open-source statutory withdrawal form for German online shops. Self-hosted, neutral by default, brandable per deployment. Mandatory since 19 June 2026 (§ 356a BGB).">
+  <meta property="og:url" content="https://chriras.github.io/revoco/">
+  <meta property="og:image" content="https://chriras.github.io/revoco/assets/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="site-rail" aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="container">
+    <a class="site-logo" href="#top" aria-label="Revoco — back to top">
+      <picture>
+        <source srcset="assets/revoco-logo-dark.svg" media="(prefers-color-scheme: dark)">
+        <img src="revoco-logo.svg" alt="Revoco" width="300" height="84">
+      </picture>
+    </a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="#law">Why now</a>
+      <a href="#features">Features</a>
+      <a href="#screenshots">Screenshots</a>
+      <a href="#ai-setup">AI setup</a>
+      <a href="#quickstart">Quick start</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <span aria-current="true" lang="en">EN</span>
+        <a href="de/" lang="de" hreflang="de">DE</a>
+      </div>
+      <a class="gh-link" href="https://github.com/ChriRas/revoco" rel="noopener" aria-label="Revoco on GitHub">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        <span class="gh-label">GitHub</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============ Hero ============ -->
+  <section class="hero" id="top">
+    <div class="container">
+      <div>
+        <p class="deadline-badge"><span class="dot" aria-hidden="true"></span> Withdrawal form — mandatory for German online shops since 19 June 2026 (§ 356a BGB)</p>
+        <h1>The statutory withdrawal form. Self-hosted, neutral, yours.</h1>
+        <p class="lead">Revoco is an open-source electronic withdrawal form for a single merchant: a consumer submits a withdrawal declaration, the system stores it and sends the legally required acknowledgment — while all data stays on your own server.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#quickstart">Get started</a>
+          <a class="btn btn-secondary" href="https://github.com/ChriRas/revoco" rel="noopener">View on GitHub</a>
+        </div>
+      </div>
+      <div class="hero-shot">
+        <figure class="browser-frame">
+          <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+          <img src="assets/img/form-neutral.webp" alt="The Revoco withdrawal form in its neutral default theme: name, e-mail, order number and description fields, with a 'Confirm withdrawal' button" width="1440" height="900" fetchpriority="high">
+        </figure>
+        <img class="phone-shot" src="assets/img/form-branded-mobile.webp" alt="The same form on a phone, restyled in a merchant's teal brand theme with logo" width="640" height="1386" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ § 356a explainer ============ -->
+  <section class="section" id="law">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Why now</span>
+        <h2>The withdrawal form is now a legal duty</h2>
+        <p>Since <strong>19 June 2026</strong> — with no transition period — online shops offering consumers a statutory right of withdrawal must provide an <em>electronic withdrawal form</em>: one the consumer can use without logging in, answered by a confirmation on a durable medium. The legal basis is § 356a BGB, transposing EU Directive 2023/2673.</p>
+      </div>
+
+      <ol class="law-steps">
+        <li>
+          <h3>A withdrawal button in your shop</h3>
+          <p>A constantly available, prominently placed button — "Withdraw from contract" — on your site. It links straight to your Revoco form; integrating the button is the only change your shop needs.</p>
+        </li>
+        <li>
+          <h3>The electronic withdrawal form</h3>
+          <p>The consumer states name, contract identification and e-mail address — exactly the data the law allows to be required, and nothing more — and confirms the withdrawal. Revoco is this form.</p>
+        </li>
+        <li>
+          <h3>The acknowledgment e-mail</h3>
+          <p>Immediately after submission the consumer receives a receipt acknowledgment on a durable medium, with the content of the declaration plus date and time. Ad-free, as the law demands.</p>
+        </li>
+      </ol>
+
+      <ul class="law-facts">
+        <li><span class="check" aria-hidden="true">✓</span><span>Only the three legally permitted mandatory fields — name, contract identification, e-mail. Nothing else is required.</span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>The submit is never blocked: no captcha, no order-number gate. Spam signals only classify — every declaration is stored.</span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>Acknowledgment e-mail with declaration content, date and time in the consumer's local time — sent asynchronously, so a mail-server hiccup never breaks the submit.</span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>Every declaration is stored immutably, giving you the proof of receipt the law expects you to keep.</span></li>
+      </ul>
+
+      <p class="disclaimer">Revoco is software, not legal advice. Whether and how § 356a BGB applies to your shop is a question for your legal counsel.</p>
+    </div>
+  </section>
+
+  <!-- ============ Value props ============ -->
+  <section class="section section-alt" id="features">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Features</span>
+        <h2>Compliance without a compliance vendor</h2>
+        <p>Revoco is deliberately small: one merchant, one container stack, one job done well.</p>
+      </div>
+      <div class="card-grid">
+        <div class="card">
+          <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg></span>
+          <h3>Built for the legal withdrawal flow</h3>
+          <p>The full statutory flow per § 356a BGB: form → submission → success page → acknowledgment e-mail. Three mandatory fields, never-block submission, immutable records.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg></span>
+          <h3>Self-hosted, full data sovereignty</h3>
+          <p>You run it, you own it. Withdrawal data lives in a SQLite file on your volume — no SaaS, no third-party processors, and you remain the data controller.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18c-1.5 0-2-1-1.5-2s.5-2-.5-2.5S7 16 6 15"/><circle cx="9" cy="8" r="1"/><circle cx="15" cy="8" r="1"/><circle cx="16.5" cy="12" r="1"/></svg></span>
+          <h3>Neutral by default, brandable per deploy</h3>
+          <p>Ships with a clean neutral design. A single CSS token contract (<code>--wf-*</code>) turns it into your shop's look — logo, colours and brand name are configuration, not a fork.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l-6-6 6-6"/><path d="M15 6l6 6-6 6"/></svg></span>
+          <h3>Open source (AGPL-3.0)</h3>
+          <p>The entire codebase is public and auditable. Fork it, review it, extend it — the AGPL keeps improvements open for everyone.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16V8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/></svg></span>
+          <h3>One-command Docker deploy</h3>
+          <p>Published images on GHCR, a generic <code>docker-compose.yml</code>, env-driven configuration. Runs behind any reverse proxy; fails fast when misconfigured.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z"/></svg></span>
+          <h3>German and English, switchable</h3>
+          <p>The consumer form ships in German and English with an in-form language switcher; the operator panel speaks English by default. More languages are a lang file away.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Screenshots ============ -->
+  <section class="section" id="screenshots">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Screenshots</span>
+        <h2>A look at the product</h2>
+        <p>All screenshots show fictitious demo data — the invented "Muster Shop" brand and test personas. No real merchants or customers appear.</p>
+      </div>
+
+      <div class="showcase-block">
+        <h3>Neutral by default — your brand on demand</h3>
+        <p>The same deployment, two looks: the out-of-the-box neutral theme, and a deploy-time brand overlay with the merchant's colours, logo and name.</p>
+        <div class="shot-pair">
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="assets/img/form-neutral.webp" alt="Withdrawal form in the neutral default theme" width="1440" height="900" loading="lazy">
+            <figcaption>Neutral default — ready to use as shipped</figcaption>
+          </figure>
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="assets/img/form-branded.webp" alt="The same withdrawal form with a teal merchant brand theme and shop logo" width="1440" height="900" loading="lazy">
+            <figcaption>Branded — a <code>--wf-*</code> theme overlay, logo and brand name via configuration</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="showcase-block">
+        <h3>A consumer flow that cannot dead-end</h3>
+        <p>Clear inline validation, and a confirmation page the moment the declaration is submitted. The acknowledgment e-mail follows asynchronously.</p>
+        <div class="shot-pair">
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="assets/img/form-validation.webp" alt="Withdrawal form showing inline validation messages under the empty required fields" width="1440" height="900" loading="lazy">
+            <figcaption>Accessible inline validation on the three required fields</figcaption>
+          </figure>
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="assets/img/success-branded.webp" alt="Confirmation page after a successful submission, in the merchant brand theme" width="1440" height="900" loading="lazy">
+            <figcaption>Success page — the durable acknowledgment arrives by e-mail</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="showcase-block">
+        <h3>An operator panel that stays out of your way</h3>
+        <p>Incoming withdrawals in one list with search and spam signals, a detail view with a single "handled" toggle, and settings for languages, legal pages and withdrawal scope. A setup banner tells fresh installs exactly what is still missing.</p>
+        <div class="shot-grid">
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="assets/img/backend-list.webp" alt="Operator panel: list of received withdrawals with received date, name, order number, spam and handled columns" width="1440" height="900" loading="lazy">
+            <figcaption>All declarations at a glance — with spam and handled status</figcaption>
+          </figure>
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="assets/img/backend-detail.webp" alt="Operator panel: detail view of one withdrawal with submitter, statement, triage and status sections" width="1440" height="900" loading="lazy">
+            <figcaption>Immutable detail record with a single triage action: mark handled</figcaption>
+          </figure>
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="assets/img/backend-warning-banner.webp" alt="Operator panel showing a setup-pending warning banner listing the missing legal content" width="1440" height="900" loading="lazy">
+            <figcaption>Setup guard — the panel flags missing legal content before go-live</figcaption>
+          </figure>
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="assets/img/backend-settings-scope.webp" alt="Operator panel: withdrawal scope settings page with display-only toggles" width="1440" height="900" loading="lazy">
+            <figcaption>Operator settings — languages, legal pages, withdrawal scope</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="showcase-block">
+        <h3>Legal pages included</h3>
+        <p>Imprint and privacy-policy pages ship with the form, edited in the panel — multilingual, with per-language fallbacks. Or keep linking to your existing pages instead.</p>
+        <div class="shot-pair">
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="assets/img/imprint.webp" alt="Rendered imprint page of the demo shop with provider, contact and register details" width="1440" height="1161" loading="lazy">
+            <figcaption>Imprint (§ 5 DDG) — structured fields, rendered consistently</figcaption>
+          </figure>
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="assets/img/privacy.webp" alt="Rendered privacy-policy page of the demo shop" width="1440" height="1289" loading="lazy">
+            <figcaption>Privacy policy — operator-maintained content, same theme</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Push notifications ============ -->
+  <section class="section section-alt push-section" id="push">
+    <div class="container">
+      <div>
+        <div class="section-head section-head-tight">
+          <span class="kicker">Stay informed</span>
+          <h2>Know the moment a withdrawal arrives</h2>
+        </div>
+        <p class="push-copy">Withdrawal declarations are rare events with legal deadlines attached — exactly the kind of thing you want pushed to your phone, not buried in an inbox. Revoco can notify you through <a href="https://ntfy.sh" rel="noopener">ntfy</a>: instant push to your phone or desktop the moment a declaration lands.</p>
+        <ul class="law-facts facts-spaced">
+          <li><span class="check" aria-hidden="true">✓</span><span>Data-minimal by design — the push carries no personal data, just the event.</span></li>
+          <li><span class="check" aria-hidden="true">✓</span><span>Self-hostable like everything else: a ready-made ntfy service ships as an optional compose profile.</span></li>
+          <li><span class="check" aria-hidden="true">✓</span><span>Optional and decoupled — one <code>.env</code> toggle, and a push failure never affects the consumer's submission.</span></li>
+        </ul>
+      </div>
+      <div class="push-mock" role="img" aria-label="Illustration of a push notification: 'New withdrawal received — a new declaration has arrived in Revoco'">
+        <div class="push-card push-faded">
+          <div class="push-app"><span class="push-dot" aria-hidden="true"></span> ntfy · yesterday</div>
+          <strong>New withdrawal received</strong>
+          Open the operator panel to review it.
+        </div>
+        <div class="push-card">
+          <div class="push-app"><span class="push-dot" aria-hidden="true"></span> ntfy · just now</div>
+          <strong>New withdrawal received</strong>
+          Open the operator panel to review it.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AI authoring skills ============ -->
+  <section class="section" id="ai-setup">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">AI-assisted setup</span>
+        <h2>From bare install to branded and filled — in one session</h2>
+        <p>Revoco ships two deploy-time authoring skills for <a href="https://claude.com/claude-code" rel="noopener">Claude Code</a> and other AI models. They do the two setup chores nobody enjoys: matching the form to your shop's design, and porting your existing legal pages. Both run at deploy time only — AI never touches the running app.</p>
+      </div>
+      <div class="skill-cards">
+        <div class="skill-card">
+          <h3>design-adoption</h3>
+          <p>Point it at your shop's URL. It scans the site, extracts the corporate identity — colours, fonts, logo treatment — and generates a ready-to-place <code>--wf-*</code> brand theme overlay plus a placement report.</p>
+          <p class="skill-cmd">/design-adoption https://your-shop.example</p>
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="assets/img/form-branded.webp" alt="The withdrawal form after design adoption, styled in the shop's teal corporate identity" width="1440" height="900" loading="lazy">
+            <figcaption>Result: the neutral form in your shop's visual identity</figcaption>
+          </figure>
+        </div>
+        <div class="skill-card">
+          <h3>legal-extraction</h3>
+          <p>Point it at your existing imprint and privacy-policy URLs. It extracts the content and loads it into Revoco's legal settings via a guarded importer — staged for your review in the operator panel, never auto-published.</p>
+          <p class="skill-cmd">/legal-extraction https://your-shop.example/imprint …</p>
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="assets/img/backend-settings-legal.webp" alt="Legal settings page in the operator panel, populated with imported imprint and privacy fields" width="1440" height="2108" loading="lazy">
+            <figcaption>Result: legal settings populated, awaiting your review</figcaption>
+          </figure>
+        </div>
+      </div>
+      <p class="skill-note">Both skills are conveniences, not requirements — everything they produce can be authored by hand, and every AI-generated draft is reviewed by the operator before it goes live.</p>
+    </div>
+  </section>
+
+  <!-- ============ Quick start ============ -->
+  <section class="section section-alt" id="quickstart">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Quick start</span>
+        <h2>Deployed in four steps</h2>
+        <p>All you need is Docker and a reverse proxy. The official image is published to GHCR.</p>
+      </div>
+      <ol class="steps">
+        <li>
+          <h3>Generate an application key</h3>
+          <p>Once, before first boot — the container refuses to start without it:</p>
+          <pre><code>docker run --rm ghcr.io/chriras/revoco:latest \
+    php artisan key:generate --show</code></pre>
+        </li>
+        <li>
+          <h3>Configure your environment</h3>
+          <p>Copy the example file and set your key, URL, SMTP credentials and operator account:</p>
+          <pre><code>cp .env.example .env
+<span class="cmt"># set APP_KEY, APP_URL, MAIL_*, OPERATOR_EMAIL, OPERATOR_PASSWORD, …</span></code></pre>
+        </li>
+        <li>
+          <h3>Boot the stack</h3>
+          <p>Migrations, cache warm-up and health checks are handled by the entrypoint:</p>
+          <pre><code>docker compose -f docker-compose.yml up -d</code></pre>
+        </li>
+        <li>
+          <h3>Create the operator account</h3>
+          <p>Then sign in to the panel and complete the guided setup — legal pages, languages, scope:</p>
+          <pre><code>docker compose -f docker-compose.yml exec app \
+    php artisan app:operator --email=you@example.com --password=…</code></pre>
+        </li>
+      </ol>
+      <p class="section-foot">Optional extras — ntfy push (<code>--profile ntfy</code>), a brand theme overlay, your existing legal pages — are one command or one panel visit away. Full instructions in the <a href="https://github.com/ChriRas/revoco#readme" rel="noopener">README</a>.</p>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section" id="faq">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">FAQ</span>
+        <h2>Frequently asked questions</h2>
+      </div>
+      <div class="faq-list">
+        <details>
+          <summary>Who needs an electronic withdrawal form?</summary>
+          <div>
+            <p>Since 19 June 2026, traders must offer an electronic withdrawal form whenever they let consumers conclude distance contracts through an online interface and a statutory right of withdrawal exists (§ 356a BGB) — in practice: most German-market B2C online shops. There was no transition period. Whether your specific business is covered is a question for your legal counsel.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Is Revoco legally compliant out of the box?</summary>
+          <div>
+            <p>Revoco implements the statutory flow faithfully: only the three permitted mandatory fields, a never-blocked submission, an ad-free acknowledgment e-mail with date and time, and immutable storage as proof of receipt. What remains on your side: placing the withdrawal button in your shop, and providing your imprint and privacy policy. Revoco is software, not legal advice.</p>
+          </div>
+        </details>
+        <details>
+          <summary>What does it cost?</summary>
+          <div>
+            <p>Nothing — Revoco is free and open-source under the AGPL-3.0 license. You pay only for your own hosting, which can be as small as the cheapest VPS you can find: the whole stack is a handful of lightweight containers built from a single image, plus a SQLite file.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Where does the data live? What about the GDPR?</summary>
+          <div>
+            <p>Everything stays on your server: withdrawal declarations are stored in a SQLite file on your volume, e-mails go out through your own SMTP server. There is no SaaS backend and no third-party processor — you operate the software yourself and remain the data controller.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Does it integrate with my shop system?</summary>
+          <div>
+            <p>No integration is needed — and that is deliberate. Revoco runs in free-text mode: the consumer identifies the contract themselves (order number or a description of the goods), and you review incoming declarations in the panel. It works next to any shop system; the only touchpoint is a link from your shop's withdrawal button to the form.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Can the form match my shop's design?</summary>
+          <div>
+            <p>Yes. The whole appearance hangs off one CSS token contract (<code>--wf-*</code>): a deploy-time theme overlay restyles colours, typography and controls, while logo and brand name come from the environment. The <em>design-adoption</em> skill can generate the overlay from your shop's URL automatically.</p>
+          </div>
+        </details>
+        <details>
+          <summary>I run several shops — can one instance serve them all?</summary>
+          <div>
+            <p>One deployment serves one merchant — that is a deliberate design decision that keeps the software simple and auditable. For several shops or brands you run several containers, each with its own configuration, theme and data.</p>
+          </div>
+        </details>
+        <details>
+          <summary>What is under the hood?</summary>
+          <div>
+            <p>A boring, dependable stack: PHP/Laravel, SQLite, a Filament operator panel, and a database-backed queue for asynchronous mail and push. It ships as a multi-stage Docker build — the production image contains no dev dependencies — with CI-built images on GHCR.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Final CTA ============ -->
+  <section class="cta-final">
+    <div class="container">
+      <h2>From stopgap to done right — in an afternoon</h2>
+      <p>Self-hosted, open-source, deployed in an afternoon — whether you are replacing an interim fix or setting up withdrawal handling for your next shop.</p>
+      <div class="cta-row cta-center">
+        <a class="btn btn-primary" href="#quickstart">Get started</a>
+        <a class="btn btn-secondary" href="https://github.com/ChriRas/revoco" rel="noopener">Star on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <picture>
+          <source srcset="assets/revoco-logo-dark.svg" media="(prefers-color-scheme: dark)">
+          <img src="revoco-logo.svg" alt="Revoco" width="300" height="84">
+        </picture>
+        <p>A self-hosted, single-merchant electronic withdrawal form implementing § 356a BGB. Neutral by default, configurable per <code>.env</code>, open-source.</p>
+      </div>
+      <div>
+        <h3>Project</h3>
+        <ul>
+          <li><a href="https://github.com/ChriRas/revoco" rel="noopener">GitHub repository</a></li>
+          <li><a href="https://github.com/ChriRas/revoco#readme" rel="noopener">README &amp; docs</a></li>
+          <li><a href="https://github.com/ChriRas/revoco/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          <li><a href="https://github.com/ChriRas/revoco/blob/main/LICENSE" rel="noopener">License (AGPL-3.0)</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>On this page</h3>
+        <ul>
+          <li><a href="#law">Why now — the withdrawal duty</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#quickstart">Quick start</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-legal">
+      <p>Revoco is free software under the <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="noopener">GNU AGPL-3.0</a>: you may use, study, share and improve it; network use counts as distribution. Provided as-is, without warranty.</p>
+      <p>Nothing on this page is legal advice. All screenshots show fictitious demo data — no real merchants, customers or legal texts appear.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

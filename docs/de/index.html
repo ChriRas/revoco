@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Revoco — Selbst gehostetes gesetzliches Widerrufsformular (§ 356a BGB)</title>
+  <meta name="description" content="Revoco ist ein selbst gehostetes, quelloffenes gesetzliches Widerrufsformular — Pflicht für deutsche Online-Shops seit dem 19. Juni 2026 (§ 356a BGB). Neutral im Standard, pro Deployment brandbar, ausgeliefert als Docker-Container.">
+  <link rel="canonical" href="https://chriras.github.io/revoco/de/">
+  <link rel="alternate" hreflang="en" href="https://chriras.github.io/revoco/">
+  <link rel="alternate" hreflang="de" href="https://chriras.github.io/revoco/de/">
+  <link rel="alternate" hreflang="x-default" href="https://chriras.github.io/revoco/">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../assets/site.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Revoco — Selbst gehostetes gesetzliches Widerrufsformular (§ 356a BGB)">
+  <meta property="og:description" content="Quelloffenes gesetzliches Widerrufsformular für deutsche Online-Shops. Selbst gehostet, neutral im Standard, pro Deployment brandbar. Pflicht seit 19. Juni 2026 (§ 356a BGB).">
+  <meta property="og:url" content="https://chriras.github.io/revoco/de/">
+  <meta property="og:image" content="https://chriras.github.io/revoco/assets/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+<a class="skip-link" href="#main">Zum Inhalt springen</a>
+<div class="site-rail" aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="container">
+    <a class="site-logo" href="#top" aria-label="Revoco — zum Seitenanfang">
+      <picture>
+        <source srcset="../assets/revoco-logo-dark.svg" media="(prefers-color-scheme: dark)">
+        <img src="../revoco-logo.svg" alt="Revoco" width="300" height="84">
+      </picture>
+    </a>
+    <nav class="site-nav" aria-label="Hauptnavigation">
+      <a href="#law">Warum jetzt</a>
+      <a href="#features">Funktionen</a>
+      <a href="#screenshots">Screenshots</a>
+      <a href="#ai-setup">KI-Setup</a>
+      <a href="#quickstart">Schnellstart</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Sprache">
+        <a href="../" lang="en" hreflang="en">EN</a>
+        <span aria-current="true" lang="de">DE</span>
+      </div>
+      <a class="gh-link" href="https://github.com/ChriRas/revoco" rel="noopener" aria-label="Revoco auf GitHub">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        <span class="gh-label">GitHub</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============ Hero ============ -->
+  <section class="hero" id="top">
+    <div class="container">
+      <div>
+        <p class="deadline-badge"><span class="dot" aria-hidden="true"></span> Widerrufsformular — Pflicht für deutsche Online-Shops seit dem 19. Juni 2026 (§ 356a BGB)</p>
+        <h1>Das gesetzliche Widerrufsformular. Selbst gehostet, neutral, deins.</h1>
+        <p class="lead">Revoco ist ein quelloffenes elektronisches Widerrufsformular für einen einzelnen Händler: Der Verbraucher gibt seine Widerrufserklärung ab, das System speichert sie und versendet die gesetzlich vorgeschriebene Eingangsbestätigung — und alle Daten bleiben auf deinem eigenen Server.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#quickstart">Loslegen</a>
+          <a class="btn btn-secondary" href="https://github.com/ChriRas/revoco" rel="noopener">Auf GitHub ansehen</a>
+        </div>
+      </div>
+      <div class="hero-shot">
+        <figure class="browser-frame">
+          <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+          <img src="../assets/img/form-neutral.webp" alt="Das Revoco-Widerrufsformular im neutralen Standard-Design: Felder für Name, E-Mail, Bestellnummer und Beschreibung, dazu der Button „Widerruf bestätigen“" width="1440" height="900" fetchpriority="high">
+        </figure>
+        <img class="phone-shot" src="../assets/img/form-branded-mobile.webp" alt="Dasselbe Formular auf dem Smartphone, umgestylt im türkisfarbenen Marken-Design eines Händlers mit Logo" width="640" height="1386" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ § 356a-Explainer ============ -->
+  <section class="section" id="law">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Warum jetzt</span>
+        <h2>Das Widerrufsformular ist gesetzliche Pflicht</h2>
+        <p>Seit dem <strong>19. Juni 2026</strong> — ohne Übergangsfrist — müssen Online-Shops, in denen Verbrauchern ein gesetzliches Widerrufsrecht zusteht, ein <em>elektronisches Widerrufsformular</em> bereitstellen: eines, das der Verbraucher ohne Login nutzen kann, beantwortet mit einer Bestätigung auf einem dauerhaften Datenträger. Rechtsgrundlage ist § 356a BGB, der die EU-Richtlinie 2023/2673 umsetzt.</p>
+      </div>
+
+      <ol class="law-steps">
+        <li>
+          <h3>Ein Widerrufs-Button in deinem Shop</h3>
+          <p>Ein ständig verfügbarer, gut sichtbar platzierter Button — „Vertrag widerrufen“ — auf deiner Website. Er verlinkt direkt auf dein Revoco-Formular; die Einbindung dieses Buttons ist die einzige Änderung, die dein Shop braucht.</p>
+        </li>
+        <li>
+          <h3>Das elektronische Widerrufsformular</h3>
+          <p>Der Verbraucher gibt Name, Vertragsidentifikation und E-Mail-Adresse an — genau die Daten, die das Gesetz als Pflichtangaben zulässt, und keine weiteren — und bestätigt den Widerruf. Revoco ist dieses Formular.</p>
+        </li>
+        <li>
+          <h3>Die Eingangsbestätigung per E-Mail</h3>
+          <p>Unmittelbar nach dem Absenden erhält der Verbraucher eine Eingangsbestätigung auf einem dauerhaften Datenträger — mit dem Inhalt der Erklärung sowie Datum und Uhrzeit. Werbefrei, wie es das Gesetz verlangt.</p>
+        </li>
+      </ol>
+
+      <ul class="law-facts">
+        <li><span class="check" aria-hidden="true">✓</span><span>Nur die drei gesetzlich zulässigen Pflichtfelder — Name, Vertragsidentifikation, E-Mail. Mehr wird nicht verlangt.</span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>Das Absenden wird nie blockiert: kein Captcha, keine Bestellnummern-Sperre. Spam-Signale klassifizieren nur — jede Erklärung wird gespeichert.</span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>Eingangsbestätigung mit Erklärungsinhalt, Datum und Uhrzeit in der Ortszeit des Verbrauchers — asynchron versendet, damit ein Mailserver-Schluckauf nie das Absenden bricht.</span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>Jede Erklärung wird unveränderlich gespeichert — der Eingangsnachweis, den das Gesetz von dir erwartet.</span></li>
+      </ul>
+
+      <p class="disclaimer">Revoco ist Software, keine Rechtsberatung. Ob und wie § 356a BGB auf deinen Shop anwendbar ist, klärst du mit deiner Rechtsberatung.</p>
+    </div>
+  </section>
+
+  <!-- ============ Value-Props ============ -->
+  <section class="section section-alt" id="features">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Funktionen</span>
+        <h2>Compliance ohne Compliance-Anbieter</h2>
+        <p>Revoco ist bewusst klein: ein Händler, ein Container-Stack, eine Aufgabe — gut gelöst.</p>
+      </div>
+      <div class="card-grid">
+        <div class="card">
+          <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg></span>
+          <h3>Gebaut für den gesetzlichen Widerruf</h3>
+          <p>Der vollständige gesetzliche Ablauf nach § 356a BGB: Formular → Absenden → Bestätigungsseite → Eingangsbestätigung per E-Mail. Drei Pflichtfelder, nie blockiertes Absenden, unveränderliche Datensätze.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg></span>
+          <h3>Selbst gehostet, volle Datenhoheit</h3>
+          <p>Du betreibst es, dir gehört es. Widerrufsdaten liegen in einer SQLite-Datei auf deinem Volume — kein SaaS, keine Drittanbieter-Verarbeitung, und du bleibst der Verantwortliche.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18c-1.5 0-2-1-1.5-2s.5-2-.5-2.5S7 16 6 15"/><circle cx="9" cy="8" r="1"/><circle cx="15" cy="8" r="1"/><circle cx="16.5" cy="12" r="1"/></svg></span>
+          <h3>Neutral im Standard, pro Deployment brandbar</h3>
+          <p>Wird mit einem sauberen neutralen Design ausgeliefert. Ein einziger CSS-Token-Vertrag (<code>--wf-*</code>) verwandelt es in den Look deines Shops — Logo, Farben und Markenname sind Konfiguration, kein Fork.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l-6-6 6-6"/><path d="M15 6l6 6-6 6"/></svg></span>
+          <h3>Open Source (AGPL-3.0)</h3>
+          <p>Der gesamte Quellcode ist öffentlich und prüfbar. Forken, auditieren, erweitern — die AGPL hält Verbesserungen für alle offen.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16V8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/></svg></span>
+          <h3>Docker-Deploy mit einem Befehl</h3>
+          <p>Veröffentlichte Images auf GHCR, ein generisches <code>docker-compose.yml</code>, Konfiguration per Umgebungsvariablen. Läuft hinter jedem Reverse-Proxy; bricht bei Fehlkonfiguration sofort sichtbar ab.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z"/></svg></span>
+          <h3>Deutsch und Englisch, umschaltbar</h3>
+          <p>Das Verbraucherformular gibt es auf Deutsch und Englisch mit Sprachumschalter im Formular; das Betreiber-Panel spricht standardmäßig Englisch. Weitere Sprachen sind nur eine Sprachdatei entfernt.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Screenshots ============ -->
+  <section class="section" id="screenshots">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Screenshots</span>
+        <h2>Ein Blick ins Produkt</h2>
+        <p>Alle Screenshots zeigen fiktive Demo-Daten — die erfundene Marke „Muster Shop“ und Test-Personas. Es erscheinen keine echten Händler oder Kunden.</p>
+      </div>
+
+      <div class="showcase-block">
+        <h3>Neutral im Standard — deine Marke auf Wunsch</h3>
+        <p>Dasselbe Deployment, zwei Looks: das neutrale Standard-Design ab Werk und ein Deploy-Zeit-Overlay mit Farben, Logo und Namen des Händlers.</p>
+        <div class="shot-pair">
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="../assets/img/form-neutral.webp" alt="Widerrufsformular im neutralen Standard-Design" width="1440" height="900" loading="lazy">
+            <figcaption>Neutraler Standard — einsatzbereit wie ausgeliefert</figcaption>
+          </figure>
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="../assets/img/form-branded.webp" alt="Dasselbe Widerrufsformular mit türkisfarbenem Marken-Design und Shop-Logo" width="1440" height="900" loading="lazy">
+            <figcaption>Gebrandet — ein <code>--wf-*</code>-Theme-Overlay, Logo und Markenname per Konfiguration</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="showcase-block">
+        <h3>Ein Verbraucher-Ablauf ohne Sackgassen</h3>
+        <p>Klare Inline-Validierung und eine Bestätigungsseite in dem Moment, in dem die Erklärung abgesendet ist. Die Eingangsbestätigung folgt asynchron per E-Mail.</p>
+        <div class="shot-pair">
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="../assets/img/form-validation.webp" alt="Widerrufsformular mit Inline-Validierungsmeldungen unter den leeren Pflichtfeldern" width="1440" height="900" loading="lazy">
+            <figcaption>Barrierearme Inline-Validierung der drei Pflichtfelder</figcaption>
+          </figure>
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="../assets/img/success-branded.webp" alt="Bestätigungsseite nach erfolgreichem Absenden, im Marken-Design des Händlers" width="1440" height="900" loading="lazy">
+            <figcaption>Bestätigungsseite — der dauerhafte Nachweis kommt per E-Mail</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="showcase-block">
+        <h3>Ein Betreiber-Panel, das dir nicht im Weg steht</h3>
+        <p>Eingehende Widerrufe in einer Liste mit Suche und Spam-Signalen, eine Detailansicht mit einem einzigen „Erledigt“-Schalter und Einstellungen für Sprachen, Rechtsseiten und Widerrufsumfang. Ein Setup-Banner sagt frischen Installationen genau, was noch fehlt.</p>
+        <div class="shot-grid">
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="../assets/img/backend-list.webp" alt="Betreiber-Panel: Liste eingegangener Widerrufe mit Eingangsdatum, Name, Bestellnummer, Spam- und Erledigt-Spalten" width="1440" height="900" loading="lazy">
+            <figcaption>Alle Erklärungen auf einen Blick — mit Spam- und Erledigt-Status</figcaption>
+          </figure>
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="../assets/img/backend-detail.webp" alt="Betreiber-Panel: Detailansicht eines Widerrufs mit Abschnitten für Absender, Erklärung, Triage und Status" width="1440" height="900" loading="lazy">
+            <figcaption>Unveränderlicher Datensatz mit einer einzigen Triage-Aktion: als erledigt markieren</figcaption>
+          </figure>
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="../assets/img/backend-warning-banner.webp" alt="Betreiber-Panel mit Warnbanner zum ausstehenden Setup, das fehlende Rechtsinhalte auflistet" width="1440" height="900" loading="lazy">
+            <figcaption>Setup-Wächter — das Panel meldet fehlende Rechtsinhalte vor dem Go-live</figcaption>
+          </figure>
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="../assets/img/backend-settings-scope.webp" alt="Betreiber-Panel: Einstellungsseite zum Widerrufsumfang mit reinen Anzeige-Schaltern" width="1440" height="900" loading="lazy">
+            <figcaption>Betreiber-Einstellungen — Sprachen, Rechtsseiten, Widerrufsumfang</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="showcase-block">
+        <h3>Rechtsseiten inklusive</h3>
+        <p>Impressum und Datenschutzerklärung liefert das Formular gleich mit, gepflegt im Panel — mehrsprachig, mit Fallback je Sprache. Oder du verlinkst weiterhin deine bestehenden Seiten.</p>
+        <div class="shot-pair">
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="../assets/img/imprint.webp" alt="Gerenderte Impressumsseite des Demo-Shops mit Anbieter-, Kontakt- und Registerangaben" width="1440" height="1161" loading="lazy">
+            <figcaption>Impressum (§ 5 DDG) — strukturierte Felder, konsistent gerendert</figcaption>
+          </figure>
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="../assets/img/privacy.webp" alt="Gerenderte Datenschutzseite des Demo-Shops" width="1440" height="1289" loading="lazy">
+            <figcaption>Datenschutzerklärung — vom Betreiber gepflegter Inhalt, gleiches Theme</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Push-Benachrichtigungen ============ -->
+  <section class="section section-alt push-section" id="push">
+    <div class="container">
+      <div>
+        <div class="section-head section-head-tight">
+          <span class="kicker">Sofort informiert</span>
+          <h2>Wissen, wenn ein Widerruf eingeht — im selben Moment</h2>
+        </div>
+        <p class="push-copy">Widerrufserklärungen sind seltene Ereignisse mit gesetzlichen Fristen — genau das, was du als Push aufs Handy willst statt vergraben im Postfach. Revoco benachrichtigt dich auf Wunsch über <a href="https://ntfy.sh" rel="noopener">ntfy</a>: Sofort-Push auf Handy oder Desktop, sobald eine Erklärung eingeht.</p>
+        <ul class="law-facts facts-spaced">
+          <li><span class="check" aria-hidden="true">✓</span><span>Datenminimal per Design — der Push enthält keine personenbezogenen Daten, nur das Ereignis.</span></li>
+          <li><span class="check" aria-hidden="true">✓</span><span>Selbst hostbar wie alles andere: Ein fertiger ntfy-Dienst liegt als optionales Compose-Profil bei.</span></li>
+          <li><span class="check" aria-hidden="true">✓</span><span>Optional und entkoppelt — ein <code>.env</code>-Schalter, und ein Push-Fehler beeinträchtigt nie das Absenden des Verbrauchers.</span></li>
+        </ul>
+      </div>
+      <div class="push-mock" role="img" aria-label="Illustration einer Push-Benachrichtigung: „Neuer Widerruf eingegangen — eine neue Erklärung ist in Revoco eingetroffen“">
+        <div class="push-card push-faded">
+          <div class="push-app"><span class="push-dot" aria-hidden="true"></span> ntfy · gestern</div>
+          <strong>Neuer Widerruf eingegangen</strong>
+          Zum Prüfen das Betreiber-Panel öffnen.
+        </div>
+        <div class="push-card">
+          <div class="push-app"><span class="push-dot" aria-hidden="true"></span> ntfy · gerade eben</div>
+          <strong>Neuer Widerruf eingegangen</strong>
+          Zum Prüfen das Betreiber-Panel öffnen.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ KI-Authoring-Skills ============ -->
+  <section class="section" id="ai-setup">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">KI-gestütztes Setup</span>
+        <h2>Von der leeren Installation zu gebrandet und befüllt — in einer Sitzung</h2>
+        <p>Revoco bringt zwei Deploy-Zeit-Authoring-Skills für <a href="https://claude.com/claude-code" rel="noopener">Claude Code</a> und andere KI-Modelle mit. Sie erledigen die zwei Einrichtungsaufgaben, die niemand gern macht: das Formular ans Shop-Design anpassen und bestehende Rechtsseiten übernehmen. Beide laufen ausschließlich zur Deploy-Zeit — KI berührt nie die laufende Anwendung.</p>
+      </div>
+      <div class="skill-cards">
+        <div class="skill-card">
+          <h3>design-adoption</h3>
+          <p>Gib ihm die URL deines Shops. Der Skill scannt die Website, extrahiert die Corporate Identity — Farben, Schriften, Logo-Einsatz — und generiert ein einbaufertiges <code>--wf-*</code>-Marken-Theme-Overlay samt Platzierungsbericht.</p>
+          <p class="skill-cmd">/design-adoption https://dein-shop.example</p>
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="../assets/img/form-branded.webp" alt="Das Widerrufsformular nach der Design-Übernahme, gestaltet in der türkisfarbenen Corporate Identity des Shops" width="1440" height="900" loading="lazy">
+            <figcaption>Ergebnis: das neutrale Formular in der Optik deines Shops</figcaption>
+          </figure>
+        </div>
+        <div class="skill-card">
+          <h3>legal-extraction</h3>
+          <p>Gib ihm die URLs deines bestehenden Impressums und deiner Datenschutzerklärung. Der Skill extrahiert die Inhalte und lädt sie über einen abgesicherten Importer in Revocos Rechts-Einstellungen — bereitgestellt zur Prüfung im Betreiber-Panel, nie automatisch veröffentlicht.</p>
+          <p class="skill-cmd">/legal-extraction https://dein-shop.example/impressum …</p>
+          <figure class="browser-frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="../assets/img/backend-settings-legal.webp" alt="Rechts-Einstellungsseite im Betreiber-Panel, befüllt mit importierten Impressums- und Datenschutzfeldern" width="1440" height="2108" loading="lazy">
+            <figcaption>Ergebnis: Rechts-Einstellungen befüllt, bereit zu deiner Prüfung</figcaption>
+          </figure>
+        </div>
+      </div>
+      <p class="skill-note">Beide Skills sind Komfort, keine Voraussetzung — alles, was sie erzeugen, lässt sich auch von Hand pflegen, und jeder KI-Entwurf wird vom Betreiber geprüft, bevor er live geht.</p>
+    </div>
+  </section>
+
+  <!-- ============ Schnellstart ============ -->
+  <section class="section section-alt" id="quickstart">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Schnellstart</span>
+        <h2>In vier Schritten deployt</h2>
+        <p>Alles, was du brauchst: Docker und ein Reverse-Proxy. Das offizielle Image liegt auf GHCR.</p>
+      </div>
+      <ol class="steps">
+        <li>
+          <h3>Anwendungsschlüssel erzeugen</h3>
+          <p>Einmalig vor dem ersten Start — ohne ihn verweigert der Container den Dienst:</p>
+          <pre><code>docker run --rm ghcr.io/chriras/revoco:latest \
+    php artisan key:generate --show</code></pre>
+        </li>
+        <li>
+          <h3>Umgebung konfigurieren</h3>
+          <p>Beispieldatei kopieren und Schlüssel, URL, SMTP-Zugang und Betreiber-Konto setzen:</p>
+          <pre><code>cp .env.example .env
+<span class="cmt"># APP_KEY, APP_URL, MAIL_*, OPERATOR_EMAIL, OPERATOR_PASSWORD, … setzen</span></code></pre>
+        </li>
+        <li>
+          <h3>Stack starten</h3>
+          <p>Migrationen, Cache-Aufwärmen und Health-Checks übernimmt der Entrypoint:</p>
+          <pre><code>docker compose -f docker-compose.yml up -d</code></pre>
+        </li>
+        <li>
+          <h3>Betreiber-Konto anlegen</h3>
+          <p>Danach im Panel anmelden und das geführte Setup abschließen — Rechtsseiten, Sprachen, Umfang:</p>
+          <pre><code>docker compose -f docker-compose.yml exec app \
+    php artisan app:operator --email=du@example.com --password=…</code></pre>
+        </li>
+      </ol>
+      <p class="section-foot">Optionale Extras — ntfy-Push (<code>--profile ntfy</code>), ein Marken-Theme-Overlay, deine bestehenden Rechtsseiten — sind einen Befehl oder einen Panel-Besuch entfernt. Die vollständige Anleitung steht im <a href="https://github.com/ChriRas/revoco#readme" rel="noopener">README</a>.</p>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section" id="faq">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">FAQ</span>
+        <h2>Häufige Fragen</h2>
+      </div>
+      <div class="faq-list">
+        <details>
+          <summary>Wer braucht ein elektronisches Widerrufsformular?</summary>
+          <div>
+            <p>Seit dem 19. Juni 2026 müssen Unternehmer ein elektronisches Widerrufsformular anbieten, wenn sie Verbrauchern den Abschluss von Fernabsatzverträgen über eine Online-Benutzeroberfläche ermöglichen und ein gesetzliches Widerrufsrecht besteht (§ 356a BGB) — praktisch: die meisten deutschen B2C-Online-Shops. Eine Übergangsfrist gab es nicht. Ob dein konkretes Geschäft erfasst ist, klärst du mit deiner Rechtsberatung.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Ist Revoco ab Werk rechtskonform?</summary>
+          <div>
+            <p>Revoco setzt den gesetzlichen Ablauf originalgetreu um: nur die drei zulässigen Pflichtfelder, ein nie blockiertes Absenden, eine werbefreie Eingangsbestätigung mit Datum und Uhrzeit sowie unveränderliche Speicherung als Eingangsnachweis. Auf deiner Seite bleiben: der Widerrufs-Button in deinem Shop sowie Impressum und Datenschutzerklärung. Revoco ist Software, keine Rechtsberatung.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Was kostet das?</summary>
+          <div>
+            <p>Nichts — Revoco ist frei und quelloffen unter der AGPL-3.0-Lizenz. Du zahlst nur dein eigenes Hosting, und das darf klein sein: Der ganze Stack besteht aus einer Handvoll leichtgewichtiger Container aus einem einzigen Image plus einer SQLite-Datei.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Wo liegen die Daten? Und was ist mit der DSGVO?</summary>
+          <div>
+            <p>Alles bleibt auf deinem Server: Widerrufserklärungen liegen in einer SQLite-Datei auf deinem Volume, E-Mails gehen über deinen eigenen SMTP-Server raus. Es gibt kein SaaS-Backend und keinen Auftragsverarbeiter — du betreibst die Software selbst und bleibst der Verantwortliche.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Muss ich mein Shopsystem anbinden?</summary>
+          <div>
+            <p>Nein — und das ist Absicht. Revoco arbeitet im Freitext-Modus: Der Verbraucher identifiziert den Vertrag selbst (Bestellnummer oder eine Beschreibung der Ware), und du prüfst eingehende Erklärungen im Panel. Es funktioniert neben jedem Shopsystem; der einzige Berührungspunkt ist der Link vom Widerrufs-Button deines Shops zum Formular.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Kann das Formular aussehen wie mein Shop?</summary>
+          <div>
+            <p>Ja. Das gesamte Erscheinungsbild hängt an einem CSS-Token-Vertrag (<code>--wf-*</code>): Ein Deploy-Zeit-Theme-Overlay stylt Farben, Typografie und Bedienelemente um, Logo und Markenname kommen aus der Umgebung. Der Skill <em>design-adoption</em> kann das Overlay automatisch aus deiner Shop-URL erzeugen.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Ich betreibe mehrere Shops — reicht eine Instanz?</summary>
+          <div>
+            <p>Ein Deployment bedient einen Händler — eine bewusste Design-Entscheidung, die die Software einfach und prüfbar hält. Für mehrere Shops oder Marken betreibst du mehrere Container, jeder mit eigener Konfiguration, eigenem Theme und eigenen Daten.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Was steckt unter der Haube?</summary>
+          <div>
+            <p>Ein langweiliger, verlässlicher Stack: PHP/Laravel, SQLite, ein Filament-Betreiber-Panel und eine datenbankgestützte Queue für asynchrone Mails und Push. Ausgeliefert als Multi-Stage-Docker-Build — das Produktions-Image enthält keine Dev-Abhängigkeiten — mit CI-gebauten Images auf GHCR.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Abschluss-CTA ============ -->
+  <section class="cta-final">
+    <div class="container">
+      <h2>Von der Notlösung zur sauberen Lösung — an einem Nachmittag</h2>
+      <p>Selbst gehostet, quelloffen, an einem Nachmittag deployt — ob du eine Übergangslösung ersetzt oder den Widerruf für deinen nächsten Shop gleich richtig aufsetzt.</p>
+      <div class="cta-row cta-center">
+        <a class="btn btn-primary" href="#quickstart">Loslegen</a>
+        <a class="btn btn-secondary" href="https://github.com/ChriRas/revoco" rel="noopener">Auf GitHub sternen</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <picture>
+          <source srcset="../assets/revoco-logo-dark.svg" media="(prefers-color-scheme: dark)">
+          <img src="../revoco-logo.svg" alt="Revoco" width="300" height="84">
+        </picture>
+        <p>Ein selbst gehostetes elektronisches Widerrufsformular für einen einzelnen Händler nach § 356a BGB. Neutral im Standard, konfigurierbar per <code>.env</code>, quelloffen.</p>
+      </div>
+      <div>
+        <h3>Projekt</h3>
+        <ul>
+          <li><a href="https://github.com/ChriRas/revoco" rel="noopener">GitHub-Repository</a></li>
+          <li><a href="https://github.com/ChriRas/revoco#readme" rel="noopener">README &amp; Doku</a></li>
+          <li><a href="https://github.com/ChriRas/revoco/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          <li><a href="https://github.com/ChriRas/revoco/blob/main/LICENSE" rel="noopener">Lizenz (AGPL-3.0)</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Auf dieser Seite</h3>
+        <ul>
+          <li><a href="#law">Warum jetzt — die Widerrufspflicht</a></li>
+          <li><a href="#features">Funktionen</a></li>
+          <li><a href="#quickstart">Schnellstart</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-legal">
+      <p>Revoco ist freie Software unter der <a href="https://www.gnu.org/licenses/agpl-3.0.de.html" rel="noopener">GNU AGPL-3.0</a>: nutzen, studieren, teilen und verbessern ausdrücklich erwünscht; Netzwerknutzung zählt als Verbreitung. Bereitgestellt wie besehen, ohne Gewährleistung.</p>
+      <p>Nichts auf dieser Seite ist Rechtsberatung. Alle Screenshots zeigen fiktive Demo-Daten — es erscheinen keine echten Händler, Kunden oder Rechtstexte.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
