@@ -32,6 +32,15 @@ final class AdminPanelProvider extends PanelProvider
             ->login()
             ->registration(null)
             ->passwordReset(null)
+            // Explicit Revoco branding — set here, not derived from APP_NAME, so the
+            // panel (login, header, page <title>, favicon) is correct on every
+            // deployment even when the operator does not set APP_NAME. The neutral-
+            // by-default rule governs the CONSUMER form, not Revoco's own admin tool.
+            ->brandName('Revoco')
+            ->brandLogo(asset('img/revoco-logo.svg'))
+            ->darkModeBrandLogo(asset('img/revoco-logo-dark.svg'))
+            ->brandLogoHeight('2.25rem')
+            ->favicon(asset('img/revoco-favicon.svg'))
             ->colors([
                 'primary' => Color::Amber,
             ])
