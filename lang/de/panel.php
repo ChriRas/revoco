@@ -12,6 +12,23 @@ return [
 
     'settings' => [
         'navigation_group' => 'Einstellungen',
+        'notification' => [
+            'navigation_label' => 'Benachrichtigungen',
+            'title' => 'Benachrichtigungen',
+            'effective' => 'Benachrichtigungen gehen aktuell an: :email',
+            'effective_none' => 'Es ist noch kein Empfänger konfiguriert — es werden keine Betreiber-Benachrichtigungen versendet.',
+            'email' => [
+                'label' => 'Empfängeradresse',
+                'help' => 'Adresse, an die neue Widerrufe gemeldet werden. Kann sich von der Absenderadresse unterscheiden (z. B. Versand über no-reply@, Eingang an shop@). Bleibt das Feld leer, wird die Umgebungsvariable MERCHANT_NOTIFICATION_EMAIL und andernfalls die Impressum-E-Mail verwendet.',
+            ],
+            'test' => [
+                'button' => 'Test-Mail senden',
+                'sent' => 'Test-Mail an :email gesendet.',
+                'failed' => 'Test-Mail konnte nicht gesendet werden.',
+                'none' => 'Kein Empfänger konfiguriert — bitte zuerst eine Adresse hinterlegen oder die Impressum-E-Mail setzen.',
+                'sample_subject' => 'Testbenachrichtigung (Beispiel)',
+            ],
+        ],
         'localization' => [
             'navigation_label' => 'Sprachen',
             'title' => 'Sprachen',
