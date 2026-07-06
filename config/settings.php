@@ -2,6 +2,7 @@
 
 use App\Settings\LegalSettings;
 use App\Settings\LocaleSettings;
+use App\Settings\NotificationSettings;
 use App\Settings\WithdrawalScopeSettings;
 use Spatie\LaravelSettings\SettingsCasts\DateTimeInterfaceCast;
 use Spatie\LaravelSettings\SettingsCasts\DateTimeZoneCast;
@@ -18,6 +19,7 @@ return [
         LocaleSettings::class,
         LegalSettings::class,
         WithdrawalScopeSettings::class,
+        NotificationSettings::class,
     ],
 
     /*

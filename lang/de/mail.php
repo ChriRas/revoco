@@ -40,7 +40,8 @@ return [
 
     'notification' => [
         'subject' => 'Neuer Widerruf eingegangen',
-        'spam_tag' => '[Spam-Verdacht]',
+        // Prominent subject prefix for a spam-flagged case (prepended, not appended).
+        'spam_prefix' => '⚠ SPAM-VERDACHT:',
         'heading' => 'Neuer Widerruf eingegangen',
         'spam_warning' => 'Spam-Verdacht (Grund: :reason) — bitte prüfen. Der Eingang wurde dennoch gespeichert und dem Verbraucher bestätigt.',
         'spam_status' => 'Spam-Status',
