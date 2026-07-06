@@ -126,6 +126,16 @@ return [
         ],
     ],
 
+    'editor' => [
+        'paste_html' => [
+            'tool' => 'HTML einfügen',
+            'heading' => 'HTML einfügen',
+            'description' => 'HTML hier einfügen (z. B. eine von einer Kanzlei gelieferte Datenschutzerklärung). Der Inhalt wird bereinigt und formatiert in den Editor übernommen.',
+            'placeholder' => '<h2>Überschrift</h2><p>Ihr HTML-Text …</p>',
+            'submit' => 'Einfügen',
+        ],
+    ],
+
     'resource' => [
         'navigation_label' => 'Widerrufe',
         'model_label' => 'Widerruf',
