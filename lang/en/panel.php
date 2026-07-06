@@ -126,6 +126,16 @@ return [
         ],
     ],
 
+    'editor' => [
+        'paste_html' => [
+            'tool' => 'Paste HTML',
+            'heading' => 'Paste HTML',
+            'description' => 'Paste HTML here (e.g. a privacy policy delivered by a law firm). The content is sanitized and inserted into the editor as formatted text.',
+            'placeholder' => '<h2>Heading</h2><p>Your HTML …</p>',
+            'submit' => 'Insert',
+        ],
+    ],
+
     'resource' => [
         'navigation_label' => 'Withdrawals',
         'model_label' => 'Withdrawal',
