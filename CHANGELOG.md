@@ -4,6 +4,40 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] — 2026-07-08
+
+First stable release. Revoco is a self-hosted, single-merchant electronic withdrawal
+form for the German § 356a BGB statutory right of withdrawal (mandatory since
+2026-06-19) — neutral by default, configurable per `.env`, open source (AGPL-3.0). The
+full feature set — form, submit, async acknowledgment/notification mail and ntfy push,
+Filament operator backend, DE/EN i18n, operator self-service configuration, and
+containerized deployment — was validated across the 0.5.0–0.7.0 pre-releases. This
+release stabilizes it as 1.0.0 and adds the two deploy-time authoring skills.
+
+### Added
+
+- **`design-adoption` authoring skill** — a deploy-time Claude-Code skill that scans a
+  shop's website, extracts its corporate identity (colours, typography, logo), and
+  generates a ready-to-place `--wf-*` brand theme overlay plus a placement report so the
+  form mirrors the shop. Backed by the deterministic `revoco:make-theme` Artisan command,
+  which emits only known contract tokens and preserves the accessibility invariants.
+- **`legal-extraction` authoring skill** — a deploy-time Claude-Code skill that scrapes
+  the operator's existing Impressum and privacy-policy pages and loads them into the
+  DB/Filament legal settings, via the deterministic `revoco:import-legal` command
+  (schema-validated, HTML-sanitized, refuses to clobber reviewed content without
+  `--overwrite`). Reviewed in the Filament panel before it goes live.
+- Both skills run **at deploy time only** — the AI never touches the running app, and all
+  output is operator-reviewed, never auto-published.
+
+### Changed
+
+- Dependency refresh: Pest 4.7.5, Laravel Pint 1.29.3, Filament settings plugin 5.6.8.
+
+### Notes
+
+- Operator deployment specifics (real domains, reverse proxy, secrets, brand assets)
+  live in a separate private infrastructure repository, never in this public repo.
+
 ## [0.7.0] — 2026-07-06
 
 Bug-fix and polish release from the 0.6.0 staging round, ahead of the stable 1.0.0.
@@ -111,6 +145,7 @@ operator notification are sent. Neutral by default, configurable per `.env`.
 - Operator deployment specifics (real domains, reverse proxy, secrets, brand assets)
   live in a separate private infrastructure repository, never in this public repo.
 
+[1.0.0]: https://github.com/ChriRas/revoco/releases/tag/v1.0.0
 [0.7.0]: https://github.com/ChriRas/revoco/releases/tag/v0.7.0
 [0.6.0]: https://github.com/ChriRas/revoco/releases/tag/v0.6.0
 [0.5.0]: https://github.com/ChriRas/revoco/releases/tag/v0.5.0
