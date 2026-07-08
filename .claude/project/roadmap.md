@@ -81,13 +81,19 @@ a per-deployment design document; (b) privacy-policy scrape + translate → an
 operator-reviewed draft. AI output is always operator-reviewed, never
 auto-published.
 
-Status: backlog — separate epic. Its precondition (the Phase 10 app slices) has landed,
-so this is now ready to plan via `/craft:epic`.
+Status: done — epic-002 (authoring-skills) shipped: design-adoption (slice-018,
+`revoco:make-theme` overlay generator) + legal-extraction (slice-019,
+`revoco:import-legal` Impressum/Datenschutz importer). Deploy-time Claude-Code skills
+paired with Pest-tested artisan commands; all output operator-reviewed via Filament,
+never auto-published. The cross-cutting "deterministic command core + AI wrapper"
+pattern is captured in `design/authoring-skills.md`.
 
 ## Releases (optional)
 
 | Version | Date | Highlights |
 |---|---|---|
+| 0.7.0 | 2026-07-06 | PHP 8.5 baseline (Docker-first); dependency refresh (Pest 4.7, Pint 1.29, Filament settings 5.6.8). |
+| 0.6.0 | 2026-07-06 | Staging-findings round: operator-managed notification recipient + test mail + prominent spam subject (021), admin panel Revoco branding (022), paste-HTML editor button (023), sticky editor toolbar (024). |
 | 0.5.0 | 2026-06-30 | First public release (AGPL-3.0): full feature set — form, submit, async mails/push, operator backend, containerization/CI, DE/EN i18n + DST-aware mail timestamps. |
 
 > The earlier 0.1.0 / 0.2.0 entries (legal minimum; containerization + backend) were
