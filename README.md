@@ -113,8 +113,11 @@ Runs locally and in the release CI workflow.
 
 ## Configuration reference
 
-All configuration is via environment variables. See [`.env.example`](.env.example)
-for the full list with inline documentation. Key variables:
+Deployment configuration is via environment variables. See [`.env.example`](.env.example)
+for the full list with inline documentation. Content-level settings — the legal pages
+(imprint & privacy), consumer languages, withdrawal scope, and the withdrawal-notification
+recipient — are managed by the operator in the Filament panel and persist in the database,
+so changing them needs no redeploy. Key environment variables:
 
 | Variable | Required | Default | Notes |
 |---|---|---|---|
@@ -125,6 +128,7 @@ for the full list with inline documentation. Key variables:
 | `DB_DATABASE` | No | `/var/www/html/storage/database/database.sqlite` | SQLite path inside container. |
 | `QUEUE_CONNECTION` | No | `database` | Use `database` for the bundled SQLite queue. |
 | `MAIL_MAILER` | No | `log` (safe) | Set to `smtp` in prod and configure `MAIL_*`. |
+| `MERCHANT_NOTIFICATION_EMAIL` | No | — | Fallback recipient for the operator notification. The in-panel setting takes precedence; if neither is set, the imprint e-mail is used. |
 | `NTFY_ENABLED` | No | `false` | Opt-in ntfy push (no PII sent). |
 
 ---
