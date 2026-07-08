@@ -57,7 +57,11 @@ Locally: `task smoke` builds the prod image, boots the generic stack with a thro
 
 ## Configuration (per operator, via `.env`)
 - App: `APP_KEY` (required, fail-fast), `APP_URL`, `APP_TIMEZONE`, locale.
-- Branding: `APP_THEME` (neutral default) + logo/copy/links.
+- Branding: `APP_THEME` (neutral default) + logo/copy/links. **`APP_THEME` is baked
+  into the container as an OS env var at `docker compose up` (`docker-compose.yml`:
+  `APP_THEME: "${APP_THEME:-neutral}"`), which shadows the `.env` file — switching a
+  deployment's theme therefore requires recreating the `app` service
+  (`docker compose up -d --force-recreate app`), not only editing `.env`.** (slice-018)
 - Mail: direct SMTP credentials (operator's mail server); sender address.
 - Push: `NTFY_ENABLED`, `NTFY_SERVER`, `NTFY_TOPIC`, optional token.
 - Queue: `QUEUE_CONNECTION=database` (default; uses SQLite on `app_storage` volume).
