@@ -76,6 +76,7 @@
 
 - **Branch model:** trunk-based, feature branches via PR.
 - **CI/CD (this repo):** tests on PR + push `main`; image build on SemVer tag → registry. Generic, env-driven containers.
+- **Landing page:** GitHub Pages serves `docs/` from `main` (`/` = EN, `/de/` = DE — both locales are maintained in sync, hreflang-paired). The Docs CI workflow (html-validate + lychee) gates every change to `docs/**`. (slice-020)
 - **Operator deployment:** out of scope here — reverse proxy/TLS, domains, environments, runner, secrets, branding overlay live in the **private infra repo**. Generic guidance: `design/deployment.md`.
 - **License:** AGPL-3.0.
 - **Pre-deploy checks:** Pest, Pint, PHPStan green.

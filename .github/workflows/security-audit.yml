@@ -21,20 +21,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      # `composer audit` reads composer.lock against the advisory database — no
-      # install needed, so the official composer image keeps the job minimal.
+      # `composer audit --locked` reads composer.lock against the advisory database
+      # without an install — but the `--locked` flag is required, otherwise Composer
+      # aborts with "No installed packages found" before any advisory check runs.
+      # continue-on-error lets the following steps branch on the outcome; the final
+      # step re-raises a real failure so the run still shows red.
       - name: Audit locked dependencies
-        run: docker run --rm -v "${{ github.workspace }}":/app -w /app composer:2 audit --no-interaction
+        id: audit
+        continue-on-error: true
+        run: docker run --rm -v "${{ github.workspace }}":/app -w /app composer:2 audit --locked --no-interaction
 
       - name: Open a tracking issue when the audit fails
-        if: failure()
+        if: steps.audit.outcome == 'failure'
         uses: actions/github-script@v9
         with:
           script: |
             const title = 'Security audit: vulnerable dependency detected';
             const run = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             const body = [
-              'The scheduled `composer audit` reported one or more advisories.',
+              'The scheduled `composer audit --locked` failed — a dependency advisory was',
+              'reported, or the audit step itself errored. Check the run before assuming a fix.',
               '',
               `- Workflow run: ${run}`,
               '- Reproduce locally: `task audit`',
@@ -49,3 +55,29 @@ jobs:
                 owner: context.repo.owner, repo: context.repo.repo, title, body,
               });
             }
+
+      - name: Close the tracking issue when the audit is clean
+        if: steps.audit.outcome == 'success'
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const title = 'Security audit: vulnerable dependency detected';
+            const run = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const open = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open',
+            });
+            for (const issue of open.filter((i) => i.title === title)) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: issue.number,
+                body: `\`composer audit --locked\` is clean again as of ${run}. Closing automatically.`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: issue.number, state: 'closed',
+              });
+            }
+
+      # Re-raise a genuine audit failure so the scheduled run is marked red even
+      # though the audit step used continue-on-error.
+      - name: Reflect the audit result in the job status
+        if: steps.audit.outcome == 'failure'
+        run: exit 1

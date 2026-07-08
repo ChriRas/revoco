@@ -32,8 +32,10 @@ final class WithdrawalNotification extends Mailable implements ShouldQueue
     {
         $subject = __('mail.notification.subject');
 
+        // Spam verdict up front, not appended — the operator must see it at a
+        // glance in an inbox list without opening or widening the subject.
         if ($this->withdrawal->spam) {
-            $subject .= ' '.__('mail.notification.spam_tag');
+            $subject = __('mail.notification.spam_prefix').' '.$subject;
         }
 
         return new Envelope(subject: $subject);

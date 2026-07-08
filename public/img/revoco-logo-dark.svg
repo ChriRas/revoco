@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="84" viewBox="0 0 300 84" fill="none" role="img" aria-label="Revoco">
+  <title>Revoco</title>
+  <!-- Dark-mode variant of docs/revoco-logo.svg: identical geometry, the
+       wordmark flips to a light ink so it stays legible on dark surfaces. -->
+  <g transform="translate(0,10)">
+    <rect x="2" y="2" width="60" height="60" rx="16" fill="#1f63e6"/>
+    <path d="M25.36 16.35 A17 17 0 1 0 38.64 16.35" stroke="#ffffff" stroke-width="6.2" stroke-linecap="round"/>
+    <path d="M29.44 12.45 L41.4 10.3 L36.0 22.2 Z" fill="#ffffff"/>
+  </g>
+  <text x="84" y="54" font-family="'Space Grotesk', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" font-weight="600" font-size="52" letter-spacing="-1.6" fill="#e8eef7">Revoco</text>
+</svg>

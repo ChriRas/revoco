@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Pages;
 
+use App\Filament\RichContent\PasteHtmlPlugin;
 use App\Settings\LegalSettings;
 use App\Support\ConsumerLocales;
 use BackedEnum;
@@ -263,11 +264,13 @@ final class ManageLegal extends SettingsPage
         foreach ($this->localeOptions() as $code => $label) {
             $editors[] = RichEditor::make('privacy_content.'.$code)
                 ->label($this->localeFlagLabel($code, $label))
+                ->plugins([PasteHtmlPlugin::make()])
                 ->toolbarButtons([
                     ['bold', 'italic', 'underline', 'strike', 'link'],
                     ['h2', 'h3'],
                     ['blockquote', 'bulletList', 'orderedList'],
                     ['undo', 'redo'],
+                    ['pasteHtml'],
                 ]);
         }
 
@@ -310,11 +313,13 @@ final class ManageLegal extends SettingsPage
         foreach ($this->localeOptions() as $code => $label) {
             $editors[] = RichEditor::make('imprint_addendum.'.$code)
                 ->label($this->localeFlagLabel($code, $label))
+                ->plugins([PasteHtmlPlugin::make()])
                 ->toolbarButtons([
                     ['bold', 'italic', 'underline', 'strike', 'link'],
                     ['h2', 'h3'],
                     ['blockquote', 'bulletList', 'orderedList'],
                     ['undo', 'redo'],
+                    ['pasteHtml'],
                 ]);
         }
 

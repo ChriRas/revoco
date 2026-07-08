@@ -12,6 +12,23 @@ return [
 
     'settings' => [
         'navigation_group' => 'Settings',
+        'notification' => [
+            'navigation_label' => 'Notifications',
+            'title' => 'Notifications',
+            'effective' => 'Notifications currently go to: :email',
+            'effective_none' => 'No recipient is configured yet — no operator notifications are being sent.',
+            'email' => [
+                'label' => 'Recipient address',
+                'help' => 'Address new withdrawals are reported to. It may differ from the sending address (e.g. sent via no-reply@, received at shop@). If left empty, the MERCHANT_NOTIFICATION_EMAIL environment variable and otherwise the imprint e-mail is used.',
+            ],
+            'test' => [
+                'button' => 'Send test e-mail',
+                'sent' => 'Test e-mail sent to :email.',
+                'failed' => 'The test e-mail could not be sent.',
+                'none' => 'No recipient configured — set an address first, or set the imprint e-mail.',
+                'sample_subject' => 'Test notification (sample)',
+            ],
+        ],
         'localization' => [
             'navigation_label' => 'Localization',
             'title' => 'Localization',
@@ -106,6 +123,16 @@ return [
             'imprint_job_title' => ['label' => 'Job title and country of grant'],
             'imprint_professional_rules' => ['label' => 'Professional rules and how to access them'],
             'imprint_liquidation_note' => ['label' => 'Liquidation / insolvency statement (§ 5 Nr. 7 DDG)'],
+        ],
+    ],
+
+    'editor' => [
+        'paste_html' => [
+            'tool' => 'Paste HTML',
+            'heading' => 'Paste HTML',
+            'description' => 'Paste HTML here (e.g. a privacy policy delivered by a law firm). The content is sanitized and inserted into the editor as formatted text.',
+            'placeholder' => '<h2>Heading</h2><p>Your HTML …</p>',
+            'submit' => 'Insert',
         ],
     ],
 
