@@ -4,6 +4,46 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] — 2026-08-20
+
+Maintenance release. No functional changes and no configuration changes — this release
+only refreshes the dependency tree on top of 1.0.0, closes three high-severity npm
+advisories in the build toolchain, and republishes the Filament panel assets to match
+the upgraded package. The full quality gate (Pint, PHPStan level max, 220 Pest tests)
+is green, and `npm audit` reports zero vulnerabilities.
+
+### Security
+
+- **shell-quote 1.8.4 → 1.9.0** (via `concurrently` 9.2.4) — quadratic-complexity denial
+  of service in `parse()` (CWE-407).
+- **postcss 8.5.15 → 8.5.25** (via `vite`) — path traversal in source-map auto-loading
+  that could expose arbitrary `.map` files (GHSA-r28c-9q8g-f849).
+- **nanoid 3.3.16 → 3.3.18** — infinite loop in custom generators when `size` is zero
+  (GHSA-2v37-7h3g-55p8).
+
+All three are build-time dev dependencies. None affects the shipped production image,
+which contains no Node toolchain.
+
+### Changed
+
+- **Filament 5.6.8 → 5.7.6** across all packages, with the published panel assets under
+  `public/js/filament/` and `public/css/filament/` rebuilt to match.
+- **Laravel framework 13.19.0 → 13.26.1**, Livewire 4.3.3 → 4.4.1, Symfony components
+  8.1.0/8.1.1 → 8.1.2/8.1.4, Carbon 3.13.2, CommonMark 2.10.0.
+- **Guzzle 7.13.2 → 8.0.2** (with `promises` 3.0.1, `psr7` 3.0.0, `uri-template` 2.0.0) —
+  a transitive major upgrade pulled in by the framework. Revoco calls no Guzzle API
+  directly; the ntfy push client goes through Laravel's HTTP client facade.
+- Dev toolchain: Pint 1.29.3 → 1.30.5, PHPStan 2.2.2 → 2.2.8, Pest 4.7.5 → 4.7.8,
+  PHPUnit 12.5.30 → 12.5.33, Mockery 1.6.14.
+
+### Notes
+
+- Version constraints in `composer.json` and `package.json` are unchanged — this is a
+  lockfile refresh, so upgrading requires no operator action beyond pulling the new
+  image.
+- Operator deployment specifics (real domains, reverse proxy, secrets, brand assets)
+  live in a separate private infrastructure repository, never in this public repo.
+
 ## [1.0.0] — 2026-07-08
 
 First stable release. Revoco is a self-hosted, single-merchant electronic withdrawal
@@ -145,6 +185,7 @@ operator notification are sent. Neutral by default, configurable per `.env`.
 - Operator deployment specifics (real domains, reverse proxy, secrets, brand assets)
   live in a separate private infrastructure repository, never in this public repo.
 
+[1.0.1]: https://github.com/ChriRas/revoco/releases/tag/v1.0.1
 [1.0.0]: https://github.com/ChriRas/revoco/releases/tag/v1.0.0
 [0.7.0]: https://github.com/ChriRas/revoco/releases/tag/v0.7.0
 [0.6.0]: https://github.com/ChriRas/revoco/releases/tag/v0.6.0
