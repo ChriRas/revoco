@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.1] — 2026-08-20
+## [1.0.1] — 2026-08-21
 
 Maintenance release. No functional changes and no configuration changes — this release
 only refreshes the dependency tree on top of 1.0.0, closes three high-severity npm
