@@ -5,7 +5,8 @@ declare(strict_types=1);
 /*
 | E-mail copy. Consumer-facing acknowledgment in the consumer's language;
 | the merchant notification is operator-facing (app default locale).
-| The acknowledgment confirms RECEIPT only and carries NO advertising (§ 356a Abs. 4).
+| The acknowledgment confirms RECEIPT only (§ 356a Abs. 4) and deliberately carries
+| no advertising (a design choice, not a statutory requirement of § 356a).
 */
 
 return [

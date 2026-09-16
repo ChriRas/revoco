@@ -47,7 +47,7 @@ which contains no Node toolchain.
 ## [1.0.0] — 2026-07-08
 
 First stable release. Revoco is a self-hosted, single-merchant electronic withdrawal
-form for the German § 356a BGB statutory right of withdrawal (mandatory since
+form for the electronic withdrawal function under German § 356a BGB (mandatory since
 2026-06-19) — neutral by default, configurable per `.env`, open source (AGPL-3.0). The
 full feature set — form, submit, async acknowledgment/notification mail and ntfy push,
 Filament operator backend, DE/EN i18n, operator self-service configuration, and
@@ -65,9 +65,10 @@ release stabilizes it as 1.0.0 and adds the two deploy-time authoring skills.
   the operator's existing Impressum and privacy-policy pages and loads them into the
   DB/Filament legal settings, via the deterministic `revoco:import-legal` command
   (schema-validated, HTML-sanitized, refuses to clobber reviewed content without
-  `--overwrite`). Reviewed in the Filament panel before it goes live.
+  `--overwrite`). Imported content is live immediately and must be reviewed by the
+  operator in the Filament panel.
 - Both skills run **at deploy time only** — the AI never touches the running app, and all
-  output is operator-reviewed, never auto-published.
+  output is meant to be reviewed by the operator.
 
 ### Changed
 
@@ -118,9 +119,9 @@ validation in a real environment before 1.0.0.
 
 ## [0.6.0] — 2026-07-05
 
-Feature release ahead of the 1.0 stabilization. Building on the 0.5.0 legal-minimum
-baseline, an operator can now configure all legally required content in the panel — no
-code changes to go live — and the project is prepared for public, community use under
+Feature release ahead of the 1.0 stabilization. Building on the 0.5.0 core-flow
+baseline, an operator can now configure the imprint and privacy content in the panel — no
+code changes needed — and the project is prepared for public, community use under
 AGPL-3.0. This release is intended for staging validation in a real environment before
 the stable 1.0.0.
 
@@ -153,9 +154,9 @@ the stable 1.0.0.
 
 ## [0.5.0] — 2026-06-30
 
-First public release under **AGPL-3.0**. Implements the legal minimum of the § 356a BGB
+First public release under **AGPL-3.0**. Implements the core flow of the § 356a BGB
 electronic withdrawal function (mandatory from 2026-06-19): a consumer submits a
-withdrawal declaration, it is stored, and the statutory acknowledgment e-mail plus an
+withdrawal declaration, it is stored, and a receipt acknowledgment e-mail plus an
 operator notification are sent. Neutral by default, configurable per `.env`.
 
 ### Added
@@ -166,12 +167,12 @@ operator notification are sent. Neutral by default, configurable per `.env`.
 - **Submit & persistence** — `FormRequest` validation of the three mandatory fields only,
   SQLite storage (Europe/Berlin timestamp + consumer locale), success page, soft
   rate-limit + spam flag (signal only — the submit never blocks).
-- **E-mails & push** — consumer acknowledgment (§ 356a Abs. 4, advertising-free) and
+- **E-mails & push** — consumer receipt acknowledgment (§ 356a Abs. 4; deliberately ad-free) and
   merchant notification via SMTP; opt-in, data-minimal ntfy push; all delivered async
   through the database queue so the submit never fails on an external dependency.
 - **Operator backend** — Filament panel with a read-mostly `Withdrawal` resource
-  (list/search/detail + `handled` triage toggle) behind login; the stored record is
-  immutable.
+  (list/search/detail + `handled` triage toggle) behind login; the stored record cannot
+  be edited in the panel.
 - **Containerization & CI** — multi-stage Dockerfile (php-fpm + nginx, non-root prod),
   generic env-driven Compose, `task` orchestration; GitHub Actions run Pint + PHPStan
   (max) + Pest, and build/smoke-test/push the prod image to GHCR on a `v*` tag.

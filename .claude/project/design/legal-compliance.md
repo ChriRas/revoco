@@ -69,9 +69,10 @@ the receipt can be proven. The `spam` flag governs downstream e-mail gating
 
 On activating the confirmation function, the trader must **without undue delay**
 send a receipt acknowledgment on a **durable medium** (→ e-mail, Phase 4)
-containing at least: the content of the declaration + **date and time in the
-consumer's local time**. It confirms **receipt of the declaration only**, not the
-withdrawal itself. **No advertising** in the acknowledgment.
+containing at least: the content of the declaration + **date and time of its
+receipt**. It confirms **receipt of the declaration only**, not the withdrawal itself.
+**No advertising** in the acknowledgment — a deliberate design choice; § 356a itself
+contains no advertising ban (verified against the statute text 2026-09-16).
 
 - The Phase 3 **success page is the on-screen confirmation only**; the durable
   proof is the Phase 4 e-mail.
