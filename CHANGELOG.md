@@ -4,6 +4,42 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] — 2026-09-17
+
+Maintenance release. No functional changes and no configuration changes — this release
+reworks the public wording so it no longer implies a legal-compliance guarantee, and
+refreshes the dependency tree on top of 1.0.1. Upgrading requires no operator action
+beyond pulling the new image.
+
+### Changed
+
+- **Wording without implied compliance guarantees.** README, landing pages (DE/EN),
+  changelog and package description were checked against the statute text of § 356a BGB
+  and reworded: Revoco provides a technical implementation of the electronic withdrawal
+  function, but does not guarantee that using it meets any legal requirement. Claims the
+  statute does not support (ad-free acknowledgment *as required by law*, consumer's local
+  time, "immutable" proof of receipt, "the only change your shop needs") were removed or
+  corrected, and the README gains a *Legal notice* section.
+- **`legal-extraction` documentation corrected** — imported imprint/privacy content is
+  live immediately (there is no draft state) and must be reviewed in the panel before
+  linking to the form.
+- README: the `APP_TIMEZONE` default is documented correctly as `Europe/Berlin`.
+- `SECURITY.md`: supported versions updated to 1.0.x.
+- **Filament 5.7.6 → 5.8.2** across all packages, with the published panel assets under
+  `public/js/filament/` and `public/css/filament/` rebuilt to match.
+- **Laravel framework 13.26.1 → 13.32.0**, Livewire 4.4.1 → 4.4.5, Symfony components
+  → 8.1.5–8.1.7, Guzzle 8.0.2 → 8.2.0, Monolog 3.12.0, Carbon 3.14.0,
+  tiptap-php 2.2.0, phpdotenv 5.7.0.
+- Dev toolchain: Pint 1.30.5 → 1.32.1, PHPStan 2.2.8 → 2.2.14, Larastan 3.10.0 → 3.12.0,
+  Mockery 1.6.15, Laravel Pao 1.1.5.
+
+### Notes
+
+- Quality gate green: Pint, PHPStan level max, 220 Pest tests (714 assertions);
+  `composer audit` and `npm audit` report no vulnerabilities.
+- Version constraints in `composer.json` and `package.json` are unchanged — this is a
+  lockfile refresh.
+
 ## [1.0.1] — 2026-08-21
 
 Maintenance release. No functional changes and no configuration changes — this release
@@ -186,6 +222,7 @@ operator notification are sent. Neutral by default, configurable per `.env`.
 - Operator deployment specifics (real domains, reverse proxy, secrets, brand assets)
   live in a separate private infrastructure repository, never in this public repo.
 
+[1.0.2]: https://github.com/ChriRas/revoco/releases/tag/v1.0.2
 [1.0.1]: https://github.com/ChriRas/revoco/releases/tag/v1.0.1
 [1.0.0]: https://github.com/ChriRas/revoco/releases/tag/v1.0.0
 [0.7.0]: https://github.com/ChriRas/revoco/releases/tag/v0.7.0
