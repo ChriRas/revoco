@@ -4,9 +4,19 @@
 
 <p align="center">
   A self-hosted, single-merchant electronic withdrawal form implementing the<br>
-  § 356a BGB statutory right of withdrawal (mandatory from 2026-06-19).<br>
+  electronic withdrawal function under § 356a BGB (mandatory from 2026-06-19).<br>
   Neutral by default, configurable per <code>.env</code>, open-source (AGPL-3.0).
 </p>
+
+---
+
+## Legal notice
+
+Revoco is software, not legal advice. It provides a technical implementation of the
+electronic withdrawal function, but it does **not** guarantee that using it meets any
+legal requirement. Whether your shop complies depends on how you integrate, configure
+and operate it (button placement, withdrawal policy, imprint, privacy policy, mail
+delivery, …). The operator is responsible for that — clarify it with your legal counsel.
 
 ---
 
@@ -123,7 +133,7 @@ so changing them needs no redeploy. Key environment variables:
 |---|---|---|---|
 | `APP_KEY` | Yes | — | Generate with `key:generate --show`. Fail-fast if missing. |
 | `APP_URL` | Yes | `http://localhost` | Full public URL incl. scheme. |
-| `APP_TIMEZONE` | No | `UTC` | Consumer-local time for withdrawal timestamps. |
+| `APP_TIMEZONE` | No | `Europe/Berlin` | Time zone for withdrawal timestamps (receipt date and time). |
 | `APP_THEME` | No | `neutral` | Visual theme token set (`data-theme`). |
 | `DB_DATABASE` | No | `/var/www/html/storage/database/database.sqlite` | SQLite path inside container. |
 | `QUEUE_CONNECTION` | No | `database` | Use `database` for the bundled SQLite queue. |
@@ -195,9 +205,10 @@ task artisan -- revoco:import-legal --locale=de --input=./legal-payload.json
 The command validates the payload against the settings schema (unknown key or malformed
 e-mail → nothing written), sanitises scraped HTML, scopes per-locale fields to `--locale`,
 and **refuses to overwrite already-populated fields** unless `--overwrite` is given — your
-reviewed legal text is never silently replaced. The import is **operator-reviewed**: open
-Filament → Legal, correct every field, and check the rendered pages before relying on them.
-Revoco makes no legal-correctness guarantee.
+reviewed legal text is never silently replaced. Imported content is **live immediately**
+(there is no draft state): open Filament → Legal, correct every field, and check the
+rendered pages before you link to the form. Scraped or AI-extracted text can be incomplete
+or wrong, and Revoco makes no legal-correctness guarantee.
 
 ---
 

@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "chriras/revoco",
     "type": "project",
-    "description": "Self-hosted, single-merchant electronic withdrawal form for the German § 356a BGB statutory right of withdrawal — neutral by default, configurable per .env.",
+    "description": "Self-hosted, single-merchant electronic withdrawal form implementing the electronic withdrawal function under German § 356a BGB — neutral by default, configurable per .env.",
     "version": "1.0.1",
     "keywords": ["withdrawal", "widerruf", "bgb", "356a", "gdpr", "self-hosted", "laravel"],
     "license": "AGPL-3.0-or-later",

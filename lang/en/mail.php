@@ -7,8 +7,9 @@ declare(strict_types=1);
 | The acknowledgment is rendered in the consumer's chosen locale; the merchant
 | notification is operator-facing and pinned to the app default locale, so its
 | `notification` subtree lives only in lang/de/mail.php and is deliberately
-| absent here. The acknowledgment confirms RECEIPT only and carries NO
-| advertising (§ 356a Abs. 4).
+| absent here. The acknowledgment confirms RECEIPT only (§ 356a Abs. 4) and
+| deliberately carries no advertising (a design choice, not a statutory
+| requirement of § 356a).
 */
 
 return [
