@@ -48,6 +48,18 @@ return [
         'spam_status' => 'Spam-Status',
         'spam_yes' => 'Verdacht',
         'spam_no' => 'unauffällig',
+        'mark_spam_link' => 'Als Spam markieren',
+        'mark_spam_hint' => 'Der Link öffnet eine Bestätigungsseite und ist :days Tage gültig. Erst die Bestätigung ändert etwas.',
+    ],
+
+    'digest' => [
+        'subject' => '{1} Spam-Zusammenfassung: 1 Eingang in den letzten 24 Stunden|[2,*] Spam-Zusammenfassung: :count Eingänge in den letzten 24 Stunden',
+        'heading' => 'Spam-Zusammenfassung',
+        'intro' => '{1} In den letzten 24 Stunden ist 1 Widerruf als Spam eingestuft worden. Er wurde gespeichert, aber weder bestätigt noch einzeln gemeldet.|[2,*] In den letzten 24 Stunden sind :count Widerrufe als Spam eingestuft worden. Sie wurden gespeichert, aber weder bestätigt noch einzeln gemeldet.',
+        'reason' => 'Grund',
+        'not_spam_link' => 'Kein Spam',
+        'more' => '… und :count weitere',
+        'panel_link' => 'Alle im Backend ansehen',
     ],
 
 ];

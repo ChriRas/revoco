@@ -24,6 +24,13 @@
             <tr><td style="padding:6px 0;color:#5d6776;">{{ __('mail.field.datetime') }}</td><td style="padding:6px 0;">@include('mail.withdrawal.received-at', ['at' => $withdrawal->created_at])</td></tr>
             <tr><td style="padding:6px 0;color:#5d6776;">{{ __('mail.notification.spam_status') }}</td><td style="padding:6px 0;">{{ $withdrawal->spam_level !== SpamLevel::Green ? __('mail.notification.spam_yes') : __('mail.notification.spam_no') }}</td></tr>
         </table>
+
+        @if ($markSpamUrl !== null)
+            <p style="margin:22px 0 0;">
+                <a href="{{ $markSpamUrl }}" style="display:inline-block;padding:10px 18px;background:#1e2630;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:600;">{{ __('mail.notification.mark_spam_link') }}</a>
+            </p>
+            <p style="margin:10px 0 0;font-size:.85rem;color:#5d6776;">{{ __('mail.notification.mark_spam_hint', ['days' => \App\Spam\SpamLinks::TTL_DAYS]) }}</p>
+        @endif
     </div>
 </body>
 </html>
