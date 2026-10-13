@@ -21,6 +21,10 @@ return [
                 'label' => 'Recipient address',
                 'help' => 'Address new withdrawals are reported to. It may differ from the sending address (e.g. sent via no-reply@, received at shop@). If left empty, the MERCHANT_NOTIFICATION_EMAIL environment variable and otherwise the imprint e-mail is used.',
             ],
+            'spam_digest_time' => [
+                'label' => 'Spam digest time',
+                'help' => 'Every day at this time (HH:MM, application time zone) a summary of the withdrawals classified as spam in the last 24 hours goes to the recipient address. Nothing is sent when there are none.',
+            ],
             'test' => [
                 'button' => 'Send test e-mail',
                 'sent' => 'Test e-mail sent to :email.',
@@ -168,7 +172,7 @@ return [
         'mark_spam_description' => 'The withdrawal moves to the Spam tab and is deleted for good in :days days. You can undo this until then with "Not spam".',
         'not_spam' => 'Not spam',
         'not_spam_heading' => 'Mark as not spam?',
-        'not_spam_description' => 'The withdrawal moves to the Inbox tab and is never deleted automatically.',
+        'not_spam_description' => 'The withdrawal moves to the Inbox tab and is never deleted automatically. The acknowledgment goes to the submitter if it has not been sent yet.',
     ],
 
     'tab' => [

@@ -68,6 +68,12 @@ final class ManageNotifications extends SettingsPage
                         ->helperText(__('panel.settings.notification.email.help'))
                         ->email()
                         ->maxLength(512),
+                    TextInput::make('spam_digest_time')
+                        ->label(__('panel.settings.notification.spam_digest_time.label'))
+                        ->helperText(__('panel.settings.notification.spam_digest_time.help'))
+                        ->placeholder('07:00')
+                        ->required()
+                        ->regex('/^([01]\d|2[0-3]):[0-5]\d$/'),
                 ]),
         ]);
     }

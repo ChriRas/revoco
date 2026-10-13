@@ -21,6 +21,10 @@ return [
                 'label' => 'Empfängeradresse',
                 'help' => 'Adresse, an die neue Widerrufe gemeldet werden. Kann sich von der Absenderadresse unterscheiden (z. B. Versand über no-reply@, Eingang an shop@). Bleibt das Feld leer, wird die Umgebungsvariable MERCHANT_NOTIFICATION_EMAIL und andernfalls die Impressum-E-Mail verwendet.',
             ],
+            'spam_digest_time' => [
+                'label' => 'Uhrzeit der Spam-Zusammenfassung',
+                'help' => 'Täglich um diese Uhrzeit (HH:MM, Zeitzone der Anwendung) geht eine Zusammenfassung der als Spam eingestuften Eingänge der letzten 24 Stunden an die Empfängeradresse. Ohne solche Eingänge wird nichts versendet.',
+            ],
             'test' => [
                 'button' => 'Test-Mail senden',
                 'sent' => 'Test-Mail an :email gesendet.',
@@ -168,7 +172,7 @@ return [
         'mark_spam_description' => 'Der Widerruf wechselt in den Reiter „Spam“ und wird in :days Tagen endgültig gelöscht. Bis dahin können Sie das mit „Kein Spam“ rückgängig machen.',
         'not_spam' => 'Kein Spam',
         'not_spam_heading' => 'Als „Kein Spam“ markieren?',
-        'not_spam_description' => 'Der Widerruf wechselt in den Reiter „Posteingang“ und wird nie automatisch gelöscht.',
+        'not_spam_description' => 'Der Widerruf wechselt in den Reiter „Posteingang“ und wird nie automatisch gelöscht. Die Eingangsbestätigung geht an den Einreicher, falls sie noch nicht verschickt wurde.',
     ],
 
     'tab' => [
