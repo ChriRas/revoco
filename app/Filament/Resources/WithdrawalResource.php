@@ -17,6 +17,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\PageRegistration;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -70,6 +71,11 @@ final class WithdrawalResource extends Resource
                 TextColumn::make('spam_level')
                     ->label(__('panel.column.spam_level'))
                     ->badge(),
+
+                TextColumn::make('country')
+                    ->label(__('panel.column.country'))
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 IconColumn::make('handled_at')
                     ->label(__('panel.column.handled'))
@@ -170,6 +176,14 @@ final class WithdrawalResource extends Resource
                             ->label(__('panel.infolist.field.spam_verdict_at'))
                             ->dateTime('d.m.Y H:i', 'Europe/Berlin')
                             ->placeholder('—'),
+                        TextEntry::make('country')
+                            ->label(__('panel.infolist.field.country'))
+                            ->placeholder('—'),
+                        TextEntry::make('asn')
+                            ->label(__('panel.infolist.field.network'))
+                            ->formatStateUsing(fn (?int $state, Withdrawal $record): ?string => $state === null ? null : trim('AS'.$state.' '.$record->asn_org))
+                            ->placeholder('—'),
+                        View::make('panels.db-ip-attribution')->columnSpanFull(),
                     ]),
 
                 Section::make(__('panel.infolist.section.status'))

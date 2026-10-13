@@ -46,6 +46,33 @@ return [
                 'not_available' => 'The default language must be one of the offered languages.',
             ],
         ],
+        'network' => [
+            'navigation_label' => 'Network signals',
+            'title' => 'Network signals',
+            'description' => 'The country and the network of a submission are derived from its IP address on this server. They only add to the spam score and never block a submission. The IP address itself is not stored.',
+            'shipping_countries' => [
+                'label' => 'Shipping countries',
+                'help' => 'Signal only — never blocks. A submission from another country adds a small spam signal. Empty = signal off.',
+            ],
+            'status' => [
+                'heading' => 'Data sources',
+                'help' => 'Refreshed daily. Without data the network signals stay silent.',
+                'last_refresh' => 'Last refresh',
+                'entries' => 'Entries',
+                'never' => 'never',
+                'source' => [
+                    'geo' => 'Country and network database',
+                    'drop' => 'Listed IP networks',
+                    'asn-drop' => 'Listed network operators',
+                    'tor' => 'Tor exit nodes',
+                ],
+            ],
+            'refresh' => [
+                'button' => 'Refresh now',
+                'queued' => 'Refresh queued — the queue worker fetches the data.',
+            ],
+            'attribution' => 'IP Geolocation by DB-IP',
+        ],
         'scope' => [
             'navigation_label' => 'Withdrawal scope',
             'title' => 'Withdrawal scope',
@@ -152,6 +179,7 @@ return [
         'order_number' => 'Order #',
         'spam_level' => 'Spam level',
         'handled' => 'Handled',
+        'country' => 'Country',
     ],
 
     'filter' => [
@@ -200,6 +228,11 @@ return [
         'content_gibberish' => 'Name or subject looks random',
         'name_without_space' => 'Name without a space',
         'field_lengths_equal' => 'Several fields of identical length',
+        'country_outside_shipping' => 'Country outside the shipping countries',
+        'drop_network' => 'IP address in a listed network',
+        'asn_drop' => 'Listed network operator',
+        'tor_exit' => 'Tor exit node',
+        'learned_network' => 'Network with repeatedly confirmed spam',
     ],
 
     'setup' => [
@@ -226,6 +259,8 @@ return [
             'spam_reason' => 'Spam reason',
             'spam_verdict' => 'Your verdict',
             'spam_verdict_at' => 'Verdict at',
+            'country' => 'Country',
+            'network' => 'Network',
             'handled_at' => 'Handled at',
             'received_at' => 'Received at',
             'last_updated' => 'Last updated',

@@ -46,6 +46,33 @@ return [
                 'not_available' => 'Die Standardsprache muss eine der angebotenen Sprachen sein.',
             ],
         ],
+        'network' => [
+            'navigation_label' => 'Netzwerk-Signale',
+            'title' => 'Netzwerk-Signale',
+            'description' => 'Land und Netz eines Eingangs werden auf diesem Server aus der IP-Adresse abgeleitet. Sie erhöhen nur den Spam-Wert und blockieren nie einen Eingang. Die IP-Adresse selbst wird nicht gespeichert.',
+            'shipping_countries' => [
+                'label' => 'Versandländer',
+                'help' => 'Nur ein Signal — blockiert nie. Ein Eingang aus einem anderen Land erhöht den Spam-Wert geringfügig. Leer = Signal aus.',
+            ],
+            'status' => [
+                'heading' => 'Datenquellen',
+                'help' => 'Wird täglich aktualisiert. Ohne Daten bleiben die Netzwerk-Signale stumm.',
+                'last_refresh' => 'Letzte Aktualisierung',
+                'entries' => 'Einträge',
+                'never' => 'nie',
+                'source' => [
+                    'geo' => 'Länder- und Netz-Datenbank',
+                    'drop' => 'Gelistete IP-Netze',
+                    'asn-drop' => 'Gelistete Netzbetreiber',
+                    'tor' => 'Tor-Exit-Knoten',
+                ],
+            ],
+            'refresh' => [
+                'button' => 'Jetzt aktualisieren',
+                'queued' => 'Aktualisierung eingeplant — der Queue-Worker lädt die Daten.',
+            ],
+            'attribution' => 'IP Geolocation by DB-IP',
+        ],
         'scope' => [
             'navigation_label' => 'Widerrufsumfang',
             'title' => 'Widerrufsumfang',
@@ -152,6 +179,7 @@ return [
         'order_number' => 'Bestellnr.',
         'spam_level' => 'Spam-Stufe',
         'handled' => 'Bearbeitet',
+        'country' => 'Land',
     ],
 
     'filter' => [
@@ -200,6 +228,11 @@ return [
         'content_gibberish' => 'Name oder Gegenstand wirkt zufällig',
         'name_without_space' => 'Name ohne Leerzeichen',
         'field_lengths_equal' => 'Mehrere Felder mit identischer Länge',
+        'country_outside_shipping' => 'Land außerhalb der Versandländer',
+        'drop_network' => 'IP-Adresse in einem gelisteten Netz',
+        'asn_drop' => 'Gelisteter Netzbetreiber',
+        'tor_exit' => 'Tor-Exit-Knoten',
+        'learned_network' => 'Netz mit wiederholt bestätigtem Spam',
     ],
 
     'setup' => [
@@ -226,6 +259,8 @@ return [
             'spam_reason' => 'Spam-Grund',
             'spam_verdict' => 'Ihr Urteil',
             'spam_verdict_at' => 'Urteil am',
+            'country' => 'Land',
+            'network' => 'Netz',
             'handled_at' => 'Bearbeitet am',
             'received_at' => 'Eingegangen am',
             'last_updated' => 'Zuletzt aktualisiert',
