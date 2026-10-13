@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 
 /**
  * Fired once when the operator marks a withdrawal as not spam.
- * A hook for later listeners; nothing listens yet.
+ * Re-sends the withheld acknowledgment (SendAcknowledgmentOnNotSpam); later slices attach more.
  */
 final class WithdrawalMarkedNotSpam
 {
