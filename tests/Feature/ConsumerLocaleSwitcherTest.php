@@ -91,7 +91,7 @@ it('renders the acknowledgment e-mail in English for an en withdrawal', function
         'order_number' => 'A-12345',
         'subject' => 'Inflatable boat model X',
         'locale' => 'en',
-        'spam' => false,
+        'spam_level' => 'green',
         'spam_reason' => null,
     ]);
 

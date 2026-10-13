@@ -32,7 +32,7 @@ it('stores a valid withdrawal and redirects to the success page', function () {
         'order_number' => 'A-12345',
         'subject' => 'Schlauchboot Modell X',
         'locale' => 'de',
-        'spam' => false,
+        'spam_level' => 'green',
         'spam_reason' => null,
     ]);
 });
@@ -72,7 +72,7 @@ it('stores a honeypot submission flagged as spam, never rejecting it', function 
 
     $this->assertDatabaseHas('withdrawals', [
         'email' => 'erika@example.com',
-        'spam' => true,
+        'spam_level' => 'red',
         'spam_reason' => 'honeypot',
     ]);
 });
@@ -90,7 +90,7 @@ it('flags throttled submissions as spam but still stores them (never 429)', func
 
     $this->assertDatabaseHas('withdrawals', [
         'email' => 'over@example.com',
-        'spam' => true,
+        'spam_level' => 'red',
         'spam_reason' => 'throttle',
     ]);
     $this->assertDatabaseCount('withdrawals', 6);

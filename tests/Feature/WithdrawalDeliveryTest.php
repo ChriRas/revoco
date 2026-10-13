@@ -40,7 +40,7 @@ function makeWithdrawal(array $overrides = []): Withdrawal
         'order_number' => 'A-12345',
         'subject' => 'Schlauchboot Modell X',
         'locale' => 'de',
-        'spam' => false,
+        'spam_level' => 'green',
         'spam_reason' => null,
     ], $overrides));
 }
@@ -80,7 +80,7 @@ it('suppresses the consumer acknowledgment for a honeypot-flagged submit but sti
         ->assertRedirect(route('withdrawal.success'));
 
     // Stored as proof regardless — only the mail to the (possibly abused) address is withheld.
-    $this->assertDatabaseHas('withdrawals', ['email' => 'erika@example.com', 'spam' => true]);
+    $this->assertDatabaseHas('withdrawals', ['email' => 'erika@example.com', 'spam_level' => 'red']);
     Mail::assertNotQueued(WithdrawalAcknowledgment::class);
     Mail::assertQueued(WithdrawalNotification::class, fn ($m) => $m->hasTo('merchant@example.com'));
     Mail::assertQueuedCount(1);
@@ -166,10 +166,10 @@ it('renders the de-pinned timezone label in the operator notification', function
 });
 
 it('reflects the spam status in the merchant notification', function () {
-    $clean = (new WithdrawalNotification(makeWithdrawal(['spam' => false])))->locale('de');
+    $clean = (new WithdrawalNotification(makeWithdrawal(['spam_level' => 'green'])))->locale('de');
     $clean->assertSeeInHtml('unauffällig');
 
-    $flagged = (new WithdrawalNotification(makeWithdrawal(['spam' => true, 'spam_reason' => 'honeypot'])))->locale('de');
+    $flagged = (new WithdrawalNotification(makeWithdrawal(['spam_level' => 'red', 'spam_reason' => 'honeypot'])))->locale('de');
     $flagged->assertSeeInHtml('Spam-Verdacht');
     $flagged->assertSeeInHtml('honeypot');
 });

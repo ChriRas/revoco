@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Listeners;
 
+use App\Enums\SpamLevel;
 use App\Events\WithdrawalSubmitted;
 use App\Jobs\SendNtfyPush;
 use App\Mail\WithdrawalAcknowledgment;
@@ -32,11 +33,11 @@ final class SendWithdrawalNotifications implements ShouldQueue
 
         /**
          * Consumer acknowledgment (§ 356a Abs. 4), rendered in the consumer's locale —
-         * withheld for spam-flagged rows: bots submit real third parties' addresses, so
+         * withheld for red rows: bots submit real third parties' addresses, so
          * the acknowledgment would turn the operator into a spam sender. The row itself
          * is stored either way.
          */
-        if (! $withdrawal->spam) {
+        if ($withdrawal->spam_level !== SpamLevel::Red) {
             rescue(fn () => Mail::to($withdrawal->email)
                 ->send((new WithdrawalAcknowledgment($withdrawal))->locale($withdrawal->locale)));
         }
@@ -54,7 +55,7 @@ final class SendWithdrawalNotifications implements ShouldQueue
 
         // ntfy push — opt-in, data-minimal (no PII).
         if (config('revoco.ntfy.enabled') === true) {
-            rescue(fn () => SendNtfyPush::dispatch($withdrawal->spam));
+            rescue(fn () => SendNtfyPush::dispatch($withdrawal->spam_level !== SpamLevel::Green));
         }
     }
 }

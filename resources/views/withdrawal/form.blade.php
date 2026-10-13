@@ -106,7 +106,7 @@
                 </div>
 
                 {{-- Honeypot: anti-spam decoy, hidden from users + assistive tech.
-                     Filled → stored with spam=true; never blocks (handled in the controller). --}}
+                     Filled → stored with spam_level=red; never blocks (handled in the controller). --}}
                 <div class="wf-hp" aria-hidden="true">
                     <label for="wf-website">{{ __('wf.honeypot.label') }}</label>
                     <input type="text" id="wf-website" name="website" tabindex="-1" autocomplete="off">

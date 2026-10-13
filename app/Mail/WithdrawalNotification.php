@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
+use App\Enums\SpamLevel;
 use App\Models\Withdrawal;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,7 +35,7 @@ final class WithdrawalNotification extends Mailable implements ShouldQueue
 
         // Spam verdict up front, not appended — the operator must see it at a
         // glance in an inbox list without opening or widening the subject.
-        if ($this->withdrawal->spam) {
+        if ($this->withdrawal->spam_level !== SpamLevel::Green) {
             $subject = __('mail.notification.spam_prefix').' '.$subject;
         }
 

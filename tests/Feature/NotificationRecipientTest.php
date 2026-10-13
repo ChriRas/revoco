@@ -116,12 +116,12 @@ it('routes the notification to the imprint e-mail when it is the only address', 
 
 it('leads the notification subject with the spam verdict when flagged', function () {
     $clean = (new WithdrawalNotification(
-        Withdrawal::factory()->create(['spam' => false])
+        Withdrawal::factory()->create(['spam_level' => 'green'])
     ))->locale('de');
     $clean->assertHasSubject('Neuer Widerruf eingegangen');
 
     $flagged = (new WithdrawalNotification(
-        Withdrawal::factory()->create(['spam' => true, 'spam_reason' => 'honeypot'])
+        Withdrawal::factory()->create(['spam_level' => 'red', 'spam_reason' => 'honeypot'])
     ))->locale('de');
     $flagged->assertHasSubject('⚠ SPAM-VERDACHT: Neuer Widerruf eingegangen');
 });

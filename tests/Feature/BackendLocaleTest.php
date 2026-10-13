@@ -32,7 +32,7 @@ it('renders English panel labels via middleware when BACKEND_LOCALE is en', func
         ->get('/admin/withdrawals')
         ->assertOk()
         ->assertSee('Received')          // panel.column.received (en)
-        ->assertSee('No Spam')           // panel.column.no_spam (en)
+        ->assertSee('Spam level')        // panel.column.spam_level (en)
         ->assertDontSee('Widerruf');     // must not leak German resource label
 });
 

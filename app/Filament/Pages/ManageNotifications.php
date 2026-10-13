@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Pages;
 
+use App\Enums\SpamLevel;
 use App\Mail\WithdrawalNotification;
 use App\Models\Withdrawal;
 use App\Settings\NotificationSettings;
@@ -110,7 +111,7 @@ final class ManageNotifications extends SettingsPage
             'order_number' => 'TEST-0001',
             'subject' => __('panel.settings.notification.test.sample_subject'),
             'locale' => $locale,
-            'spam' => false,
+            'spam_level' => SpamLevel::Green,
             'spam_reason' => null,
         ]);
         $sample->created_at = now();
