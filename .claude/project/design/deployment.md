@@ -65,6 +65,16 @@ Locally: `task smoke` builds the prod image, boots the generic stack with a thro
 - Mail: direct SMTP credentials (operator's mail server); sender address.
 - Push: `NTFY_ENABLED`, `NTFY_SERVER`, `NTFY_TOPIC`, optional token.
 - Queue: `QUEUE_CONNECTION=database` (default; uses SQLite on `app_storage` volume).
+- Reverse proxy: `TRUSTED_PROXIES` (comma list of proxy IPs/CIDRs, or `*`; empty = trust nothing). Without it
+  `$request->ip()` is the proxy's address behind a reverse proxy, so the throttle signal buckets every consumer
+  together and the network signals (country / ASN / listed networks) resolve a private IP and stay silent. The
+  reverse proxy must send `X-Forwarded-For`. Set it in the operator's env (private infra repo); changing it needs a
+  recreate of the `app` service. Only `X-Forwarded-For` and `X-Forwarded-Proto` are honoured. `*` trusts whatever
+  hop calls nginx, so use it only when nginx is reachable solely through the reverse proxy; otherwise list the proxy
+  IPs/CIDRs. (slice-028)
+- Network data (country / ASN / listed networks): fetched into `storage/app/private/network/` by the daily
+  `revoco:network-data:refresh` (scheduler container); fill it once after the first deploy with
+  `php artisan revoco:network-data:refresh`. Without data the signals stay silent. (slice-028)
 - SQLite path inside container: `/var/www/html/storage/database/database.sqlite`.
 
 ## Out of scope here (→ private infra repo)

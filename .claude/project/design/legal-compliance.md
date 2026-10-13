@@ -91,7 +91,9 @@ contains no advertising ban (verified against the statute text 2026-09-16).
 
 The operator is the **controller**. Persist the minimum: the four form fields +
 `locale` + a `spam_level` (+ reason, + the operator's optional verdict). **Do not persist the IP** —
-rate-limit transiently via cache.
+rate-limit transiently via cache. The network signals (slice-028) resolve the IP locally to a country and
+an ASN and persist those three derived values (`country`, `asn`, `asn_org`; network-level data, not the
+address). The operator's privacy policy must say that country and network derived from the IP are stored.
 
 ### Retention & erasure (OPEN — deferred)
 

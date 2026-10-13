@@ -104,10 +104,11 @@
 
 ## Open questions (for epic/slice planning)
 
-- Blocklist sources: operator-curated list in the panel next to the feeds — which feeds exactly
-  (Spamhaus DROP/ASN-DROP, Tor exit list, a datacenter-range list)? Verify current URLs/terms.
+- Blocklist sources: ~~which feeds exactly~~ settled by slice-028 (DROP v4/v6, ASN-DROP, Tor exit list). Still
+  open: an operator-curated list in the panel and a datacenter-range list (not in slice-028).
 - ~~Exact score weights and the yellow/red thresholds.~~ Settled by slice-027 (see "Score engine" below).
-- DB-IP Lite attribution (CC BY 4.0): where the link back is shown in the panel.
+- ~~DB-IP Lite attribution: where the link back is shown~~ decided at the slice-028 plan gate: panel pages
+  (withdrawal view + network settings) and the README, not the public form or success page.
 - Edge rate-limit at the reverse proxy — operator infra, out of this repo.
 
 ## Score engine (slice-027)
@@ -147,3 +148,38 @@ the submit is always stored and always redirected (§ 356a).
   green. `$server` overrides apply to that request only (e.g. `REMOTE_ADDR`). The clock stays moved:
   six submits move it 24 s, inside the 60 s throttle window. Slice-028/029 assert their own signals on
   top of this.
+
+## Network and geo signals (slice-028)
+
+Five signals read the client IP **transiently** and persist only the derived `country`, `asn`, `asn_org`
+(never the IP). They never block, and their weights sum to 69, below red (70): `drop_network` 30,
+`asn_drop` 20, `learned_network` 10, `tor_exit` 5, `country_outside_shipping` 4. A test guards the invariant.
+
+- **Lookup.** `App\Network\NetworkLookup` (bound to `MmdbNetworkLookup`) resolves an IP against the DB-IP Lite
+  country + ASN MMDBs (`maxmind-db/reader`; DB-IP ASN is `compat=GeoLite2-ASN`). Private and reserved IPs, a
+  missing or corrupt database and unknown addresses resolve to `NetworkInfo::unknown()`; the lookup never throws.
+  `SubmissionContext::$network` carries the result to the signals.
+- **Data files.** `revoco:network-data:refresh [--only=geo,drop,asn-drop,tor]` (daily 04:15, `withoutOverlapping`)
+  writes `dbip-country-lite.mmdb`, `dbip-asn-lite.mmdb`, `drop.json`, `asn-drop.json`, `tor-exits.txt` and
+  `meta.json` into `revoco.network.path` (`storage/app/private/network`), each through temp file + atomic rename.
+  DB-IP: current month, previous month on 404, skipped when the stored month is current. A failing source keeps its
+  file, is logged, and makes the exit code non-zero. `App\Network\NetworkData` reads the files lazily, once per
+  request; a missing or unparsable file reads as empty.
+- **Feed formats (verified live 2026-10-13).** Spamhaus `drop_v4.json`, `drop_v6.json` and `asndrop.json` are
+  NDJSON (`{"cidr":…}` / `{"asn":…}` lines plus a trailing `{"type":"metadata","timestamp":…}`); the Tor
+  bulk exit list is plain IPv4, one per line. DB-IP URL: `download.db-ip.com/free/dbip-{country,asn}-lite-YYYY-MM.mmdb.gz`.
+- **Signals never throw.** Every network signal extends `AbstractNetworkSignal`, whose `fires()` catches any
+  `Throwable`, reports it and answers false (the scorer itself does not isolate signals). The country signal reads
+  `NetworkSignalSettings` inside `fires()`, so a settings failure cannot break the container.
+- **Learning.** `spam_network_hits(withdrawal_id PK, asn, confirmed_at)`: `RecordNetworkHitOnSpam` upserts on
+  `WithdrawalConfirmedAsSpam`, `ForgetNetworkHitOnNotSpam` deletes on `WithdrawalMarkedNotSpam`. `learned_network`
+  fires at 3 or more hits within 90 days (`revoco.network.learning`); older hits are pruned daily (`model:prune`). The
+  7-day purge of confirmed rows leaves hits alone (no foreign key).
+- **Trusted proxies.** `TRUSTED_PROXIES` (comma list or `*`, default empty) feeds `trustProxies(at: …)` in
+  `bootstrap/app.php`; without it `$request->ip()` is the reverse proxy and the signals see a private IP.
+- **Licence and labels.** The panel labels are neutral and name neither the source nor a verdict. The README names
+  Spamhaus factually in the technical section only; the `docs/` landing page does not. The DB-IP link ("IP
+  Geolocation by DB-IP", https://db-ip.com) is on the panel pages and in the README.
+- **Test contract.** MaxMind's public test MMDBs under `tests/fixtures/network/` stand in for DB-IP;
+  `useNetworkDirectory()`, `writeNetworkFeeds()` and `shippingCountries()` in `tests/Pest.php` set a per-test
+  data directory, feed files and the shipping list. `NETWORK_FIXTURE_IP_SE` resolves to SE / AS29518.
