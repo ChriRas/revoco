@@ -13,8 +13,8 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Consumer receipt acknowledgment (§ 356a Abs. 4) — always sent, even for
- * spam-flagged rows. Confirms RECEIPT of the declaration only; contains the
+ * Consumer receipt acknowledgment (§ 356a Abs. 4) — sent for every row not
+ * flagged as spam. Confirms RECEIPT of the declaration only; contains the
  * declaration content + date/time in the consumer's local time (Europe/Berlin)
  * and NO advertising. Rendered in the consumer's locale (set by the listener).
  */

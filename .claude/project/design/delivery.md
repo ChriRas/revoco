@@ -17,10 +17,13 @@ immediately. All delivery therefore runs **off the request**, in queued jobs on 
 `StoreWithdrawal` action (Phase 3) persists the row, then fires the domain event
 **`WithdrawalSubmitted`**. Queued listeners fan out to the channels:
 
-1. **Consumer acknowledgment** (e-mail, § 356a Abs. 4) — **always sent**, including
-   for `spam`-flagged rows (legal-maximum posture; the operator accepts the small
-   backscatter risk). Content: receipt confirmation, the declaration content,
-   date + time in consumer time (Europe/Berlin), **no advertising**.
+1. **Consumer acknowledgment** (e-mail, § 356a Abs. 4) — sent for every row **not**
+   flagged as `spam`. *Revised 2026-10-13* (was: always, incl. spam): a production bot
+   campaign submitted real third parties' addresses, turning the acknowledgment into
+   spam sent from the operator's domain. A false positive (real consumer flagged) still
+   has the stored record; the operator sees it in the backend. Content: receipt
+   confirmation, the declaration content, date + time in consumer time
+   (Europe/Berlin), **no advertising**. See [`spam-handling.md`](./spam-handling.md).
 2. **Merchant notification** (e-mail) — **always sent** to the configured operator
    address; carries the full case data **and the `spam` status** for triage.
 3. **ntfy push** — sent **only when `NTFY_ENABLED`**; **data-minimal: no PII**
@@ -28,8 +31,8 @@ immediately. All delivery therefore runs **off the request**, in queued jobs on 
    spam-suspected marker, + a link to the backend). Verify the ntfy publish API
    live at build time.
 
-The `spam` flag is a **triage signal only** — it changes what the operator sees,
-never whether the consumer acknowledgment is sent.
+The `spam` flag never gates **acceptance** (the row is always stored); downstream it
+changes what the operator sees and withholds the consumer acknowledgment.
 
 ## Isolation & failure
 

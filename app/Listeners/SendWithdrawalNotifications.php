@@ -30,10 +30,16 @@ final class SendWithdrawalNotifications implements ShouldQueue
     {
         $withdrawal = $event->withdrawal;
 
-        // Consumer acknowledgment — ALWAYS, even for spam-flagged rows (§ 356a Abs. 4),
-        // rendered in the consumer's locale.
-        rescue(fn () => Mail::to($withdrawal->email)
-            ->send((new WithdrawalAcknowledgment($withdrawal))->locale($withdrawal->locale)));
+        /**
+         * Consumer acknowledgment (§ 356a Abs. 4), rendered in the consumer's locale —
+         * withheld for spam-flagged rows: bots submit real third parties' addresses, so
+         * the acknowledgment would turn the operator into a spam sender. The row itself
+         * is stored either way.
+         */
+        if (! $withdrawal->spam) {
+            rescue(fn () => Mail::to($withdrawal->email)
+                ->send((new WithdrawalAcknowledgment($withdrawal))->locale($withdrawal->locale)));
+        }
 
         // Merchant notification — always, when a recipient resolves (panel setting →
         // MERCHANT_NOTIFICATION_EMAIL env → imprint e-mail; see NotificationRecipient).

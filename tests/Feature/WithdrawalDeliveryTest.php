@@ -72,13 +72,32 @@ it('queues the consumer acknowledgment and merchant notification on submit', fun
     Mail::assertNothingSent();
 });
 
-it('still sends the consumer acknowledgment for a spam-flagged submit', function () {
+it('suppresses the consumer acknowledgment for a honeypot-flagged submit but still notifies the merchant', function () {
     Mail::fake();
+    config(['revoco.merchant_email' => 'merchant@example.com']);
 
-    $this->post(route('withdrawal.store'), deliveryPayload(['website' => 'http://spam.example']));
+    $this->post(route('withdrawal.store'), deliveryPayload(['website' => 'http://spam.example']))
+        ->assertRedirect(route('withdrawal.success'));
 
-    Mail::assertQueued(WithdrawalAcknowledgment::class, fn ($m) => $m->hasTo('erika@example.com'));
+    // Stored as proof regardless — only the mail to the (possibly abused) address is withheld.
+    $this->assertDatabaseHas('withdrawals', ['email' => 'erika@example.com', 'spam' => true]);
+    Mail::assertNotQueued(WithdrawalAcknowledgment::class);
+    Mail::assertQueued(WithdrawalNotification::class, fn ($m) => $m->hasTo('merchant@example.com'));
     Mail::assertQueuedCount(1);
+});
+
+it('suppresses the consumer acknowledgment for a throttle-flagged submit', function () {
+    Mail::fake();
+    config(['revoco.merchant_email' => null]);
+
+    // Five clean submits from one IP, the sixth trips the soft rate-limit signal.
+    foreach (range(1, 6) as $i) {
+        $this->post(route('withdrawal.store'), deliveryPayload(['email' => "kunde{$i}@example.com"]));
+    }
+
+    $this->assertDatabaseHas('withdrawals', ['email' => 'kunde6@example.com', 'spam_reason' => 'throttle']);
+    Mail::assertQueued(WithdrawalAcknowledgment::class, 5);
+    Mail::assertNotQueued(WithdrawalAcknowledgment::class, fn ($m) => $m->hasTo('kunde6@example.com'));
 });
 
 it('skips the merchant notification when no operator address is configured', function () {
