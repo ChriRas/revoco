@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
+use App\Enums\SpamLevel;
 use App\Filament\Resources\WithdrawalResource\Pages;
+use App\Filament\Resources\WithdrawalResource\SpamActions;
 use App\Models\Withdrawal;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -18,6 +20,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -63,14 +66,9 @@ final class WithdrawalResource extends Resource
                     ->searchable()
                     ->placeholder('—'),
 
-                IconColumn::make('spam')
-                    ->label(__('panel.column.no_spam'))
-                    ->boolean()
-                    ->getStateUsing(fn (Withdrawal $record): bool => ! $record->spam)
-                    ->trueIcon('heroicon-o-check-circle')
-                    ->falseIcon('heroicon-o-exclamation-triangle')
-                    ->trueColor('success')
-                    ->falseColor('danger'),
+                TextColumn::make('spam_level')
+                    ->label(__('panel.column.spam_level'))
+                    ->badge(),
 
                 IconColumn::make('handled_at')
                     ->label(__('panel.column.handled'))
@@ -89,10 +87,9 @@ final class WithdrawalResource extends Resource
                     ->trueLabel(__('panel.filter.handled_only'))
                     ->falseLabel(__('panel.filter.unhandled_only')),
 
-                TernaryFilter::make('spam')
-                    ->label(__('panel.filter.spam_status'))
-                    ->trueLabel(__('panel.filter.spam_only'))
-                    ->falseLabel(__('panel.filter.not_spam_only')),
+                SelectFilter::make('spam_level')
+                    ->label(__('panel.filter.spam_level'))
+                    ->options(SpamLevel::class),
 
                 Filter::make('date_range')
                     ->label(__('panel.filter.date_range'))
@@ -111,8 +108,10 @@ final class WithdrawalResource extends Resource
                             ->when($until, fn (Builder $q): Builder => $q->whereDate('created_at', '<=', $until));
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 ViewAction::make(),
+                SpamActions::markAsSpam(),
+                SpamActions::markAsNotSpam(),
                 Action::make('toggle_handled')
                     ->label(fn (Withdrawal $record): string => $record->isHandled()
                         ? __('panel.action.unmark_handled')
@@ -124,7 +123,10 @@ final class WithdrawalResource extends Resource
                         $record->save();
                     }),
             ])
-            ->bulkActions([])
+            ->toolbarActions([
+                SpamActions::bulkMarkAsSpam(),
+                SpamActions::bulkMarkAsNotSpam(),
+            ])
             ->recordAction(null)
             ->recordUrl(
                 fn (Withdrawal $record): string => Pages\ViewWithdrawal::getUrl(['record' => $record]),
@@ -152,14 +154,18 @@ final class WithdrawalResource extends Resource
                 Section::make(__('panel.infolist.section.triage'))
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('spam')
-                            ->label(__('panel.infolist.field.spam_signal'))
-                            ->badge()
-                            ->formatStateUsing(fn (bool $state): string => $state
-                                ? __('panel.infolist.spam.yes')
-                                : __('panel.infolist.spam.no'))
-                            ->color(fn (bool $state): string => $state ? 'danger' : 'success'),
+                        TextEntry::make('spam_level')
+                            ->label(__('panel.infolist.field.spam_level'))
+                            ->badge(),
                         TextEntry::make('spam_reason')->label(__('panel.infolist.field.spam_reason'))->placeholder('—'),
+                        TextEntry::make('spam_verdict')
+                            ->label(__('panel.infolist.field.spam_verdict'))
+                            ->badge()
+                            ->placeholder('—'),
+                        TextEntry::make('spam_verdict_at')
+                            ->label(__('panel.infolist.field.spam_verdict_at'))
+                            ->dateTime('d.m.Y H:i', 'Europe/Berlin')
+                            ->placeholder('—'),
                     ]),
 
                 Section::make(__('panel.infolist.section.status'))

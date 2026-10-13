@@ -146,7 +146,7 @@ return [
         'received' => 'Received',
         'name' => 'Name',
         'order_number' => 'Order #',
-        'no_spam' => 'No Spam',
+        'spam_level' => 'Spam level',
         'handled' => 'Handled',
     ],
 
@@ -154,9 +154,7 @@ return [
         'handled_status' => 'Handled status',
         'handled_only' => 'Handled only',
         'unhandled_only' => 'Unhandled only',
-        'spam_status' => 'Spam status',
-        'spam_only' => 'Spam only',
-        'not_spam_only' => 'Not spam only',
+        'spam_level' => 'Spam level',
         'date_range' => 'Date range',
         'date_from' => 'From',
         'date_until' => 'Until',
@@ -165,6 +163,28 @@ return [
     'action' => [
         'mark_handled' => 'Mark handled',
         'unmark_handled' => 'Unmark handled',
+        'mark_spam' => 'Mark as spam',
+        'mark_spam_heading' => 'Mark as spam?',
+        'mark_spam_description' => 'The withdrawal moves to the Spam tab and is deleted for good in :days days. You can undo this until then with "Not spam".',
+        'not_spam' => 'Not spam',
+        'not_spam_heading' => 'Mark as not spam?',
+        'not_spam_description' => 'The withdrawal moves to the Inbox tab and is never deleted automatically.',
+    ],
+
+    'tab' => [
+        'inbox' => 'Inbox',
+        'spam' => 'Spam',
+    ],
+
+    'spam_level' => [
+        'green' => 'Clean',
+        'yellow' => 'Suspicious',
+        'red' => 'Spam',
+    ],
+
+    'spam_verdict' => [
+        'spam' => 'Confirmed spam',
+        'not_spam' => 'Not spam',
     ],
 
     'setup' => [
@@ -187,15 +207,13 @@ return [
             'order_number' => 'Order number',
             'locale' => 'Locale',
             'subject' => 'Subject',
-            'spam_signal' => 'Spam signal',
+            'spam_level' => 'Spam level',
             'spam_reason' => 'Spam reason',
+            'spam_verdict' => 'Your verdict',
+            'spam_verdict_at' => 'Verdict at',
             'handled_at' => 'Handled at',
             'received_at' => 'Received at',
             'last_updated' => 'Last updated',
-        ],
-        'spam' => [
-            'yes' => 'Spam',
-            'no' => 'Not spam',
         ],
         'not_handled' => 'Not handled',
     ],

@@ -146,7 +146,7 @@ return [
         'received' => 'Eingegangen',
         'name' => 'Name',
         'order_number' => 'Bestellnr.',
-        'no_spam' => 'Kein Spam',
+        'spam_level' => 'Spam-Stufe',
         'handled' => 'Bearbeitet',
     ],
 
@@ -154,9 +154,7 @@ return [
         'handled_status' => 'Bearbeitungsstatus',
         'handled_only' => 'Nur bearbeitete',
         'unhandled_only' => 'Nur unbearbeitete',
-        'spam_status' => 'Spam-Status',
-        'spam_only' => 'Nur Spam',
-        'not_spam_only' => 'Kein Spam',
+        'spam_level' => 'Spam-Stufe',
         'date_range' => 'Zeitraum',
         'date_from' => 'Von',
         'date_until' => 'Bis',
@@ -165,6 +163,28 @@ return [
     'action' => [
         'mark_handled' => 'Als bearbeitet markieren',
         'unmark_handled' => 'Markierung aufheben',
+        'mark_spam' => 'Als Spam markieren',
+        'mark_spam_heading' => 'Als Spam markieren?',
+        'mark_spam_description' => 'Der Widerruf wechselt in den Reiter „Spam“ und wird in :days Tagen endgültig gelöscht. Bis dahin können Sie das mit „Kein Spam“ rückgängig machen.',
+        'not_spam' => 'Kein Spam',
+        'not_spam_heading' => 'Als „Kein Spam“ markieren?',
+        'not_spam_description' => 'Der Widerruf wechselt in den Reiter „Posteingang“ und wird nie automatisch gelöscht.',
+    ],
+
+    'tab' => [
+        'inbox' => 'Posteingang',
+        'spam' => 'Spam',
+    ],
+
+    'spam_level' => [
+        'green' => 'Unauffällig',
+        'yellow' => 'Verdächtig',
+        'red' => 'Spam',
+    ],
+
+    'spam_verdict' => [
+        'spam' => 'Bestätigter Spam',
+        'not_spam' => 'Kein Spam',
     ],
 
     'setup' => [
@@ -187,15 +207,13 @@ return [
             'order_number' => 'Bestell-/Vertragsnummer',
             'locale' => 'Sprache',
             'subject' => 'Betreffende Ware / Dienstleistung',
-            'spam_signal' => 'Spam-Signal',
+            'spam_level' => 'Spam-Stufe',
             'spam_reason' => 'Spam-Grund',
+            'spam_verdict' => 'Ihr Urteil',
+            'spam_verdict_at' => 'Urteil am',
             'handled_at' => 'Bearbeitet am',
             'received_at' => 'Eingegangen am',
             'last_updated' => 'Zuletzt aktualisiert',
-        ],
-        'spam' => [
-            'yes' => 'Spam',
-            'no' => 'Kein Spam',
         ],
         'not_handled' => 'Nicht bearbeitet',
     ],
