@@ -15,7 +15,7 @@ vars:
   # phpunit.xml's :memory:, so DB-less tests silently hit the pre-migrated dev DB
   # (green locally, red on CI's fresh :memory:). CI needs no DB flag: its `docker run`
   # doesn't inherit the compose env. Keep the drivers in sync with ci.yml's Pest step.
-  RUN_TEST: 'docker compose run --rm --no-deps -e APP_ENV=testing -e QUEUE_CONNECTION=sync -e CACHE_STORE=array -e SESSION_DRIVER=array -e MAIL_MAILER=array -e DB_DATABASE=:memory: app'
+  RUN_TEST: 'docker compose run --rm --no-deps -e APP_ENV=testing -e QUEUE_CONNECTION=sync -e CACHE_STORE=array -e SESSION_DRIVER=array -e MAIL_MAILER=array -e DB_DATABASE=:memory: -e TRUSTED_PROXIES= app'
 
 tasks:
   default:

@@ -22,6 +22,20 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->encryptCookies(except: [
             SetConsumerLocale::COOKIE_NAME,
         ]);
+
+        // Behind a reverse proxy `$request->ip()` is the proxy unless it is trusted. Env-driven
+        // (comma list or `*`); empty keeps the direct-connection behaviour, nothing is trusted.
+        $trustedProxies = trim((string) env('TRUSTED_PROXIES', ''));
+
+        if ($trustedProxies !== '') {
+            $middleware->trustProxies(
+                at: $trustedProxies === '*'
+                    ? '*'
+                    : array_values(array_filter(array_map('trim', explode(',', $trustedProxies)))),
+                // Only the client IP and the scheme are needed; host, port and prefix stay the app's own.
+                headers: Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_PROTO,
+            );
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // A tampered or expired mail link gets a neutral page; it never says why.

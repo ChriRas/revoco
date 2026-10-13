@@ -69,6 +69,7 @@ services:
       OPERATOR_EMAIL: "${OPERATOR_EMAIL:-}"
       OPERATOR_PASSWORD: "${OPERATOR_PASSWORD:-}"
       BACKEND_LOCALE: "${BACKEND_LOCALE:-en}"
+      TRUSTED_PROXIES: "${TRUSTED_PROXIES:-}"
     volumes:
       # Persist SQLite + Laravel storage (cache, sessions, logs) across restarts.
       - app_storage:/var/www/html/storage
