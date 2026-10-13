@@ -10,7 +10,8 @@ use Illuminate\Queue\SerializesModels;
 
 /**
  * Fired once when the operator marks a withdrawal as not spam.
- * Re-sends the withheld acknowledgment (SendAcknowledgmentOnNotSpam); later slices attach more.
+ * Re-sends the withheld acknowledgment (SendAcknowledgmentOnNotSpam) and takes the row's
+ * learned-network hit back (ForgetNetworkHitOnNotSpam); later slices attach more.
  */
 final class WithdrawalMarkedNotSpam
 {
