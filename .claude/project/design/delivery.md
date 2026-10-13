@@ -17,22 +17,27 @@ immediately. All delivery therefore runs **off the request**, in queued jobs on 
 `StoreWithdrawal` action (Phase 3) persists the row, then fires the domain event
 **`WithdrawalSubmitted`**. Queued listeners fan out to the channels:
 
-1. **Consumer acknowledgment** (e-mail, § 356a Abs. 4) — sent for every row **not**
-   flagged as `spam`. *Revised 2026-10-13* (was: always, incl. spam): a production bot
+1. **Consumer acknowledgment** (e-mail, § 356a Abs. 4) — sent for every row whose
+   `spam_level` is **not** `red`. *Revised 2026-10-13* (was: always, incl. spam): a production bot
    campaign submitted real third parties' addresses, turning the acknowledgment into
    spam sent from the operator's domain. A false positive (real consumer flagged) still
    has the stored record; the operator sees it in the backend. Content: receipt
    confirmation, the declaration content, date + time in consumer time
    (Europe/Berlin), **no advertising**. See [`spam-handling.md`](./spam-handling.md).
 2. **Merchant notification** (e-mail) — **always sent** to the configured operator
-   address; carries the full case data **and the `spam` status** for triage.
+   address; carries the full case data **and the spam level** (any level but green gets the subject prefix and
+   warning) for triage.
 3. **ntfy push** — sent **only when `NTFY_ENABLED`**; **data-minimal: no PII**
    (no name/e-mail/order). A bare "new withdrawal received" notice (+ optional
    spam-suspected marker, + a link to the backend). Verify the ntfy publish API
    live at build time.
 
-The `spam` flag never gates **acceptance** (the row is always stored); downstream it
-changes what the operator sees and withholds the consumer acknowledgment.
+The `spam_level` (`green` / `yellow` / `red`) never gates **acceptance** (the row is always
+stored); downstream it changes what the operator sees and, for `red`, withholds the consumer
+acknowledgment. The operator's verdict (`spam_verdict`: `spam` / `not_spam`, with
+`spam_verdict_at`) is a separate column that overrides the level for the list tabs and the
+7-day purge, but does not yet change delivery (slice-026). Both verdict actions fire a domain
+event (`WithdrawalConfirmedAsSpam` / `WithdrawalMarkedNotSpam`) that later slices listen to.
 
 ## Isolation & failure
 

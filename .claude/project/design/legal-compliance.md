@@ -50,8 +50,8 @@ pre-submit gate:
   silent spam filters are allowed.
 
 **Consequence for this app:** honeypot and rate-limit are **signals only** — they
-set a `spam` flag (+ reason), they never reject. Every submission is stored so
-the receipt can be proven. The `spam` flag governs downstream e-mail gating
+set a `spam_level` (+ reason), they never reject. Every submission is stored so
+the receipt can be proven. The `spam_level` governs downstream e-mail gating
 (Phase 4), not acceptance.
 
 ## Two-stage flow (§ 356a Abs. 1 & 3)
@@ -90,7 +90,7 @@ contains no advertising ban (verified against the statute text 2026-09-16).
 ## Data protection
 
 The operator is the **controller**. Persist the minimum: the four form fields +
-`locale` + a boolean `spam` flag (+ reason). **Do not persist the IP** —
+`locale` + a `spam_level` (+ reason, + the operator's optional verdict). **Do not persist the IP** —
 rate-limit transiently via cache.
 
 ### Retention & erasure (OPEN — deferred)
@@ -107,6 +107,10 @@ therefore **read-only + a "handled" status** — no in-panel edit/delete, so the
 record's integrity is protected by default. Erasure, if needed, is currently a
 manual DB operation; a proper retention policy (retention period + a controlled
 erasure path) is a candidate for a later slice. Revisit before public release.
+
+One exception since the spam-handling amendment (2026-10-13): rows the operator
+**confirmed** as spam are hard-deleted 7 days after the confirmation (`model:prune`).
+Unconfirmed rows are never deleted; the general retention question stays open.
 
 ## Imprint & privacy policy (footer legal pages)
 
