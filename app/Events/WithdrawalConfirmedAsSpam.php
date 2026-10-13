@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 
 /**
  * Fired once when the operator confirms a withdrawal as spam.
- * Listeners: RecordNetworkHitOnSpam (learned networks).
+ * Listeners: RecordNetworkHitOnSpam (learned networks), RememberAbusedAddressOnSpam (address memory).
  */
 final class WithdrawalConfirmedAsSpam
 {
