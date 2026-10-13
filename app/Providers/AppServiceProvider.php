@@ -34,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
             Signals\LearnedNetwork::class,
             Signals\TorExit::class,
             Signals\CountryOutsideShipping::class,
+            Signals\AbusedAddress::class,
         ], 'spam.signals');
 
         $this->app->singleton(NetworkData::class);

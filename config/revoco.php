@@ -93,6 +93,8 @@ return [
             'learned_network' => 10,
             'tor_exit' => 5,
             'country_outside_shipping' => 4,
+            // Abused-address memory (slice-029): at the yellow threshold, so a hit alone is yellow and never red.
+            'abused_address' => 30,
         ],
 
         'thresholds' => [

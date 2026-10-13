@@ -233,6 +233,7 @@ return [
         'asn_drop' => 'Listed network operator',
         'tor_exit' => 'Tor exit node',
         'learned_network' => 'Network with repeatedly confirmed spam',
+        'abused_address' => 'Address known from confirmed spam',
     ],
 
     'setup' => [

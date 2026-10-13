@@ -233,6 +233,7 @@ return [
         'asn_drop' => 'Gelisteter Netzbetreiber',
         'tor_exit' => 'Tor-Exit-Knoten',
         'learned_network' => 'Netz mit wiederholt bestätigtem Spam',
+        'abused_address' => 'Adresse aus bestätigtem Spam bekannt',
     ],
 
     'setup' => [

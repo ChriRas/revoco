@@ -41,6 +41,7 @@ final class StoreWithdrawalController extends Controller
             ip: $request->ip(),
             submittedAt: CarbonImmutable::now(),
             network: $network,
+            email: $data['email'],
         ));
 
         $store->handle(

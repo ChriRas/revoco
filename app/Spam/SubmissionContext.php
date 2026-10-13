@@ -24,5 +24,7 @@ final readonly class SubmissionContext
         public CarbonImmutable $submittedAt,
         /** Country and ASN resolved from the IP; null when no lookup ran. */
         public ?NetworkInfo $network = null,
+        /** The submitted address; only the `abused_address` signal reads it (as a hash). Never persisted from here. */
+        public ?string $email = null,
     ) {}
 }
