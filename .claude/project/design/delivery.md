@@ -17,27 +17,55 @@ immediately. All delivery therefore runs **off the request**, in queued jobs on 
 `StoreWithdrawal` action (Phase 3) persists the row, then fires the domain event
 **`WithdrawalSubmitted`**. Queued listeners fan out to the channels:
 
-1. **Consumer acknowledgment** (e-mail, § 356a Abs. 4) — sent for every row whose
-   `spam_level` is **not** `red`. *Revised 2026-10-13* (was: always, incl. spam): a production bot
-   campaign submitted real third parties' addresses, turning the acknowledgment into
-   spam sent from the operator's domain. A false positive (real consumer flagged) still
-   has the stored record; the operator sees it in the backend. Content: receipt
-   confirmation, the declaration content, date + time in consumer time
+1. **Consumer acknowledgment** (e-mail, § 356a Abs. 4) — queued for every row whose
+   `spam_level` is **not** `red`, and recorded in the insert-only `withdrawal_acknowledgments`
+   log (unique per withdrawal, removed with the row). *Revised 2026-10-13* (was: always, incl.
+   spam): a production bot campaign submitted real third parties' addresses, turning the
+   acknowledgment into spam sent from the operator's domain. A red row that the operator
+   corrects to **not spam** (mail link, panel row or bulk) gets the withheld acknowledgment once,
+   showing the original receipt time; the log makes that, and any later flip, at most one mail.
+   Content: receipt confirmation, the declaration content, date + time in consumer time
    (Europe/Berlin), **no advertising**. See [`spam-handling.md`](./spam-handling.md).
-2. **Merchant notification** (e-mail) — **always sent** to the configured operator
-   address; carries the full case data **and the spam level** (any level but green gets the subject prefix and
-   warning) for triage.
-3. **ntfy push** — sent **only when `NTFY_ENABLED`**; **data-minimal: no PII**
-   (no name/e-mail/order). A bare "new withdrawal received" notice (+ optional
-   spam-suspected marker, + a link to the backend). Verify the ntfy publish API
-   live at build time.
+2. **Merchant notification** (e-mail) — sent to the configured operator address for **green and
+   yellow** rows; carries the full case data, a signed **"mark as spam"** link, and for yellow
+   the "spam suspected" subject prefix and warning. **Red rows get no per-row mail**; they appear
+   only in the morning digest (below).
+3. **ntfy push** — sent **only when `NTFY_ENABLED`** and only for green and yellow rows;
+   **data-minimal: no PII** (no name/e-mail/order). A bare "new withdrawal received" notice
+   (+ the spam-suspected marker for yellow, + a link to the backend). Verify the ntfy publish
+   API live at build time.
+
+Which channel a level reaches is one table in `App\Delivery\ChannelPolicy`:
+
+| Level | Acknowledgment | Merchant mail | Push |
+|---|---|---|---|
+| green | queued | queued, with "mark as spam" link | plain |
+| yellow | queued | "spam suspected" + link | spam-suspected marker |
+| red | not queued | not queued | not published |
+
+### Mail links and the digest
+
+- **Signed links.** The merchant mail and the digest carry links to `/spam/{withdrawal}/{action}`
+  (`action` = `spam` | `not-spam`). A GET only shows a confirmation page (entry number, receipt
+  time, status; no name/e-mail/subject; `noindex`, `no-referrer`) because mail scanners prefetch
+  links; only the POST on the same URL changes state, through the panel's status Actions. The
+  signature (`signed:relative`) covers path and query, not scheme or host, so a link issued under
+  an `https://` `APP_URL` stays valid behind a TLS-terminating proxy; the form action and the
+  redirect still point at `APP_URL`. Links expire after 7 days and are single-use through a
+  `state` parameter (the row's verdict at issue). The `queue` and `scheduler` services need
+  `APP_URL` so links rendered by the worker point at the deployment.
+- **Digest.** `revoco:spam-digest` runs daily at the time set on the panel's Notifications page
+  (`NotificationSettings::$spam_digest_time`, default 07:00, app timezone). It queues one mail to
+  the notification recipient for red rows from the last 24 h that have no operator verdict
+  yet (up to 50 entries with a "not spam" link each, then "… and N more", plus a link to the
+  panel's spam tab). With none, or no recipient, it sends nothing.
 
 The `spam_level` (`green` / `yellow` / `red`) never gates **acceptance** (the row is always
-stored); downstream it changes what the operator sees and, for `red`, withholds the consumer
-acknowledgment. The operator's verdict (`spam_verdict`: `spam` / `not_spam`, with
-`spam_verdict_at`) is a separate column that overrides the level for the list tabs and the
-7-day purge, but does not yet change delivery (slice-026). Both verdict actions fire a domain
-event (`WithdrawalConfirmedAsSpam` / `WithdrawalMarkedNotSpam`) that later slices listen to.
+stored); downstream it decides the channels above. The operator's verdict (`spam_verdict`:
+`spam` / `not_spam`, with `spam_verdict_at`) is a separate column that overrides the level for
+the list tabs and the 7-day purge; "not spam" releases the withheld acknowledgment. Both verdict
+actions fire a domain event (`WithdrawalConfirmedAsSpam` / `WithdrawalMarkedNotSpam`) that
+listeners attach to.
 
 ## Isolation & failure
 

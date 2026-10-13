@@ -84,6 +84,12 @@
 - **Digest:** mornings (time configurable in the panel, default 07:00), sent **only when** there
   was spam in the last 24 h.
 
+> **Built by slice-026** (spam-delivery-routing): round 2's signed mail links, the confirmation page,
+> the re-sent acknowledgment on "not spam" (insert-only `withdrawal_acknowledgments` log), and round 3's
+> level-based channel gating and morning digest (time configurable in the panel, default 07:00).
+> Links are signed URLs made single-use by a `state` parameter, not stored tokens. See
+> [`delivery.md`](./delivery.md).
+
 ## Decisions (round 4)
 
 - **Immutability amended** (`rules.md` Tabus): besides `handled_at`, the spam status and score
