@@ -95,6 +95,15 @@ rate-limit transiently via cache. The network signals (slice-028) resolve the IP
 an ASN and persist those three derived values (`country`, `asn`, `asn_org`; network-level data, not the
 address). The operator's privacy policy must say that country and network derived from the IP are stored.
 
+**Abused-address memory (slice-029).** When the operator confirms a withdrawal as spam, an HMAC-SHA256 hash of its
+e-mail address (trimmed, lowercased; key derived from `APP_KEY`) is remembered in `abused_addresses`. A later submit
+from that address scores the `abused_address` signal (yellow on its own, never red, never blocked). This is
+**pseudonymous personal data**, processed under legitimate interest (GDPR Art. 6(1)(f): abuse prevention). The entry
+counts for one year after the last confirmation and is deleted by "not spam" or by the daily `model:prune`; the plaintext
+address is never stored in it, and it has no foreign key to the withdrawal and holds none of its content (it can be matched to
+rows with the same address only by recomputing the hash with the app key). The operator's privacy policy must mention this
+processing; Revoco never authors that text.
+
 ### Retention & erasure (OPEN — deferred)
 
 Two obligations pull in opposite directions and are **not yet resolved**:

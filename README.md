@@ -219,6 +219,11 @@ Revoco serves an Impressum (§ 5 DDG) and a privacy policy at `/impressum` and
 (neutral "not configured yet" placeholders until filled). The operator is the data
 controller and authors the substantive text — Revoco ships only the mechanism.
 
+**Privacy policy and spam handling.** When you confirm a withdrawal as spam, Revoco remembers a one-way hash
+(HMAC-SHA256, keyed from `APP_KEY`) of its e-mail address for one year, so a later submit from the same address is
+flagged as suspicious (never blocked). Your privacy policy should cover this pseudonymous processing (legitimate
+interest, abuse prevention); Revoco never writes that text for you. Rotating `APP_KEY` resets the memory.
+
 ### The `legal-extraction` skill
 
 If the operator already publishes an Impressum and privacy policy elsewhere (their shop,
