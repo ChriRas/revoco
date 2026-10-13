@@ -6,6 +6,7 @@ namespace App\Actions;
 
 use App\Events\WithdrawalSubmitted;
 use App\Models\Withdrawal;
+use App\Network\NetworkInfo;
 use App\Spam\SpamAssessment;
 
 /**
@@ -14,7 +15,8 @@ use App\Spam\SpamAssessment;
  * Captures the consumer's active locale (drives the acknowledgment language) and
  * stamps `created_at` in the app timezone (Europe/Berlin). The spam assessment (score,
  * level, fired signals) is a non-blocking triage signal decided upstream — this action never rejects a
- * submission (§ 356a: the receipt must never be prevented). After persisting it
+ * submission (§ 356a: the receipt must never be prevented). The network info (country, ASN)
+ * was derived from the client IP upstream; the IP itself is never stored. After persisting it
  * fires `WithdrawalSubmitted`; queued listeners handle delivery off the request.
  */
 final class StoreWithdrawal
@@ -25,6 +27,7 @@ final class StoreWithdrawal
         ?string $orderNumber,
         string $subject,
         SpamAssessment $assessment,
+        ?NetworkInfo $network = null,
     ): Withdrawal {
         $withdrawal = Withdrawal::create([
             'name' => $name,
@@ -35,6 +38,9 @@ final class StoreWithdrawal
             'spam_score' => $assessment->score,
             'spam_level' => $assessment->level,
             'spam_reason' => $assessment->reason(),
+            'country' => $network?->country,
+            'asn' => $network?->asn,
+            'asn_org' => $network?->asnOrg,
         ]);
 
         WithdrawalSubmitted::dispatch($withdrawal);

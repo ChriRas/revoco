@@ -31,6 +31,9 @@ final class WithdrawalFactory extends Factory
             'spam_score' => null,
             'spam_level' => SpamLevel::Green,
             'spam_reason' => null,
+            'country' => null,
+            'asn' => null,
+            'asn_org' => null,
         ];
     }
 
@@ -51,6 +54,16 @@ final class WithdrawalFactory extends Factory
             'spam_score' => 30,
             'spam_level' => SpamLevel::Yellow,
             'spam_reason' => 'throttle',
+        ]);
+    }
+
+    /** The network the submit came from, as derived locally from the client IP. */
+    public function fromNetwork(string $country, int $asn, ?string $asnOrg = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'country' => $country,
+            'asn' => $asn,
+            'asn_org' => $asnOrg,
         ]);
     }
 

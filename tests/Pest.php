@@ -1,6 +1,9 @@
 <?php
 
+use App\Network\NetworkData;
+use App\Settings\NetworkSignalSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\File;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
@@ -84,4 +87,71 @@ function submitCleanWithdrawal(array $payload, array $server = []): TestResponse
         cookies: (fn () => $this->prepareCookiesForRequest())->call(test()),
         server: $server + ['HTTP_USER_AGENT' => CLEAN_BROWSER_USER_AGENT],
     );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Network fixtures (slice-028)
+|--------------------------------------------------------------------------
+|
+| MaxMind's public test databases (tests/fixtures/network/README.md) stand in for the DB-IP
+| files; the IPs below come from their published source data.
+|
+*/
+
+/** Country SE, ASN 29518 "Bredband2 AB". */
+const NETWORK_FIXTURE_IP_SE = '89.160.20.128';
+
+/** Country US, ASN 209 (no organisation). */
+const NETWORK_FIXTURE_IP_US = '216.160.83.56';
+
+/** Country DE (IPv6), no ASN. */
+const NETWORK_FIXTURE_IP_DE_V6 = '2a02:d180::1';
+
+/**
+ * Points `revoco.network.path` at a fresh temp directory (removed after the test) and, by default,
+ * copies the two test MMDBs in under the names the refresh command writes.
+ */
+function useNetworkDirectory(bool $withDatabases = true): string
+{
+    $dir = sys_get_temp_dir().'/revoco-network-'.bin2hex(random_bytes(6));
+    mkdir($dir, 0775, true);
+    config(['revoco.network.path' => $dir]);
+
+    if ($withDatabases) {
+        copy(__DIR__.'/fixtures/network/GeoLite2-Country-Test.mmdb', $dir.'/dbip-country-lite.mmdb');
+        copy(__DIR__.'/fixtures/network/GeoLite2-ASN-Test.mmdb', $dir.'/dbip-asn-lite.mmdb');
+    }
+
+    test()->beforeApplicationDestroyed(function () use ($dir): void {
+        File::deleteDirectory($dir);
+    });
+
+    return $dir;
+}
+
+/**
+ * Writes the normalised feed files the refresh produces.
+ *
+ * @param  list<string>  $dropV4
+ * @param  list<string>  $dropV6
+ * @param  list<int>  $asnDrop
+ * @param  list<string>  $tor
+ */
+function writeNetworkFeeds(string $dir, array $dropV4 = [], array $dropV6 = [], array $asnDrop = [], array $tor = []): void
+{
+    file_put_contents($dir.'/drop.json', json_encode(['v4' => $dropV4, 'v6' => $dropV6]));
+    file_put_contents($dir.'/asn-drop.json', json_encode($asnDrop));
+    file_put_contents($dir.'/tor-exits.txt', implode("\n", $tor)."\n");
+
+    // The feeds are read once per instance (per request in production); the test app outlives requests.
+    app(NetworkData::class)->flush();
+}
+
+/** Sets the operator's shipping countries. */
+function shippingCountries(array $codes): void
+{
+    $settings = app(NetworkSignalSettings::class);
+    $settings->shipping_countries = $codes;
+    $settings->save();
 }

@@ -19,6 +19,7 @@
         "filament/spatie-laravel-settings-plugin": "^5.0",
         "laravel/framework": "^13.8",
         "laravel/tinker": "^3.0",
+        "maxmind-db/reader": "^1.14",
         "spatie/laravel-settings": "^3.9"
     },
     "require-dev": {

@@ -87,6 +87,12 @@ return [
             'field_lengths_equal' => 25,
             'user_agent_ancient' => 25,
             'name_without_space' => 15,
+            // Network signals (slice-028): classify only, and their sum stays below the red threshold.
+            'drop_network' => 30,
+            'asn_drop' => 20,
+            'learned_network' => 10,
+            'tor_exit' => 5,
+            'country_outside_shipping' => 4,
         ],
 
         'thresholds' => [
@@ -100,6 +106,48 @@ return [
             'chrome' => 100,
             'firefox' => 100,
             'safari' => 14,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Network — local country / ASN lookup and listed-network feeds
+    |--------------------------------------------------------------------------
+    |
+    | `revoco:network-data:refresh` downloads the files below into `path`; the
+    | submit only ever reads them locally. The raw IP is never persisted, only the
+    | country and ASN derived from it.
+    |
+    | path:       directory of the downloaded databases and feed files.
+    | geo:        DB-IP Lite (country + ASN); `{type}` is `country` or `asn`,
+    |             `{month}` is YYYY-MM. The current month 404s until it is published,
+    |             the refresh then falls back to the previous month.
+    | feeds:      listed-network feeds (IP blocks, listed ASNs, Tor exit nodes).
+    | timeout:    HTTP timeout in seconds per download.
+    | learning:   a network (ASN) is "learned" once `min_hits` confirmed-spam rows
+    |             of it fall within `window_days`.
+    |
+    */
+
+    'network' => [
+        'path' => storage_path('app/private/network'),
+
+        'geo' => [
+            'url' => 'https://download.db-ip.com/free/dbip-{type}-lite-{month}.mmdb.gz',
+        ],
+
+        'feeds' => [
+            'drop_v4' => 'https://www.spamhaus.org/drop/drop_v4.json',
+            'drop_v6' => 'https://www.spamhaus.org/drop/drop_v6.json',
+            'asn_drop' => 'https://www.spamhaus.org/drop/asndrop.json',
+            'tor' => 'https://check.torproject.org/torbulkexitlist',
+        ],
+
+        'timeout' => 30,
+
+        'learning' => [
+            'min_hits' => 3,
+            'window_days' => 90,
         ],
     ],
 

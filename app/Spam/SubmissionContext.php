@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Spam;
 
+use App\Network\NetworkInfo;
 use Carbon\CarbonImmutable;
 
 /**
@@ -21,5 +22,7 @@ final readonly class SubmissionContext
         public ?string $userAgent,
         public ?string $ip,
         public CarbonImmutable $submittedAt,
+        /** Country and ASN resolved from the IP; null when no lookup ran. */
+        public ?NetworkInfo $network = null,
     ) {}
 }

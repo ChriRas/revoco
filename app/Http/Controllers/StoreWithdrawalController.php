@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\StoreWithdrawal;
 use App\Http\Requests\StoreWithdrawalRequest;
+use App\Network\NetworkLookup;
 use App\Spam\SpamScorer;
 use App\Spam\SubmissionContext;
 use Carbon\CarbonImmutable;
@@ -21,12 +22,15 @@ use Illuminate\Http\RedirectResponse;
  */
 final class StoreWithdrawalController extends Controller
 {
-    public function __invoke(StoreWithdrawalRequest $request, StoreWithdrawal $store, SpamScorer $scorer): RedirectResponse
+    public function __invoke(StoreWithdrawalRequest $request, StoreWithdrawal $store, SpamScorer $scorer, NetworkLookup $lookup): RedirectResponse
     {
         /** @var array{name: string, email: string, subject: string, orderNumber?: string|null} $data */
         $data = $request->validated();
 
-        // Transient: the IP and the user agent are read in memory and never persisted.
+        // Transient: the IP and the user agent are read in memory and never persisted; only
+        // the country and ASN derived locally from the IP are stored. The lookup never throws.
+        $network = $lookup->lookup($request->ip());
+
         $assessment = $scorer->assess(new SubmissionContext(
             name: $data['name'],
             orderNumber: $data['orderNumber'] ?? null,
@@ -36,6 +40,7 @@ final class StoreWithdrawalController extends Controller
             userAgent: $request->userAgent(),
             ip: $request->ip(),
             submittedAt: CarbonImmutable::now(),
+            network: $network,
         ));
 
         $store->handle(
@@ -44,6 +49,7 @@ final class StoreWithdrawalController extends Controller
             orderNumber: $data['orderNumber'] ?? null,
             subject: $data['subject'],
             assessment: $assessment,
+            network: $network,
         );
 
         return redirect()->route('withdrawal.success');

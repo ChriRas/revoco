@@ -27,6 +27,9 @@ use Illuminate\Support\Carbon;
  * @property SpamVerdict|null $spam_verdict
  * @property Carbon|null $spam_verdict_at
  * @property string|null $spam_reason
+ * @property string|null $country
+ * @property int|null $asn
+ * @property string|null $asn_org
  * @property Carbon|null $handled_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -51,6 +54,9 @@ final class Withdrawal extends Model
         'spam_score',
         'spam_level',
         'spam_reason',
+        'country',
+        'asn',
+        'asn_org',
         // handled_at, spam_verdict and spam_verdict_at are intentionally excluded — set
         // exclusively via the operator actions, never mass-assigned (immutable-record invariant).
     ];
@@ -62,6 +68,7 @@ final class Withdrawal extends Model
     {
         return [
             'spam_score' => 'integer',
+            'asn' => 'integer',
             'spam_level' => SpamLevel::class,
             'spam_verdict' => SpamVerdict::class,
             'spam_verdict_at' => 'datetime',

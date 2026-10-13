@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Network\MmdbNetworkLookup;
+use App\Network\NetworkData;
+use App\Network\NetworkLookup;
 use App\Spam\Signals;
 use App\Spam\SpamScorer;
 use App\Spam\SpamSignal;
@@ -26,7 +29,15 @@ class AppServiceProvider extends ServiceProvider
             Signals\ContentGibberish::class,
             Signals\NameWithoutSpace::class,
             Signals\FieldLengthsEqual::class,
+            Signals\DropNetwork::class,
+            Signals\AsnDrop::class,
+            Signals\LearnedNetwork::class,
+            Signals\TorExit::class,
+            Signals\CountryOutsideShipping::class,
         ], 'spam.signals');
+
+        $this->app->singleton(NetworkData::class);
+        $this->app->singleton(NetworkLookup::class, MmdbNetworkLookup::class);
 
         $this->app->bind(SpamScorer::class, function (Application $app): SpamScorer {
             /** @var iterable<SpamSignal> $signals */
