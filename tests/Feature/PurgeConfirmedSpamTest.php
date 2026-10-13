@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Actions\MarkWithdrawalAsNotSpam;
 use App\Models\Withdrawal;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 
@@ -60,7 +61,8 @@ it('cancels the pending purge when the operator corrects to not spam', function 
 });
 
 it('schedules the prune daily for the Withdrawal model', function () {
-    $this->artisan('schedule:list')
-        ->expectsOutputToContain("0 0 * * *  php artisan model:prune --model='App\\Models\\Withdrawal'")
-        ->assertSuccessful();
+    $event = collect(app(Schedule::class)->events())
+        ->first(fn ($event) => str_contains((string) $event->command, "model:prune --model='App\\Models\\Withdrawal'"));
+
+    expect($event->expression)->toBe('0 0 * * *');
 });
