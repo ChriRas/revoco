@@ -191,6 +191,17 @@ return [
         'not_spam' => 'Kein Spam',
     ],
 
+    'spam_signal' => [
+        'honeypot' => 'Verstecktes Honeypot-Feld ausgefüllt',
+        'throttle' => 'Zu viele Eingänge von derselben IP-Adresse',
+        'render_token_invalid' => 'Formular-Token fehlt oder ist ungültig',
+        'fill_time_too_fast' => 'Formular unplausibel schnell ausgefüllt',
+        'user_agent_ancient' => 'Veraltete oder fehlende Browser-Kennung',
+        'content_gibberish' => 'Name oder Gegenstand wirkt zufällig',
+        'name_without_space' => 'Name ohne Leerzeichen',
+        'field_lengths_equal' => 'Mehrere Felder mit identischer Länge',
+    ],
+
     'setup' => [
         'warning' => 'Einrichtung ausstehend — folgende Seiten fehlen noch: :pages.',
         'link' => 'Rechtstexte einrichten',

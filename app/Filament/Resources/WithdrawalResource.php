@@ -8,6 +8,7 @@ use App\Enums\SpamLevel;
 use App\Filament\Resources\WithdrawalResource\Pages;
 use App\Filament\Resources\WithdrawalResource\SpamActions;
 use App\Models\Withdrawal;
+use App\Spam\SpamReasonLabels;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
@@ -157,7 +158,10 @@ final class WithdrawalResource extends Resource
                         TextEntry::make('spam_level')
                             ->label(__('panel.infolist.field.spam_level'))
                             ->badge(),
-                        TextEntry::make('spam_reason')->label(__('panel.infolist.field.spam_reason'))->placeholder('—'),
+                        TextEntry::make('spam_reason')
+                            ->label(__('panel.infolist.field.spam_reason'))
+                            ->formatStateUsing(fn (?string $state): ?string => SpamReasonLabels::render($state))
+                            ->placeholder('—'),
                         TextEntry::make('spam_verdict')
                             ->label(__('panel.infolist.field.spam_verdict'))
                             ->badge()

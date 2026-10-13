@@ -1,5 +1,6 @@
 @use('App\Enums\SpamLinkAction')
 @use('App\Spam\SpamLinks')
+@use('App\Spam\SpamReasonLabels')
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -17,7 +18,7 @@
                 <tr><td style="padding:6px 0;color:#5d6776;width:34%;">{{ __('mail.field.datetime') }}</td><td style="padding:6px 0;">@include('mail.withdrawal.received-at', ['at' => $entry->created_at])</td></tr>
                 <tr><td style="padding:6px 0;color:#5d6776;">{{ __('mail.field.name') }}</td><td style="padding:6px 0;">{{ $entry->name }}</td></tr>
                 <tr><td style="padding:6px 0;color:#5d6776;">{{ __('mail.field.email') }}</td><td style="padding:6px 0;">{{ $entry->email }}</td></tr>
-                <tr><td style="padding:6px 0;color:#5d6776;">{{ __('mail.digest.reason') }}</td><td style="padding:6px 0;">{{ $entry->spam_reason ?? '—' }}</td></tr>
+                <tr><td style="padding:6px 0;color:#5d6776;">{{ __('mail.digest.reason') }}</td><td style="padding:6px 0;">{{ SpamReasonLabels::render($entry->spam_reason) ?? '—' }}</td></tr>
                 <tr><td colspan="2" style="padding:6px 0;"><a href="{{ SpamLinks::url($entry, SpamLinkAction::NotSpam) }}" style="color:#33576f;font-weight:600;">{{ __('mail.digest.not_spam_link') }}</a></td></tr>
             </table>
         @endforeach

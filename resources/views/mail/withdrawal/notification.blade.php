@@ -1,4 +1,5 @@
 @use('App\Enums\SpamLevel')
+@use('App\Spam\SpamReasonLabels')
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -12,7 +13,7 @@
 
         @if ($withdrawal->spam_level !== SpamLevel::Green)
             <p style="margin:0 0 18px;padding:10px 14px;background:#fdeceb;border:1px solid #f3c0bb;border-radius:8px;color:#a32a1e;">
-                <strong>{{ __('mail.notification.spam_warning', ['reason' => $withdrawal->spam_reason ?? '—']) }}</strong>
+                <strong>{{ __('mail.notification.spam_warning', ['reason' => SpamReasonLabels::render($withdrawal->spam_reason) ?? '—']) }}</strong>
             </p>
         @endif
 

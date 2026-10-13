@@ -191,6 +191,17 @@ return [
         'not_spam' => 'Not spam',
     ],
 
+    'spam_signal' => [
+        'honeypot' => 'Hidden honeypot field filled',
+        'throttle' => 'Too many submissions from one IP address',
+        'render_token_invalid' => 'Form token missing or invalid',
+        'fill_time_too_fast' => 'Form filled in implausibly fast',
+        'user_agent_ancient' => 'Outdated or missing browser identifier',
+        'content_gibberish' => 'Name or subject looks random',
+        'name_without_space' => 'Name without a space',
+        'field_lengths_equal' => 'Several fields of identical length',
+    ],
+
     'setup' => [
         'warning' => 'Setup pending — the following pages are missing: :pages.',
         'link' => 'Configure legal pages',

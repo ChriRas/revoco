@@ -75,7 +75,7 @@ it('lists name, e-mail, reason and a not-spam link per entry', function () {
 
     expect($html)->toContain('Max Mustermann')
         ->toContain('kunde@example.com')
-        ->toContain('honeypot')
+        ->toContain('Verstecktes Honeypot-Feld ausgefüllt')
         ->toContain('/spam/'.$row->id.'/not-spam?')
         ->toContain('tab=spam')
         ->not->toContain('weitere');
