@@ -213,7 +213,7 @@ it('never 500s on GET / and still shows the notice when LegalSettings is unseede
 it('POST / succeeds and redirects to success even when legal content is incomplete', function (): void {
     fakeLegalSettingsIncomplete();
 
-    $this->post(route('withdrawal.store'), [
+    submitCleanWithdrawal([
         'name' => 'Max Mustermann',
         'email' => 'kunde@example.com',
         'orderNumber' => 'B-99999',

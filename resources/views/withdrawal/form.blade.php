@@ -17,6 +17,8 @@
          `required`/`aria-required` stay for assistive-tech semantics. --}}
     <form class="wf-card" data-theme="{{ config('revoco.theme') }}" method="POST" action="{{ route('withdrawal.store') }}" novalidate>
         @csrf
+        {{-- Signed render time (spam signal "fill time"); old() keeps the original across a validation re-render. --}}
+        <input type="hidden" name="rendered" value="{{ old('rendered', $renderToken) }}">
 
         <div class="wf-utility">
             @if (config('revoco.logo_url'))
@@ -106,7 +108,7 @@
                 </div>
 
                 {{-- Honeypot: anti-spam decoy, hidden from users + assistive tech.
-                     Filled → stored with spam_level=red; never blocks (handled in the controller). --}}
+                     Filled → scored as spam (red); never blocks (see App\Spam\Signals\Honeypot). --}}
                 <div class="wf-hp" aria-hidden="true">
                     <label for="wf-website">{{ __('wf.honeypot.label') }}</label>
                     <input type="text" id="wf-website" name="website" tabindex="-1" autocomplete="off">

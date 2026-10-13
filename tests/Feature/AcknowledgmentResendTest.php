@@ -99,8 +99,8 @@ it('backfills a submit entry for every existing row that is not red', function (
     $red = Withdrawal::factory()->spam()->create();
     $correctedRed = Withdrawal::factory()->spam()->notSpam()->create();
 
-    // Step 2: the log migration and the digest-time settings migration that follows it.
-    Artisan::call('migrate:rollback', ['--step' => 2]);
+    // Step 3: the score column (slice-027) and the digest-time settings migration roll back before the log migration.
+    Artisan::call('migrate:rollback', ['--step' => 3]);
     expect(Schema::hasTable('withdrawal_acknowledgments'))->toBeFalse();
     Artisan::call('migrate');
 

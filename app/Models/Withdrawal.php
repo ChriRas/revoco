@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $order_number
  * @property string $subject
  * @property string $locale
+ * @property int|null $spam_score
  * @property SpamLevel $spam_level
  * @property SpamVerdict|null $spam_verdict
  * @property Carbon|null $spam_verdict_at
@@ -47,6 +48,7 @@ final class Withdrawal extends Model
         'order_number',
         'subject',
         'locale',
+        'spam_score',
         'spam_level',
         'spam_reason',
         // handled_at, spam_verdict and spam_verdict_at are intentionally excluded — set
@@ -59,6 +61,7 @@ final class Withdrawal extends Model
     protected function casts(): array
     {
         return [
+            'spam_score' => 'integer',
             'spam_level' => SpamLevel::class,
             'spam_verdict' => SpamVerdict::class,
             'spam_verdict_at' => 'datetime',

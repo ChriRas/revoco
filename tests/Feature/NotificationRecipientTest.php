@@ -82,7 +82,7 @@ it('routes the notification to the panel recipient over env', function () {
     setPanelRecipient('panel@example.com');
     config(['revoco.merchant_email' => 'env@example.com']);
 
-    $this->post(route('withdrawal.store'), [
+    submitCleanWithdrawal([
         'name' => 'Max Mustermann',
         'email' => 'kunde@example.com',
         'orderNumber' => 'A-1',
@@ -99,7 +99,7 @@ it('routes the notification to the imprint e-mail when it is the only address', 
     config(['revoco.merchant_email' => null]);
     setImprintEmail('imprint@example.com');
 
-    $this->post(route('withdrawal.store'), [
+    submitCleanWithdrawal([
         'name' => 'Max Mustermann',
         'email' => 'kunde@example.com',
         'orderNumber' => 'A-1',

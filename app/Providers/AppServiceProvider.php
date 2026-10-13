@@ -4,15 +4,36 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Spam\Signals;
+use App\Spam\SpamScorer;
+use App\Spam\SpamSignal;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        /** Spam signals are a tagged list: further slices append their class here without touching the scorer. */
+        $this->app->tag([
+            Signals\Honeypot::class,
+            Signals\Throttle::class,
+            Signals\RenderTokenInvalid::class,
+            Signals\FillTimeTooFast::class,
+            Signals\UserAgentAncient::class,
+            Signals\ContentGibberish::class,
+            Signals\NameWithoutSpace::class,
+            Signals\FieldLengthsEqual::class,
+        ], 'spam.signals');
+
+        $this->app->bind(SpamScorer::class, function (Application $app): SpamScorer {
+            /** @var iterable<SpamSignal> $signals */
+            $signals = $app->tagged('spam.signals');
+
+            return new SpamScorer($signals);
+        });
     }
 
     public function boot(): void

@@ -89,7 +89,7 @@ it('queues the acknowledgment at most once even when the submit event is handled
 });
 
 it('never queues an acknowledgment for a honeypot submit (hotfix 1.0.3 guard)', function () {
-    $this->post(route('withdrawal.store'), [
+    submitCleanWithdrawal([
         'name' => 'Max Mustermann',
         'email' => 'kunde@example.com',
         'orderNumber' => 'A-1',

@@ -50,7 +50,7 @@ it('defers all delivery to the queue so the submit is never blocked', function (
     // so SMTP/push cannot run in-request and cannot affect the response.
     Queue::fake();
 
-    $this->post(route('withdrawal.store'), deliveryPayload())
+    submitCleanWithdrawal(deliveryPayload())
         ->assertRedirect(route('withdrawal.success'));
 
     // Stored regardless of any delivery outcome, and delivery was queued, not inline.
@@ -62,7 +62,7 @@ it('queues the consumer acknowledgment and merchant notification on submit', fun
     Mail::fake();
     config(['revoco.merchant_email' => 'merchant@example.com']);
 
-    $this->post(route('withdrawal.store'), deliveryPayload());
+    submitCleanWithdrawal(deliveryPayload());
 
     Mail::assertQueued(WithdrawalAcknowledgment::class, fn ($m) => $m->hasTo('erika@example.com'));
     Mail::assertQueued(WithdrawalNotification::class, fn ($m) => $m->hasTo('merchant@example.com'));
@@ -76,7 +76,7 @@ it('sends neither acknowledgment nor merchant mail for a honeypot-flagged submit
     Mail::fake();
     config(['revoco.merchant_email' => 'merchant@example.com']);
 
-    $this->post(route('withdrawal.store'), deliveryPayload(['website' => 'http://spam.example']))
+    submitCleanWithdrawal(deliveryPayload(['website' => 'http://spam.example']))
         ->assertRedirect(route('withdrawal.success'));
 
     // Stored as proof regardless — a red row only shows up in the morning digest.
@@ -86,28 +86,31 @@ it('sends neither acknowledgment nor merchant mail for a honeypot-flagged submit
     Mail::assertNothingQueued();
 });
 
-it('suppresses the consumer acknowledgment and the merchant mail for a throttle-flagged submit', function () {
+it('still delivers a throttle-flagged submit: throttle alone is yellow, not red', function () {
     Mail::fake();
     config(['revoco.merchant_email' => 'merchant@example.com']);
 
     // Five clean submits from one IP, the sixth trips the soft rate-limit signal.
     foreach (range(1, 6) as $i) {
-        $this->post(route('withdrawal.store'), deliveryPayload(['email' => "kunde{$i}@example.com"]));
+        submitCleanWithdrawal(deliveryPayload(['email' => "kunde{$i}@example.com"]));
     }
 
-    $this->assertDatabaseHas('withdrawals', ['email' => 'kunde6@example.com', 'spam_reason' => 'throttle']);
-    Mail::assertQueued(WithdrawalAcknowledgment::class, 5);
-    Mail::assertNotQueued(WithdrawalAcknowledgment::class, fn ($m) => $m->hasTo('kunde6@example.com'));
-    // Merchant mail is gated by level too: five for the clean rows, none for the throttled one.
-    Mail::assertQueued(WithdrawalNotification::class, 5);
-    Mail::assertNotQueued(WithdrawalNotification::class, fn ($m) => $m->withdrawal->email === 'kunde6@example.com');
+    $this->assertDatabaseHas('withdrawals', [
+        'email' => 'kunde6@example.com',
+        'spam_level' => 'yellow',
+        'spam_reason' => 'throttle',
+    ]);
+    // A yellow row is delivered like a green one (the merchant mail carries the warning).
+    Mail::assertQueued(WithdrawalAcknowledgment::class, 6);
+    Mail::assertQueued(WithdrawalNotification::class, 6);
+    Mail::assertQueued(WithdrawalNotification::class, fn ($m) => $m->withdrawal->email === 'kunde6@example.com');
 });
 
 it('skips the merchant notification when no operator address is configured', function () {
     Mail::fake();
     config(['revoco.merchant_email' => null]);
 
-    $this->post(route('withdrawal.store'), deliveryPayload());
+    submitCleanWithdrawal(deliveryPayload());
 
     Mail::assertQueued(WithdrawalAcknowledgment::class);
     Mail::assertNotQueued(WithdrawalNotification::class);
@@ -174,7 +177,7 @@ it('reflects the spam status in the merchant notification', function () {
 
     $flagged = (new WithdrawalNotification(makeWithdrawal(['spam_level' => 'yellow', 'spam_reason' => 'honeypot'])))->locale('de');
     $flagged->assertSeeInHtml('Spam-Verdacht');
-    $flagged->assertSeeInHtml('honeypot');
+    $flagged->assertSeeInHtml('Verstecktes Honeypot-Feld ausgefüllt');
 });
 
 it('publishes a PII-free ntfy push when enabled', function () {
@@ -187,7 +190,7 @@ it('publishes a PII-free ntfy push when enabled', function () {
         'revoco.ntfy.token' => null,
     ]);
 
-    $this->post(route('withdrawal.store'), deliveryPayload([
+    submitCleanWithdrawal(deliveryPayload([
         'name' => 'Geheim Nachname',
         'email' => 'geheim@example.com',
         'orderNumber' => 'ORDER-XYZ',
@@ -210,7 +213,7 @@ it('sends no push when ntfy is disabled', function () {
     Http::fake();
     config(['revoco.ntfy.enabled' => false]);
 
-    $this->post(route('withdrawal.store'), deliveryPayload());
+    submitCleanWithdrawal(deliveryPayload());
 
     Http::assertNothingSent();
 });

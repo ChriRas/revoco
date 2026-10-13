@@ -13,7 +13,7 @@ use Illuminate\Foundation\Http\FormRequest;
  * Validating these is LAWFUL collection of the mandated information — distinct
  * from unlawful obstruction (captcha / contract-existence gate / spam rejection),
  * which this app never does. The honeypot field is not validated here; spam
- * signals are evaluated in the controller and never block the submit.
+ * signals (App\Spam\SpamScorer) are evaluated in the controller and never block the submit.
  */
 final class StoreWithdrawalRequest extends FormRequest
 {

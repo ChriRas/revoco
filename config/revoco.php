@@ -60,4 +60,47 @@ return [
         'token' => env('NTFY_TOKEN'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Spam — non-blocking score engine
+    |--------------------------------------------------------------------------
+    |
+    | Every submit is scored by the signals in app/Spam/Signals; the score only
+    | classifies (green / yellow / red), it never blocks (§ 356a). Code defaults
+    | only: tuning is reviewed in code, there is no env switch or panel for it.
+    |
+    | weights:              points per signal key; an unknown key weighs 0.
+    | thresholds:           score >= yellow is yellow, score >= red is red.
+    | min_fill_seconds:     a faster submit than this after the form render is
+    |                       "too fast".
+    | user_agent_floors:    browser major versions below these count as ancient.
+    |
+    */
+
+    'spam' => [
+        'weights' => [
+            'honeypot' => 100,
+            'content_gibberish' => 45,
+            'render_token_invalid' => 40,
+            'fill_time_too_fast' => 40,
+            'throttle' => 30,
+            'field_lengths_equal' => 25,
+            'user_agent_ancient' => 25,
+            'name_without_space' => 15,
+        ],
+
+        'thresholds' => [
+            'yellow' => 30,
+            'red' => 70,
+        ],
+
+        'min_fill_seconds' => 3,
+
+        'user_agent_floors' => [
+            'chrome' => 100,
+            'firefox' => 100,
+            'safari' => 14,
+        ],
+    ],
+
 ];

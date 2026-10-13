@@ -117,6 +117,7 @@ final class ManageNotifications extends SettingsPage
             'order_number' => 'TEST-0001',
             'subject' => __('panel.settings.notification.test.sample_subject'),
             'locale' => $locale,
+            'spam_score' => 0,
             'spam_level' => SpamLevel::Green,
             'spam_reason' => null,
         ]);

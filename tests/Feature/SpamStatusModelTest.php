@@ -221,7 +221,7 @@ it('does not allow the verdict to be mass-assigned', function () {
 it('stores a honeypot submit as red and still withholds the acknowledgment', function () {
     Mail::fake();
 
-    $this->post(route('withdrawal.store'), [
+    submitCleanWithdrawal([
         'name' => 'Max Mustermann',
         'email' => 'kunde@example.com',
         'orderNumber' => 'A-12345',
@@ -256,8 +256,8 @@ it('reverses and re-applies the migration, mapping the old spam flag to red or g
     $corrected = Withdrawal::factory()->spam()->notSpam()->create();
     $confirmedGreen = Withdrawal::factory()->create(['spam_verdict' => SpamVerdict::Spam, 'spam_verdict_at' => now()]);
 
-    // Step 3: slice-026's two migrations (acknowledgment log, digest-time setting) sort after this one and roll back first.
-    Artisan::call('migrate:rollback', ['--step' => 3]);
+    // Step 4: slice-026's two migrations (acknowledgment log, digest-time setting) and slice-027's score column sort after this one and roll back first.
+    Artisan::call('migrate:rollback', ['--step' => 4]);
 
     expect(Schema::hasColumn('withdrawals', 'spam'))->toBeTrue()
         ->and(Schema::hasColumn('withdrawals', 'spam_level'))->toBeFalse()

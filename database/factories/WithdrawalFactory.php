@@ -28,6 +28,7 @@ final class WithdrawalFactory extends Factory
             'order_number' => fake()->optional(0.7)->numerify('ORD-######'),
             'subject' => fake()->sentence(8),
             'locale' => 'de',
+            'spam_score' => null,
             'spam_level' => SpamLevel::Green,
             'spam_reason' => null,
         ];
@@ -37,6 +38,7 @@ final class WithdrawalFactory extends Factory
     public function spam(): static
     {
         return $this->state(fn (array $attributes) => [
+            'spam_score' => 100,
             'spam_level' => SpamLevel::Red,
             'spam_reason' => 'honeypot',
         ]);
@@ -46,8 +48,9 @@ final class WithdrawalFactory extends Factory
     public function yellow(): static
     {
         return $this->state(fn (array $attributes) => [
+            'spam_score' => 30,
             'spam_level' => SpamLevel::Yellow,
-            'spam_reason' => 'suspicious',
+            'spam_reason' => 'throttle',
         ]);
     }
 
