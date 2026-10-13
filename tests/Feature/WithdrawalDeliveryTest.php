@@ -72,23 +72,23 @@ it('queues the consumer acknowledgment and merchant notification on submit', fun
     Mail::assertNothingSent();
 });
 
-it('suppresses the consumer acknowledgment for a honeypot-flagged submit but still notifies the merchant', function () {
+it('sends neither acknowledgment nor merchant mail for a honeypot-flagged submit', function () {
     Mail::fake();
     config(['revoco.merchant_email' => 'merchant@example.com']);
 
     $this->post(route('withdrawal.store'), deliveryPayload(['website' => 'http://spam.example']))
         ->assertRedirect(route('withdrawal.success'));
 
-    // Stored as proof regardless — only the mail to the (possibly abused) address is withheld.
+    // Stored as proof regardless — a red row only shows up in the morning digest.
     $this->assertDatabaseHas('withdrawals', ['email' => 'erika@example.com', 'spam_level' => 'red']);
     Mail::assertNotQueued(WithdrawalAcknowledgment::class);
-    Mail::assertQueued(WithdrawalNotification::class, fn ($m) => $m->hasTo('merchant@example.com'));
-    Mail::assertQueuedCount(1);
+    Mail::assertNotQueued(WithdrawalNotification::class);
+    Mail::assertNothingQueued();
 });
 
-it('suppresses the consumer acknowledgment for a throttle-flagged submit', function () {
+it('suppresses the consumer acknowledgment and the merchant mail for a throttle-flagged submit', function () {
     Mail::fake();
-    config(['revoco.merchant_email' => null]);
+    config(['revoco.merchant_email' => 'merchant@example.com']);
 
     // Five clean submits from one IP, the sixth trips the soft rate-limit signal.
     foreach (range(1, 6) as $i) {
@@ -98,6 +98,9 @@ it('suppresses the consumer acknowledgment for a throttle-flagged submit', funct
     $this->assertDatabaseHas('withdrawals', ['email' => 'kunde6@example.com', 'spam_reason' => 'throttle']);
     Mail::assertQueued(WithdrawalAcknowledgment::class, 5);
     Mail::assertNotQueued(WithdrawalAcknowledgment::class, fn ($m) => $m->hasTo('kunde6@example.com'));
+    // Merchant mail is gated by level too: five for the clean rows, none for the throttled one.
+    Mail::assertQueued(WithdrawalNotification::class, 5);
+    Mail::assertNotQueued(WithdrawalNotification::class, fn ($m) => $m->withdrawal->email === 'kunde6@example.com');
 });
 
 it('skips the merchant notification when no operator address is configured', function () {
@@ -169,7 +172,7 @@ it('reflects the spam status in the merchant notification', function () {
     $clean = (new WithdrawalNotification(makeWithdrawal(['spam_level' => 'green'])))->locale('de');
     $clean->assertSeeInHtml('unauffällig');
 
-    $flagged = (new WithdrawalNotification(makeWithdrawal(['spam_level' => 'red', 'spam_reason' => 'honeypot'])))->locale('de');
+    $flagged = (new WithdrawalNotification(makeWithdrawal(['spam_level' => 'yellow', 'spam_reason' => 'honeypot'])))->locale('de');
     $flagged->assertSeeInHtml('Spam-Verdacht');
     $flagged->assertSeeInHtml('honeypot');
 });

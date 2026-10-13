@@ -256,7 +256,8 @@ it('reverses and re-applies the migration, mapping the old spam flag to red or g
     $corrected = Withdrawal::factory()->spam()->notSpam()->create();
     $confirmedGreen = Withdrawal::factory()->create(['spam_verdict' => SpamVerdict::Spam, 'spam_verdict_at' => now()]);
 
-    Artisan::call('migrate:rollback', ['--step' => 1]);
+    // Step 3: slice-026's two migrations (acknowledgment log, digest-time setting) sort after this one and roll back first.
+    Artisan::call('migrate:rollback', ['--step' => 3]);
 
     expect(Schema::hasColumn('withdrawals', 'spam'))->toBeTrue()
         ->and(Schema::hasColumn('withdrawals', 'spam_level'))->toBeFalse()
