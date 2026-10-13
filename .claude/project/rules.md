@@ -67,7 +67,7 @@
 
 - No hard blocking of the submit via spam signals or captcha — signals classify only.
 - No mandatory fields beyond name / contract identification / e-mail; no advertising in the acknowledgment e-mail.
-- The stored withdrawal record is **immutable** — no operator UI or other code path may edit or delete it; the only permitted mutation is the operator's `handled_at` triage toggle. *Grounds:* integrity of the § 356a legal record (slice-005).
+- The stored withdrawal record is **immutable** — no operator UI or other code path may edit or delete its declaration content (name, e-mail, order, subject, receipt time). Permitted mutations: the operator's `handled_at` triage toggle and the spam status/score; rows the operator **confirmed** as spam are purged after 7 days (never unconfirmed ones). *Grounds:* integrity of the § 356a legal record (slice-005); spam amendment 2026-10-13 — see `design/spam-handling.md`.
 - **No operator/infra specifics in this public repo** — real domains, IPs, hosting, reverse-proxy/VPN details, secrets, and brand assets live in the private infra repo. Ship placeholders + `.env.example` only.
 - Non-production environments never send real mail/push (`MAIL_MAILER=log`, push off).
 - The `research/` folder is read-only and never committed.
