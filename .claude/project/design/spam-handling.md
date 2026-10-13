@@ -49,10 +49,57 @@
 - **IP-derived data:** resolve **country + ASN locally** and persist them on the row; the raw IP
   is still never persisted.
 
-## Open questions (for the planning dialogue)
+## Decisions (round 2)
 
-- Which confidence level suppresses which channel (merchant mail / push / ack)?
-- Ack for honeypot rows: suppress, delay with operator veto, or keep sending?
-- Persist IP-derived data (country, ASN) on the row, or evaluate transiently only?
-- Is a blocklist (IP, ASN, e-mail) operator-curated, feed-driven, or both?
-- Retention period for confirmed spam; does "handled spam" disappear or move to a trash view?
+- **Mail links:** every non-spam merchant notification carries "mark as spam"; the daily digest
+  carries "not spam" per entry. Both: random single-use token → confirmation page → POST
+  (scanner prefetch must not mutate).
+- **False-positive correction** ("not spam") **automatically sends the withheld acknowledgment**,
+  stating the original receipt date/time.
+- **Retention:** confirmed spam is hidden from the default view and **purged after 7 days**.
+- **Signals (all four groups, never blocking):** content (random strings, no space in name, equal
+  lengths) · network + country (datacenter ASN, country outside an operator-maintained shipping
+  list, Spamhaus DROP/ASN-DROP, Tor exits) · learning from confirmed spam (networks, e-mail) ·
+  behaviour (signed render timestamp → fill time, ancient UA).
+- **Abused-address memory (operator idea):** keep a keyed hash of e-mail addresses seen in
+  confirmed spam + timestamp; a hit raises the score; "not spam" removes the entry; entries
+  expire after ~1 year. Recommended shape: HMAC-SHA256 with an app-held key (a plain hash of an
+  e-mail is reversible by dictionary), normalized address (trim + lowercase), sliding expiry on
+  `last_seen_at`. Still pseudonymous personal data (GDPR) → legitimate interest (abuse
+  prevention), storage limitation via the expiry; the operator's privacy policy must mention it
+  (Revoco never authors that text).
+
+## Decisions (round 3)
+
+- **Abused-address hit alone = suspicion only** — it raises the score; spam needs at least one
+  further signal (a real victim who later withdraws for real still gets the acknowledgment).
+- **Three levels:**
+  - *green* — normal delivery.
+  - *yellow (suspicious)* — acknowledgment **sent**; merchant mail flagged "spam suspected" + a
+    "mark as spam" link; push as today.
+  - *red (spam)* — no acknowledgment, no per-row merchant mail, no push; daily digest only, with
+    a "not spam" link per entry.
+- **Shipping countries:** maintained in the panel (multi-select), default `DE`; empty list
+  disables the country signal.
+- **Digest:** mornings (time configurable in the panel, default 07:00), sent **only when** there
+  was spam in the last 24 h.
+
+## Decisions (round 4)
+
+- **Immutability amended** (`rules.md` Tabus): besides `handled_at`, the spam status and score
+  may change; rows **confirmed** as spam by the operator are purged after 7 days. The declaration
+  content (name, e-mail, order, subject, receipt time) stays immutable; unconfirmed red rows are
+  never purged.
+- **Default panel view = green + yellow.** Red and confirmed spam live behind a "Spam" tab/filter.
+  Yellow is highlighted; "spam" / "not spam" actions single + bulk.
+- **Delivery as an epic** with slices: (1) status model + panel actions + 7-day purge,
+  (2) mail links + digest + re-sent acknowledgment, (3) score + content/behaviour signals,
+  (4) GeoIP/ASN + shipping countries + feeds, (5) abused-address hash memory.
+
+## Open questions (for epic/slice planning)
+
+- Blocklist sources: operator-curated list in the panel next to the feeds — which feeds exactly
+  (Spamhaus DROP/ASN-DROP, Tor exit list, a datacenter-range list)? Verify current URLs/terms.
+- Exact score weights and the yellow/red thresholds.
+- DB-IP Lite attribution (CC BY 4.0): where the link back is shown in the panel.
+- Edge rate-limit at the reverse proxy — operator infra, out of this repo.
