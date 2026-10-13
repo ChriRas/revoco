@@ -106,6 +106,44 @@
 
 - Blocklist sources: operator-curated list in the panel next to the feeds — which feeds exactly
   (Spamhaus DROP/ASN-DROP, Tor exit list, a datacenter-range list)? Verify current URLs/terms.
-- Exact score weights and the yellow/red thresholds.
+- ~~Exact score weights and the yellow/red thresholds.~~ Settled by slice-027 (see "Score engine" below).
 - DB-IP Lite attribution (CC BY 4.0): where the link back is shown in the panel.
 - Edge rate-limit at the reverse proxy — operator infra, out of this repo.
+
+## Score engine (slice-027)
+
+Every submit is scored by `App\Spam\SpamScorer` and the result is stored; the score only classifies,
+the submit is always stored and always redirected (§ 356a).
+
+- **Stored on the row:** `spam_score` (nullable, legacy rows stay unscored), `spam_level`
+  (`App\Enums\SpamLevel`, from slice-025) and `spam_reason`: the fired signal keys, snake_case,
+  comma-separated, heaviest first, null when none fired. The level is computed once at submit time.
+- **Signals** (`app/Spam/Signals`, weights in `config('revoco.spam.weights')`, code defaults, no env/panel):
+  `honeypot` 100, `content_gibberish` 45, `render_token_invalid` 40, `fill_time_too_fast` 40,
+  `throttle` 30, `field_lengths_equal` 25, `user_agent_ancient` 25, `name_without_space` 15.
+  Thresholds: yellow >= 30, red >= 70. Red needs the honeypot or at least two strong signals; no other
+  single signal reaches red. `throttle` alone is yellow (it used to be red/withheld: bots rotate IPs,
+  NAT consumers may trip it).
+- **Render token:** `App\Spam\FormRenderToken` is the render time, `Crypt`-encrypted (APP_KEY-bound,
+  authenticated), in the hidden `rendered` field; `old('rendered', ...)` keeps it across a
+  validation-error re-render. Missing, tampered or future tokens are `render_token_invalid`; there
+  is no "too slow" signal.
+- **User agent:** evaluated in memory only, never persisted. Floors in `user_agent_floors`: Chrome
+  (also Edge/Opera, which carry `Chrome/`) 100, Firefox 100, Safari `Version/` 14 (with `Safari/`, without `Chrome/`);
+  missing/empty UA and `MSIE `/`Trident/` fire; unknown families never do. Formats verified live on
+  2026-10-13 (Chrome UA-reduced `Chrome/<major>.0.0.0`, Firefox `Firefox/<major>.0`, Safari
+  `Version/<major>.x Safari/605.1.15`).
+- **Extension point:** the signals are the container tag `spam.signals` (`AppServiceProvider::register()`).
+  A new signal implements `SpamSignal` (`key()`, `fires(SubmissionContext)`), is appended to the tag, gets a
+  weight under its key in `revoco.spam.weights`, and a label under `panel.spam_signal.<key>` in en + de.
+  `SubmissionContext` is transient (fields, honeypot flag, render token, UA, IP, time); a sibling slice
+  that needs more input adds a constructor field there.
+- **Labels:** `App\Spam\SpamReasonLabels::render()` is the one rendering point for `spam_reason`
+  (panel infolist, merchant mail, spam digest). Siblings add only lang keys under `panel.spam_signal`,
+  never another rendering path; an unlabelled key is shown raw.
+- **Test contract:** `submitCleanWithdrawal(array $payload, array $server = [])` in `tests/Pest.php` GETs
+  the form, takes the `rendered` token, travels the clock forward by `min_fill_seconds + 1` and POSTs
+  with a pinned current-browser UA (`CLEAN_BROWSER_USER_AGENT`). With nothing else firing it scores 0 /
+  green. `$server` overrides apply to that request only (e.g. `REMOTE_ADDR`). The clock stays moved:
+  six submits move it 24 s, inside the 60 s throttle window. Slice-028/029 assert their own signals on
+  top of this.
