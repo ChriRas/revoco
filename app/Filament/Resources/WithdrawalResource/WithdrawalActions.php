@@ -101,22 +101,41 @@ final class WithdrawalActions
                 : (string) __('panel.action.not_spam'));
     }
 
-    /** The list row's "handled" toggle: an icon button, green while the row is handled, neutral otherwise. */
-    public static function rowToggleHandled(): Action
+    /**
+     * "Mark as handled" / "Unmark" — the view-page header button. Hidden for confirmed spam (by the operator or
+     * auto-sorted): spam needs no handling.
+     */
+    public static function toggleHandled(): Action
     {
         return Action::make('toggle_handled')
             ->label(fn (Withdrawal $record): string => $record->isHandled()
                 ? __('panel.action.unmark_handled')
                 : __('panel.action.mark_handled'))
-            ->iconButton()
-            ->icon('heroicon-o-check-circle')
-            ->color(fn (Withdrawal $record): string => $record->isHandled() ? 'success' : 'gray')
-            ->tooltip(fn (Withdrawal $record): string => $record->isHandled()
-                ? __('panel.action.unmark_handled')
-                : __('panel.action.mark_handled'))
+            ->icon(fn (Withdrawal $record): string => $record->isHandled() ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
+            ->color(fn (Withdrawal $record): string => $record->isHandled() ? 'gray' : 'success')
+            ->visible(fn (Withdrawal $record): bool => ! $record->isConfirmedSpam())
             ->action(function (Withdrawal $record): void {
                 $record->handled_at = $record->isHandled() ? null : Carbon::now();
                 $record->save();
+            });
+    }
+
+    /**
+     * The list row's "handled" toggle: an icon button that is always shown, green while the row is handled, neutral
+     * otherwise; disabled (not hidden) for confirmed spam, so the icon row stays aligned.
+     */
+    public static function rowToggleHandled(): Action
+    {
+        return self::toggleHandled()
+            ->iconButton()
+            ->icon('heroicon-o-check-circle')
+            ->visible(true)
+            ->disabled(fn (Withdrawal $record): bool => $record->isConfirmedSpam())
+            ->color(fn (Withdrawal $record): string => $record->isHandled() && ! $record->isConfirmedSpam() ? 'success' : 'gray')
+            ->tooltip(fn (Withdrawal $record): string => match (true) {
+                $record->isConfirmedSpam() => __('panel.action.handled_not_needed'),
+                $record->isHandled() => __('panel.action.unmark_handled'),
+                default => __('panel.action.mark_handled'),
             });
     }
 

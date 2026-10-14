@@ -194,6 +194,7 @@ return [
 
     'action' => [
         'mark_handled' => 'Mark handled',
+        'handled_not_needed' => 'Spam – no handling needed',
         'unmark_handled' => 'Unmark handled',
         'mark_spam' => 'Mark as spam',
         'mark_spam_heading' => 'Mark as spam?',
@@ -219,6 +220,8 @@ return [
         'spam' => 'Confirmed spam',
         'not_spam' => 'Not spam',
         'spam_auto' => 'Spam (automatic)',
+        'spam_operator' => 'Spam (your decision)',
+        'not_spam_operator' => 'Not spam (your decision)',
     ],
 
     'spam_signal' => [
@@ -243,6 +246,11 @@ return [
         'link' => 'Configure legal pages',
         'page_imprint' => 'Imprint',
         'page_privacy' => 'Privacy Policy',
+    ],
+
+    'preview' => [
+        'heading' => 'Preview',
+        'empty' => 'No withdrawals in this tab.',
     ],
 
     'infolist' => [

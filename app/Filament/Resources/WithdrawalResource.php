@@ -68,7 +68,8 @@ final class WithdrawalResource extends Resource
                 TextColumn::make('spam_level')
                     ->label(__('panel.column.spam_level'))
                     ->badge()
-                    ->description(fn (Withdrawal $record): ?string => $record->isAutoSorted() ? $record->verdictLabel() : null),
+                    // The level is the system's view at receipt; a verdict that overrides it is named below the badge.
+                    ->description(fn (Withdrawal $record): ?string => $record->verdictNote()),
 
                 TextColumn::make('country')
                     ->label(__('panel.column.country'))
@@ -78,7 +79,8 @@ final class WithdrawalResource extends Resource
                 IconColumn::make('handled_at')
                     ->label(__('panel.column.handled'))
                     ->boolean()
-                    ->getStateUsing(fn (Withdrawal $record): bool => $record->isHandled())
+                    // Confirmed spam needs no handling: no "still open" clock for it.
+                    ->getStateUsing(fn (Withdrawal $record): ?bool => $record->isConfirmedSpam() ? null : $record->isHandled())
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-clock')
                     ->trueColor('success')

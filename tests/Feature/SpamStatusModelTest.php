@@ -131,10 +131,12 @@ it('shows every row action as an icon button and disables it where it would chan
 
 it('colours the icon of the current state and keeps the others neutral', function () {
     $green = Withdrawal::factory()->create();
-    $confirmed = Withdrawal::factory()->confirmedSpam()->handled()->create();
+    $handled = Withdrawal::factory()->handled()->create();
+    $confirmed = Withdrawal::factory()->confirmedSpam()->create();
     $corrected = Withdrawal::factory()->spam()->notSpam()->create();
 
     livewire(ListWithdrawals::class)
+        ->assertTableActionHasColor('toggle_handled', 'success', $handled)
         ->assertTableActionHasColor('mark_spam', 'gray', $green)
         ->assertTableActionHasColor('not_spam', 'gray', $green)
         ->assertTableActionHasColor('toggle_handled', 'gray', $green)
@@ -142,8 +144,52 @@ it('colours the icon of the current state and keeps the others neutral', functio
         ->assertTableActionHasColor('not_spam', 'success', $corrected)
         ->assertTableActionHasColor('mark_spam', 'gray', $corrected)
         ->set('activeTab', 'spam')
-        ->assertTableActionHasColor('mark_spam', 'danger', $confirmed)
-        ->assertTableActionHasColor('toggle_handled', 'success', $confirmed);
+        ->assertTableActionHasColor('mark_spam', 'danger', $confirmed);
+});
+
+it('takes no handling for confirmed spam, by the operator or auto-sorted', function () {
+    $operator = Withdrawal::factory()->confirmedSpam()->handled()->create();
+    $auto = Withdrawal::factory()->autoSorted()->create();
+    $corrected = Withdrawal::factory()->spam()->notSpam()->create();
+
+    livewire(ListWithdrawals::class)
+        ->assertTableActionEnabled('toggle_handled', $corrected)
+        ->assertTableColumnStateSet('handled_at', false, $corrected)
+        ->set('activeTab', 'spam')
+        ->assertTableActionDisabled('toggle_handled', $operator)
+        ->assertTableActionDisabled('toggle_handled', $auto)
+        ->assertTableActionHasColor('toggle_handled', 'gray', $operator)
+        ->assertTableColumnStateSet('handled_at', null, $operator)
+        ->assertTableColumnStateSet('handled_at', null, $auto);
+
+    $actions = collect(livewire(ListWithdrawals::class)->instance()->getTable()->getRecordActions())
+        ->keyBy(fn ($action) => $action->getName());
+    expect($actions['toggle_handled']->record($auto)->getTooltip())->toBe(__('panel.action.handled_not_needed'));
+
+    livewire(ViewWithdrawal::class, ['record' => $auto->getKey()])->assertActionHidden('toggle_handled');
+    livewire(ViewWithdrawal::class, ['record' => $corrected->getKey()])->assertActionVisible('toggle_handled');
+});
+
+it('notes a verdict only where it overrides the level', function () {
+    expect(Withdrawal::factory()->autoSorted()->make()->verdictNote())->toBe(__('panel.spam_verdict.spam_auto'))
+        ->and(Withdrawal::factory()->spam()->notSpam()->make()->verdictNote())->toBe(__('panel.spam_verdict.not_spam_operator'))
+        ->and(Withdrawal::factory()->yellow()->notSpam()->make()->verdictNote())->toBe(__('panel.spam_verdict.not_spam_operator'))
+        ->and(Withdrawal::factory()->notSpam()->make()->verdictNote())->toBeNull()
+        ->and(Withdrawal::factory()->yellow()->make(['spam_verdict' => SpamVerdict::Spam, 'spam_verdict_source' => 'operator'])->verdictNote())->toBe(__('panel.spam_verdict.spam_operator'))
+        ->and(Withdrawal::factory()->confirmedSpam()->make()->verdictNote())->toBeNull()
+        ->and(Withdrawal::factory()->spam()->make()->verdictNote())->toBeNull();
+});
+
+it('names the decision below the level badge where it overrides the level', function () {
+    $correctedRed = Withdrawal::factory()->spam()->notSpam()->create();
+    $confirmedYellow = Withdrawal::factory()->yellow()->create(['spam_verdict' => SpamVerdict::Spam, 'spam_verdict_at' => now(), 'spam_verdict_source' => 'operator']);
+    $confirmedRed = Withdrawal::factory()->confirmedSpam()->create();
+
+    $inbox = livewire(ListWithdrawals::class)->html();
+    $spam = livewire(ListWithdrawals::class)->set('activeTab', 'spam')->html();
+
+    expect(substr_count($inbox, __('panel.spam_verdict.not_spam_operator')))->toBe(1)
+        ->and(substr_count($spam, __('panel.spam_verdict.spam_operator')))->toBe(1);
 });
 
 it('renders the row actions icon-only with a tooltip naming the action or the state', function () {

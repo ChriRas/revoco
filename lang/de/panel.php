@@ -194,6 +194,7 @@ return [
 
     'action' => [
         'mark_handled' => 'Als bearbeitet markieren',
+        'handled_not_needed' => 'Spam – keine Bearbeitung nötig',
         'unmark_handled' => 'Markierung aufheben',
         'mark_spam' => 'Als Spam markieren',
         'mark_spam_heading' => 'Als Spam markieren?',
@@ -219,6 +220,8 @@ return [
         'spam' => 'Bestätigter Spam',
         'not_spam' => 'Kein Spam',
         'spam_auto' => 'Spam (automatisch)',
+        'spam_operator' => 'Spam (Ihre Entscheidung)',
+        'not_spam_operator' => 'Kein Spam (Ihre Entscheidung)',
     ],
 
     'spam_signal' => [
@@ -243,6 +246,11 @@ return [
         'link' => 'Rechtstexte einrichten',
         'page_imprint' => 'Impressum',
         'page_privacy' => 'Datenschutzerklärung',
+    ],
+
+    'preview' => [
+        'heading' => 'Vorschau',
+        'empty' => 'Keine Widerrufe in diesem Reiter.',
     ],
 
     'infolist' => [
