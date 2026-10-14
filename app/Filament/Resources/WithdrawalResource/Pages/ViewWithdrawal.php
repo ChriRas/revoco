@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\WithdrawalResource\Pages;
 
 use App\Filament\Resources\WithdrawalResource;
-use App\Filament\Resources\WithdrawalResource\SpamActions;
+use App\Filament\Resources\WithdrawalResource\WithdrawalActions;
 use App\Models\Withdrawal;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ViewRecord;
@@ -24,8 +24,8 @@ final class ViewWithdrawal extends ViewRecord
         $refresh = fn (ViewWithdrawal $livewire) => $livewire->refreshFormData(['spam_verdict', 'spam_verdict_at']);
 
         return [
-            SpamActions::markAsSpam()->after($refresh),
-            SpamActions::markAsNotSpam()->after($refresh),
+            WithdrawalActions::markAsSpam()->after($refresh),
+            WithdrawalActions::markAsNotSpam()->after($refresh),
             Action::make('toggle_handled')
                 ->label(fn (): string => $this->record instanceof Withdrawal && $this->record->isHandled()
                     ? __('panel.action.unmark_handled')

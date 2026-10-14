@@ -111,19 +111,57 @@ it('treats a repeated verdict as a no-op without a second event', function () {
     Event::assertDispatchedTimes(WithdrawalMarkedNotSpam::class, 1);
 });
 
-it('offers the row actions only where they change something', function () {
+it('shows every row action as an icon button and disables it where it would change nothing', function () {
     $green = Withdrawal::factory()->create();
     $confirmed = Withdrawal::factory()->confirmedSpam()->create();
     $corrected = Withdrawal::factory()->spam()->notSpam()->create();
 
     livewire(ListWithdrawals::class)
         ->assertTableActionVisible('mark_spam', $green)
-        ->assertTableActionHidden('not_spam', $green)
-        ->assertTableActionVisible('mark_spam', $corrected)
-        ->assertTableActionHidden('not_spam', $corrected)
+        ->assertTableActionEnabled('mark_spam', $green)
+        ->assertTableActionVisible('not_spam', $green)
+        ->assertTableActionDisabled('not_spam', $green)
+        ->assertTableActionEnabled('mark_spam', $corrected)
+        ->assertTableActionDisabled('not_spam', $corrected)
         ->set('activeTab', 'spam')
-        ->assertTableActionHidden('mark_spam', $confirmed)
-        ->assertTableActionVisible('not_spam', $confirmed);
+        ->assertTableActionVisible('mark_spam', $confirmed)
+        ->assertTableActionDisabled('mark_spam', $confirmed)
+        ->assertTableActionEnabled('not_spam', $confirmed);
+});
+
+it('colours the icon of the current state and keeps the others neutral', function () {
+    $green = Withdrawal::factory()->create();
+    $confirmed = Withdrawal::factory()->confirmedSpam()->handled()->create();
+    $corrected = Withdrawal::factory()->spam()->notSpam()->create();
+
+    livewire(ListWithdrawals::class)
+        ->assertTableActionHasColor('mark_spam', 'gray', $green)
+        ->assertTableActionHasColor('not_spam', 'gray', $green)
+        ->assertTableActionHasColor('toggle_handled', 'gray', $green)
+        ->assertTableActionHasColor('view', 'gray', $green)
+        ->assertTableActionHasColor('not_spam', 'success', $corrected)
+        ->assertTableActionHasColor('mark_spam', 'gray', $corrected)
+        ->set('activeTab', 'spam')
+        ->assertTableActionHasColor('mark_spam', 'danger', $confirmed)
+        ->assertTableActionHasColor('toggle_handled', 'success', $confirmed);
+});
+
+it('renders the row actions icon-only with a tooltip naming the action or the state', function () {
+    $green = Withdrawal::factory()->create();
+    $auto = Withdrawal::factory()->autoSorted()->create();
+
+    $actions = collect(livewire(ListWithdrawals::class)->instance()->getTable()->getRecordActions())
+        ->keyBy(fn ($action) => $action->getName());
+
+    foreach (['view', 'mark_spam', 'not_spam', 'toggle_handled'] as $name) {
+        expect($actions[$name]->record($green)->isIconButton())->toBeTrue("{$name} is not an icon button");
+    }
+
+    expect($actions['mark_spam']->record($green)->getTooltip())->toBe(__('panel.action.mark_spam'))
+        ->and($actions['mark_spam']->record($auto)->getTooltip())->toBe(__('panel.spam_verdict.spam_auto'))
+        ->and($actions['not_spam']->record($green)->getTooltip())->toBe(__('panel.action.not_spam'))
+        ->and($actions['toggle_handled']->record($green)->getTooltip())->toBe(__('panel.action.mark_handled'))
+        ->and($actions['view']->record($green)->getTooltip())->not->toBeEmpty();
 });
 
 it('runs both verdicts from the view page header', function () {
@@ -256,9 +294,10 @@ it('reverses and re-applies the migration, mapping the old spam flag to red or g
     $corrected = Withdrawal::factory()->spam()->notSpam()->create();
     $confirmedGreen = Withdrawal::factory()->create(['spam_verdict' => SpamVerdict::Spam, 'spam_verdict_at' => now()]);
 
-    // Step 8: slice-029's table, slice-028's three migrations (network columns, hits table, shipping-countries setting), slice-026's two
-    // (acknowledgment log, digest-time setting) and slice-027's score column sort after this one and roll back first.
-    Artisan::call('migrate:rollback', ['--step' => 8]);
+    // Step 9: slice-030's verdict-source column, slice-029's table, slice-028's three migrations (network columns, hits table,
+    // shipping-countries setting), slice-026's two (acknowledgment log, digest-time setting) and slice-027's score column sort after
+    // this one and roll back first.
+    Artisan::call('migrate:rollback', ['--step' => 9]);
 
     expect(Schema::hasColumn('withdrawals', 'spam'))->toBeTrue()
         ->and(Schema::hasColumn('withdrawals', 'spam_level'))->toBeFalse()

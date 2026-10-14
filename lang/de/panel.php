@@ -198,6 +198,7 @@ return [
         'mark_spam' => 'Als Spam markieren',
         'mark_spam_heading' => 'Als Spam markieren?',
         'mark_spam_description' => 'Der Widerruf wechselt in den Reiter „Spam“ und wird in :days Tagen endgültig gelöscht. Bis dahin können Sie das mit „Kein Spam“ rückgängig machen.',
+        'is_not_spam' => '„Kein Spam“ bestätigt',
         'not_spam' => 'Kein Spam',
         'not_spam_heading' => 'Als „Kein Spam“ markieren?',
         'not_spam_description' => 'Der Widerruf wechselt in den Reiter „Posteingang“ und wird nie automatisch gelöscht. Die Eingangsbestätigung geht an den Einreicher, falls sie noch nicht verschickt wurde.',
@@ -217,6 +218,7 @@ return [
     'spam_verdict' => [
         'spam' => 'Bestätigter Spam',
         'not_spam' => 'Kein Spam',
+        'spam_auto' => 'Spam (automatisch)',
     ],
 
     'spam_signal' => [
@@ -258,8 +260,8 @@ return [
             'subject' => 'Betreffende Ware / Dienstleistung',
             'spam_level' => 'Spam-Stufe',
             'spam_reason' => 'Spam-Grund',
-            'spam_verdict' => 'Ihr Urteil',
-            'spam_verdict_at' => 'Urteil am',
+            'spam_verdict' => 'Ihre Entscheidung',
+            'spam_verdict_at' => 'Entscheidung am',
             'country' => 'Land',
             'network' => 'Netz',
             'handled_at' => 'Bearbeitet am',

@@ -198,6 +198,7 @@ return [
         'mark_spam' => 'Mark as spam',
         'mark_spam_heading' => 'Mark as spam?',
         'mark_spam_description' => 'The withdrawal moves to the Spam tab and is deleted for good in :days days. You can undo this until then with "Not spam".',
+        'is_not_spam' => 'Confirmed not spam',
         'not_spam' => 'Not spam',
         'not_spam_heading' => 'Mark as not spam?',
         'not_spam_description' => 'The withdrawal moves to the Inbox tab and is never deleted automatically. The acknowledgment goes to the submitter if it has not been sent yet.',
@@ -217,6 +218,7 @@ return [
     'spam_verdict' => [
         'spam' => 'Confirmed spam',
         'not_spam' => 'Not spam',
+        'spam_auto' => 'Spam (automatic)',
     ],
 
     'spam_signal' => [

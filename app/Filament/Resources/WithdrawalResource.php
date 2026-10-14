@@ -6,12 +6,10 @@ namespace App\Filament\Resources;
 
 use App\Enums\SpamLevel;
 use App\Filament\Resources\WithdrawalResource\Pages;
-use App\Filament\Resources\WithdrawalResource\SpamActions;
+use App\Filament\Resources\WithdrawalResource\WithdrawalActions;
 use App\Models\Withdrawal;
 use App\Spam\SpamReasonLabels;
 use BackedEnum;
-use Filament\Actions\Action;
-use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\PageRegistration;
@@ -26,7 +24,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 
 final class WithdrawalResource extends Resource
 {
@@ -70,7 +67,8 @@ final class WithdrawalResource extends Resource
 
                 TextColumn::make('spam_level')
                     ->label(__('panel.column.spam_level'))
-                    ->badge(),
+                    ->badge()
+                    ->description(fn (Withdrawal $record): ?string => $record->isAutoSorted() ? $record->verdictLabel() : null),
 
                 TextColumn::make('country')
                     ->label(__('panel.column.country'))
@@ -115,24 +113,10 @@ final class WithdrawalResource extends Resource
                             ->when($until, fn (Builder $q): Builder => $q->whereDate('created_at', '<=', $until));
                     }),
             ])
-            ->recordActions([
-                ViewAction::make(),
-                SpamActions::markAsSpam(),
-                SpamActions::markAsNotSpam(),
-                Action::make('toggle_handled')
-                    ->label(fn (Withdrawal $record): string => $record->isHandled()
-                        ? __('panel.action.unmark_handled')
-                        : __('panel.action.mark_handled'))
-                    ->icon(fn (Withdrawal $record): string => $record->isHandled() ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
-                    ->color(fn (Withdrawal $record): string => $record->isHandled() ? 'gray' : 'success')
-                    ->action(function (Withdrawal $record): void {
-                        $record->handled_at = $record->isHandled() ? null : Carbon::now();
-                        $record->save();
-                    }),
-            ])
+            ->recordActions(WithdrawalActions::row())
             ->toolbarActions([
-                SpamActions::bulkMarkAsSpam(),
-                SpamActions::bulkMarkAsNotSpam(),
+                WithdrawalActions::bulkMarkAsSpam(),
+                WithdrawalActions::bulkMarkAsNotSpam(),
             ])
             ->recordAction(null)
             ->recordUrl(
@@ -171,6 +155,7 @@ final class WithdrawalResource extends Resource
                         TextEntry::make('spam_verdict')
                             ->label(__('panel.infolist.field.spam_verdict'))
                             ->badge()
+                            ->formatStateUsing(fn (Withdrawal $record): ?string => $record->verdictLabel())
                             ->placeholder('—'),
                         TextEntry::make('spam_verdict_at')
                             ->label(__('panel.infolist.field.spam_verdict_at'))
