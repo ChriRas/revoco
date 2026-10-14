@@ -112,6 +112,20 @@ final class Withdrawal extends Model
             && $this->spam_verdict_source === SpamVerdictSource::Auto;
     }
 
+    /**
+     * The note below the level badge when a verdict overrides the system's level: auto-sorted rows always, an
+     * operator's "not spam" on a yellow / red row, an operator's "spam" on a green / yellow row; null otherwise.
+     */
+    public function verdictNote(): ?string
+    {
+        return match (true) {
+            $this->isAutoSorted() => $this->verdictLabel(),
+            $this->spam_verdict === SpamVerdict::NotSpam && $this->spam_level !== SpamLevel::Green => (string) __('panel.spam_verdict.not_spam_operator'),
+            $this->spam_verdict === SpamVerdict::Spam && $this->spam_level !== SpamLevel::Red => (string) __('panel.spam_verdict.spam_operator'),
+            default => null,
+        };
+    }
+
     /** The verdict for display, telling an auto-sorted row from an operator verdict; null without a verdict. */
     public function verdictLabel(): ?string
     {
