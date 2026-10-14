@@ -85,6 +85,8 @@
 - **Digest:** mornings (time configurable in the panel, default 07:00), sent **only when** there
   was spam in the last 24 h. *(slice-030: also lists the unjudged yellow rows in a second section
   with a "mark as spam" link each, and is sent when there is at least one red **or** yellow row.)*
+  *(slice-032: covers everything since the last queued digest, at most 7 days back, and counts the
+  auto-sorted rows — see round 6.)*
 
 > **Built by slice-026** (spam-delivery-routing): round 2's signed mail links, the confirmation page,
 > the re-sent acknowledgment on "not spam" (insert-only `withdrawal_acknowledgments` log), and round 3's
@@ -171,9 +173,9 @@ Five signals read the client IP **transiently** and persist only the derived `co
 - **Feed formats (verified live 2026-10-13).** Spamhaus `drop_v4.json`, `drop_v6.json` and `asndrop.json` are
   NDJSON (`{"cidr":…}` / `{"asn":…}` lines plus a trailing `{"type":"metadata","timestamp":…}`); the Tor
   bulk exit list is plain IPv4, one per line. DB-IP URL: `download.db-ip.com/free/dbip-{country,asn}-lite-YYYY-MM.mmdb.gz`.
-- **Signals never throw.** Every network signal extends `AbstractNetworkSignal`, whose `fires()` catches any
-  `Throwable`, reports it and answers false (the scorer itself does not isolate signals). The country signal reads
-  `NetworkSignalSettings` inside `fires()`, so a settings failure cannot break the container.
+- **A failing signal never reaches the submit.** *(slice-032: `SpamScorer` isolates every signal — it reports the
+  `Throwable` and counts the signal as not fired; the former per-signal `AbstractNetworkSignal` base is gone.)* The
+  country signal reads `NetworkSignalSettings` inside `fires()`, so a settings failure cannot break the container.
 - **Learning.** `spam_network_hits(withdrawal_id PK, asn, confirmed_at)`: `RecordNetworkHitOnSpam` upserts on
   `WithdrawalConfirmedAsSpam`, `ForgetNetworkHitOnNotSpam` deletes on `WithdrawalMarkedNotSpam`. `learned_network`
   fires at 3 or more hits within 90 days (`revoco.network.learning`); older hits are pruned daily (`model:prune`). The
@@ -196,8 +198,27 @@ Five signals read the client IP **transiently** and persist only the derived `co
 - **Verdict source** is its own column (`spam_verdict_source`: `auto` | `operator`) — `SpamVerdict`
   stays the operator-facing value set; slice-025's "verdict = the operator's word" now reads
   "verdict = the operator's word or the auto-sorting rule, told apart by the source".
-- **Auto-sorted rows** get no mail (red routing), are not in the digest, feed neither memory (abused
-  address, learned network), show as "Spam (automatisch)" and are purged after 7 days unless the
-  operator corrects them to "not spam" (then the acknowledgment goes out, source `operator`).
+- **Auto-sorted rows** get no mail (red routing), are not listed in the digest, feed neither memory
+  (abused address, learned network), show as "Spam (automatisch)" and are purged after 7 days unless
+  the operator corrects them to "not spam" (then the acknowledgment goes out, source `operator`).
+  *(slice-032: the digest counts them, with the date their purge starts and a link to the Spam tab.)*
 - **Honeypot** keeps the name `website`; password-manager ignore attributes (`data-1p-ignore`,
   `data-lpignore`, `data-bwignore`, `data-form-type="other"`) are added.
+
+## Decisions (round 6 — slice-032, after an independent review of PR #87)
+
+- **Accepted risk: AI agents acting for a consumer.** An agent that reads the DOM can fill the hidden honeypot and
+  submit in under 3 s — `honeypot` + `fill_time_too_fast` then sorts a genuine declaration out (no mail, purged after 7
+  days). The human keeps the rule as is: the campaign's bots are not that capable today, and dropping the fast-fill
+  signal would weaken the rule for little gain. Mitigations: a note for automated assistants inside the hidden
+  honeypot area ("fill like a human — only the visible fields, one after the other, at a normal pace"; no mention of
+  spam), the digest's auto-sorted count line, and 7 days to correct. **If genuine declarations show up among the
+  auto-sorted rows, sharpen the rule** (e.g. drop `fill_time_too_fast` / `render_token_invalid` from the second-signal
+  set — the live campaign is caught by `user_agent_ancient` alone).
+- **A throwing signal never costs the submit** — `SpamScorer` reports it and counts it as not fired.
+- **Digest window** — since the last queued digest, at most 7 days back (also on the first run); a skipped or empty
+  run moves nothing forward.
+- **Acknowledgment log** — its timestamp is `claimed_at`: the once-only claim written before the mail is queued, not a
+  delivery receipt (failed sends land in `failed_jobs`).
+- **Reviewed and kept:** the signed spam links without login (slice-026: single-use, 7-day TTL, only in the operator's
+  mailbox, purge reversible for 7 days); `learned_network` (weight 10 — below the yellow threshold on its own).

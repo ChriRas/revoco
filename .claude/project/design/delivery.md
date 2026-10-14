@@ -58,7 +58,10 @@ Which channel a level reaches is one table in `App\Delivery\ChannelPolicy`:
   (`NotificationSettings::$spam_digest_time`, default 07:00, app timezone). It queues one mail to
   the notification recipient for red rows from the last 24 h that have no operator verdict
   yet (up to 50 entries with a "not spam" link each, then "… and N more", plus a link to the
-  panel's spam tab). With none, or no recipient, it sends nothing.
+  panel's spam tab). With none, or no recipient, it sends nothing. *(slice-030: a second section lists the
+  unjudged yellow rows with a "mark as spam" link each. slice-032: the window runs from the last queued digest, at
+  most 7 days back, instead of the last 24 h, and a count line names the auto-sorted rows with their purge date —
+  see `spam-handling.md` round 6.)*
 
 The `spam_level` (`green` / `yellow` / `red`) never gates **acceptance** (the row is always
 stored); downstream it decides the channels above. The operator's verdict (`spam_verdict`:

@@ -119,9 +119,13 @@ record's integrity is protected by default. Erasure, if needed, is currently a
 manual DB operation; a proper retention policy (retention period + a controlled
 erasure path) is a candidate for a later slice. Revisit before public release.
 
-One exception since the spam-handling amendment (2026-10-13): rows the operator
-**confirmed** as spam are hard-deleted 7 days after the confirmation (`model:prune`).
-Unconfirmed rows are never deleted; the general retention question stays open.
+One exception since the spam-handling amendment (2026-10-13): rows **confirmed** as spam are
+hard-deleted 7 days after the confirmation (`model:prune`) — confirmed by the operator, or, since
+slice-030, automatically as definite spam (honeypot plus a second bot signal; see
+`spam-handling.md` round 5, incl. the accepted risk for AI agents acting for a consumer). Until
+the purge the operator can correct a row to "not spam"; the daily digest counts the auto-sorted
+rows with their purge date. Unjudged rows are never deleted; the general retention question
+stays open.
 
 ## Imprint & privacy policy (footer legal pages)
 
