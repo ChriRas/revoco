@@ -19,6 +19,10 @@ x-dev-worker: &dev-worker
   image: revoco-app:dev
   profiles: ["tools"]
   entrypoint: []
+  environment:
+    APP_ENV: local
+    # Same dev SQLite as the app service; the base file's prod path does not exist in dev.
+    DB_DATABASE: /var/www/html/database/database.sqlite
   volumes:
     - .:/var/www/html
     - ./storage:/var/www/html/storage
