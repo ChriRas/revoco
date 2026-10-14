@@ -78,11 +78,13 @@
   - *yellow (suspicious)* — acknowledgment **sent**; merchant mail flagged "spam suspected" + a
     "mark as spam" link; push as today.
   - *red (spam)* — no acknowledgment, no per-row merchant mail, no push; daily digest only, with
-    a "not spam" link per entry.
+    a "not spam" link per entry. *(slice-030: auto-sorted red rows — see round 5 — carry a verdict
+    and are left out of the digest.)*
 - **Shipping countries:** maintained in the panel (multi-select), default `DE`; empty list
   disables the country signal.
 - **Digest:** mornings (time configurable in the panel, default 07:00), sent **only when** there
-  was spam in the last 24 h.
+  was spam in the last 24 h. *(slice-030: also lists the unjudged yellow rows in a second section
+  with a "mark as spam" link each, and is sent when there is at least one red **or** yellow row.)*
 
 > **Built by slice-026** (spam-delivery-routing): round 2's signed mail links, the confirmation page,
 > the re-sent acknowledgment on "not spam" (insert-only `withdrawal_acknowledgments` log), and round 3's
@@ -93,7 +95,8 @@
 ## Decisions (round 4)
 
 - **Immutability amended** (`rules.md` Tabus): besides `handled_at`, the spam status and score
-  may change; rows **confirmed** as spam by the operator are purged after 7 days. The declaration
+  may change; rows **confirmed** as spam by the operator are purged after 7 days *(slice-030: and
+  rows auto-sorted as definite spam — round 5; `rules.md` amendment proposed at its Phase 9)*. The declaration
   content (name, e-mail, order, subject, receipt time) stays immutable; unconfirmed red rows are
   never purged.
 - **Default panel view = green + yellow.** Red and confirmed spam live behind a "Spam" tab/filter.
@@ -183,3 +186,18 @@ Five signals read the client IP **transiently** and persist only the derived `co
 - **Test contract.** MaxMind's public test MMDBs under `tests/fixtures/network/` stand in for DB-IP;
   `useNetworkDirectory()`, `writeNetworkFeeds()` and `shippingCountries()` in `tests/Pest.php` set a per-test
   data directory, feed files and the shipping list. `NETWORK_FIXTURE_IP_SE` resolves to SE / AS29518.
+
+## Decisions (round 5 — slice-030, after the local hands-on test)
+
+- **Auto-sorting:** a submit with the `honeypot` signal **plus** at least one of `user_agent_ancient`,
+  `fill_time_too_fast`, `render_token_invalid`, `content_gibberish` is stored with the verdict "spam"
+  right away, source `auto` (config `revoco.spam.auto_confirm`). Network signals never count. The
+  honeypot alone stays an unjudged red row (password managers / AI agents on current browsers).
+- **Verdict source** is its own column (`spam_verdict_source`: `auto` | `operator`) — `SpamVerdict`
+  stays the operator-facing value set; slice-025's "verdict = the operator's word" now reads
+  "verdict = the operator's word or the auto-sorting rule, told apart by the source".
+- **Auto-sorted rows** get no mail (red routing), are not in the digest, feed neither memory (abused
+  address, learned network), show as "Spam (automatisch)" and are purged after 7 days unless the
+  operator corrects them to "not spam" (then the acknowledgment goes out, source `operator`).
+- **Honeypot** keeps the name `website`; password-manager ignore attributes (`data-1p-ignore`,
+  `data-lpignore`, `data-bwignore`, `data-form-type="other"`) are added.
