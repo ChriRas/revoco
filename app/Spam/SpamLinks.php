@@ -22,6 +22,9 @@ final class SpamLinks
     /** Days a link stays valid; matches the purge horizon. */
     public const int TTL_DAYS = 7;
 
+    /** Session flash key carrying the action a link just applied, for the page after the redirect. */
+    public const string APPLIED_FLASH = 'spam_link_applied';
+
     public static function url(Withdrawal $withdrawal, SpamLinkAction $action): string
     {
         return self::origin().URL::temporarySignedRoute(

@@ -15,7 +15,8 @@ use Illuminate\Http\Response;
  * Applies the operator's verdict from a signed mail link. Only valid while the row's
  * verdict still equals the one at issue (`state`); a repeated or outdated request changes
  * nothing. Redirects to the same URL (PRG), on the public origin and not the one the
- * app sees behind its proxy.
+ * app sees behind its proxy; a change is flashed, so that page confirms it instead of
+ * reading as an outdated link (its `state` no longer matches).
  */
 final class ApplySpamLinkController extends Controller
 {
@@ -27,8 +28,8 @@ final class ApplySpamLinkController extends Controller
             return response()->view('spam-link.gone', status: 404);
         }
 
-        if ($request->query('state') === SpamLinks::state($row)) {
-            $action->applyTo($row);
+        if ($request->query('state') === SpamLinks::state($row) && $action->applyTo($row)) {
+            $request->session()->flash(SpamLinks::APPLIED_FLASH, $action->value);
         }
 
         return redirect()->to(SpamLinks::origin().$request->getRequestUri());

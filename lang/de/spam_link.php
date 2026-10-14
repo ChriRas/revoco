@@ -14,6 +14,11 @@ return [
     'status' => 'Aktueller Status',
     'closed' => 'Dieser Link wurde bereits verwendet oder gilt nicht mehr. Den aktuellen Status sehen Sie oben.',
 
+    'applied' => [
+        'spam' => 'Erledigt: als Spam markiert. Der Widerruf wird nach :days Tagen endgültig gelöscht; bis dahin können Sie das im Backend rückgängig machen.',
+        'not-spam' => 'Erledigt: als „Kein Spam“ markiert. Die Eingangsbestätigung geht an den Einreicher, falls sie noch nicht verschickt wurde.',
+    ],
+
     'confirm' => [
         'title' => [
             'spam' => 'Als Spam markieren?',

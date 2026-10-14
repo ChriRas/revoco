@@ -59,10 +59,18 @@ it('confirms the row as spam on POST, redirects to the page and ignores a repeat
     expect($row->fresh()?->spam_verdict)->toBe(SpamVerdict::Spam)
         ->and($confirmedAt)->not->toBeNull();
 
+    // The page after the redirect confirms the change; a later reload shows the link as used.
     $this->get($url)
         ->assertOk()
         ->assertSee('Bestätigter Spam')
-        ->assertSee('bereits verwendet');
+        ->assertSee('Erledigt: als Spam markiert')
+        ->assertDontSee('bereits verwendet')
+        ->assertDontSee('<form', false);
+
+    $this->get($url)
+        ->assertOk()
+        ->assertSee('bereits verwendet')
+        ->assertDontSee('Erledigt');
 
     $this->travel(1)->hour();
     $this->post($url)->assertRedirect($url);
@@ -79,6 +87,42 @@ it('shows a link as no longer valid once the status changed elsewhere', function
     $this->post($url);
 
     expect($row->fresh()?->spam_verdict)->toBe(SpamVerdict::NotSpam);
+});
+
+it('confirms a not-spam correction on the page after the redirect', function () {
+    $row = Withdrawal::factory()->spam()->create();
+    $url = SpamLinks::url($row, SpamLinkAction::NotSpam);
+
+    $this->followingRedirects()
+        ->post($url)
+        ->assertOk()
+        ->assertSee('Erledigt: als „Kein Spam“ markiert')
+        ->assertDontSee('bereits verwendet');
+
+    expect($row->fresh()?->spam_verdict)->toBe(SpamVerdict::NotSpam);
+});
+
+it('shows no success for a repeated POST that changed nothing', function () {
+    $row = Withdrawal::factory()->create();
+    $url = markSpamUrlFromMail($row);
+
+    $this->post($url);
+    $this->get($url);
+
+    $this->followingRedirects()
+        ->post($url)
+        ->assertOk()
+        ->assertSee('bereits verwendet')
+        ->assertDontSee('Erledigt');
+});
+
+it('names an auto-sorted row as automatic spam on the link page', function () {
+    $row = Withdrawal::factory()->autoSorted()->create();
+
+    $this->get(SpamLinks::url($row, SpamLinkAction::NotSpam))
+        ->assertOk()
+        ->assertSee('Spam (automatisch)')
+        ->assertDontSee('Bestätigter Spam');
 });
 
 it('rejects a tampered signature with a neutral 403 page', function () {

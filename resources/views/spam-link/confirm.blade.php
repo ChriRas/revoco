@@ -11,10 +11,12 @@
         {{ __('mail.field.datetime') }}: @include('mail.withdrawal.received-at', ['at' => $withdrawal->created_at])
     </p>
     <p class="wf-success-text" style="margin-left:0">
-        {{ __('spam_link.status') }}: <strong>{{ ($withdrawal->spam_verdict ?? $withdrawal->spam_level)->getLabel() }}</strong>
+        {{ __('spam_link.status') }}: <strong>{{ $withdrawal->verdictLabel() ?? $withdrawal->spam_level->getLabel() }}</strong>
     </p>
 
-    @if ($open)
+    @if ($applied)
+        <p class="wf-success-text" style="margin-left:0"><strong>{{ __('spam_link.applied.'.$action->value, ['days' => \App\Models\Withdrawal::SPAM_RETENTION_DAYS]) }}</strong></p>
+    @elseif ($open)
         <p class="wf-success-text" style="margin-left:0">{{ __('spam_link.confirm.text.'.$action->value, ['days' => \App\Models\Withdrawal::SPAM_RETENTION_DAYS]) }}</p>
         <form method="POST" action="{{ $formAction }}" class="wf-actions">
             @csrf

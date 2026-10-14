@@ -29,6 +29,7 @@ final class ShowSpamLinkController extends Controller
             'withdrawal' => $row,
             'action' => $action,
             'open' => $request->query('state') === SpamLinks::state($row),
+            'applied' => $request->session()->get(SpamLinks::APPLIED_FLASH) === $action->value,
             'formAction' => SpamLinks::origin().$request->getRequestUri(),
         ]);
     }

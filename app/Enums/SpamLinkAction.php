@@ -14,10 +14,10 @@ enum SpamLinkAction: string
     case Spam = 'spam';
     case NotSpam = 'not-spam';
 
-    /** Applies the operator verdict through the same Action the panel uses. */
-    public function applyTo(Withdrawal $withdrawal): void
+    /** Applies the operator verdict through the same Action the panel uses; returns whether it changed the row. */
+    public function applyTo(Withdrawal $withdrawal): bool
     {
-        match ($this) {
+        return match ($this) {
             self::Spam => app(MarkWithdrawalAsSpam::class)->handle($withdrawal),
             self::NotSpam => app(MarkWithdrawalAsNotSpam::class)->handle($withdrawal),
         };
