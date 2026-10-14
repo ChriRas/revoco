@@ -49,7 +49,8 @@ it('queues one acknowledgment for a red row when its digest link says not spam',
     $queued->locale('de')->assertSeeInHtml('01.09.2026, 10:00');
 
     $entry = AcknowledgmentLog::where('withdrawal_id', $row->id)->sole();
-    expect($entry->trigger)->toBe(AcknowledgmentTrigger::NotSpam);
+    expect($entry->trigger)->toBe(AcknowledgmentTrigger::NotSpam)
+        ->and($entry->claimed_at)->not->toBeNull();
 });
 
 it('sends no second acknowledgment when the verdict flips back and forth', function () {
@@ -99,9 +100,9 @@ it('backfills a submit entry for every existing row that is not red', function (
     $red = Withdrawal::factory()->spam()->create();
     $correctedRed = Withdrawal::factory()->spam()->notSpam()->create();
 
-    // Step 8: slice-030's verdict-source column, slice-029's table, slice-028's three migrations (network columns, hits table,
+    // Step 10: slice-032's two (claimed_at rename, digest last-sent setting), slice-030's verdict-source column, slice-029's table, slice-028's three migrations (network columns, hits table,
     // shipping-countries setting), the score column (slice-027) and the digest-time settings migration roll back before the log migration.
-    Artisan::call('migrate:rollback', ['--step' => 8]);
+    Artisan::call('migrate:rollback', ['--step' => 10]);
     expect(Schema::hasTable('withdrawal_acknowledgments'))->toBeFalse();
     Artisan::call('migrate');
 
