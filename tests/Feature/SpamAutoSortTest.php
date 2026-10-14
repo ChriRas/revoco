@@ -12,9 +12,14 @@ use App\Filament\Resources\WithdrawalResource\Pages\ViewWithdrawal;
 use App\Mail\WithdrawalAcknowledgment;
 use App\Models\User;
 use App\Models\Withdrawal;
+use App\Spam\Signals\Honeypot;
+use App\Spam\SpamScorer;
+use App\Spam\SpamSignal;
+use App\Spam\SubmissionContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Mail;
 
 use function Pest\Livewire\livewire;
@@ -107,4 +112,28 @@ it('labels an auto-sorted row as automatic spam in the list and the detail view'
 
     livewire(ViewWithdrawal::class, ['record' => $auto->getKey()])
         ->assertSee(__('panel.spam_verdict.spam_auto'));
+});
+
+it('stores the submit and redirects when a spam signal throws', function () {
+    Exceptions::fake();
+    $this->app->bind(SpamScorer::class, fn (): SpamScorer => new SpamScorer([
+        new readonly class implements SpamSignal
+        {
+            public function key(): string
+            {
+                return 'throttle';
+            }
+
+            public function fires(SubmissionContext $context): bool
+            {
+                throw new RuntimeException('database is locked');
+            }
+        },
+        app(Honeypot::class),
+    ]));
+
+    submitCleanWithdrawal(honeypotPayload())->assertRedirect(route('withdrawal.success'));
+
+    expect(Withdrawal::sole()->spam_reason)->toBe('honeypot');
+    Exceptions::assertReported(RuntimeException::class);
 });

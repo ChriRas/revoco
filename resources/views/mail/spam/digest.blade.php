@@ -35,6 +35,13 @@
             @endif
         @endif
 
+        @if ($autoSortedTotal > 0)
+            <p style="margin:{{ $total > 0 || $suspectedEntries->isNotEmpty() ? '28px' : '0' }} 0 0;">
+                {{ trans_choice('mail.digest.auto_sorted', $autoSortedTotal, ['count' => $autoSortedTotal, 'date' => $autoPurgeDate]) }}
+                <a href="{{ $spamTabUrl }}" style="color:#33576f;font-weight:600;">{{ __('mail.digest.auto_sorted_link') }}</a>
+            </p>
+        @endif
+
         <p style="margin:22px 0 0;"><a href="{{ $panelUrl }}" style="color:#33576f;font-weight:600;">{{ __('mail.digest.panel_link') }}</a></p>
     </div>
 </body>

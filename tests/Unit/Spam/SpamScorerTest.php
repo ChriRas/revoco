@@ -7,6 +7,7 @@ use App\Spam\SpamAssessment;
 use App\Spam\SpamScorer;
 use App\Spam\SpamSignal;
 use App\Spam\SubmissionContext;
+use Illuminate\Support\Facades\Exceptions;
 
 require_once __DIR__.'/Support.php';
 
@@ -123,3 +124,27 @@ it('does not auto-confirm the honeypot alone, with a network signal, or a bot si
     'honeypot + network' => [['honeypot', 'drop_network', 'asn_drop', 'tor_exit']],
     'bot signals without honeypot' => [['user_agent_ancient', 'fill_time_too_fast', 'render_token_invalid', 'content_gibberish']],
 ]);
+
+it('reports a throwing signal and scores the others as if it had not fired', function () {
+    Exceptions::fake();
+    config(['revoco.spam.weights' => ['broken' => 50, 'b' => 40]]);
+
+    $broken = new readonly class implements SpamSignal
+    {
+        public function key(): string
+        {
+            return 'broken';
+        }
+
+        public function fires(SubmissionContext $context): bool
+        {
+            throw new RuntimeException('cache store unavailable');
+        }
+    };
+
+    $assessment = (new SpamScorer([$broken, fixedSignal('b', true)]))->assess(spamContext());
+
+    expect($assessment->score)->toBe(40)
+        ->and($assessment->signals)->toBe(['b']);
+    Exceptions::assertReported(fn (RuntimeException $e): bool => $e->getMessage() === 'cache store unavailable');
+});

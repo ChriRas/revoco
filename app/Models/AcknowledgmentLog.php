@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @property int $id
  * @property int $withdrawal_id
- * @property Carbon $sent_at
+ * @property Carbon $claimed_at when the acknowledgment was claimed and queued — not a delivery receipt
  * @property AcknowledgmentTrigger $trigger
  */
 final class AcknowledgmentLog extends Model
@@ -27,7 +27,7 @@ final class AcknowledgmentLog extends Model
     public $timestamps = false;
 
     /** @var list<string> */
-    protected $fillable = ['withdrawal_id', 'sent_at', 'trigger'];
+    protected $fillable = ['withdrawal_id', 'claimed_at', 'trigger'];
 
     /**
      * @return array<string, string>
@@ -35,7 +35,7 @@ final class AcknowledgmentLog extends Model
     protected function casts(): array
     {
         return [
-            'sent_at' => 'datetime',
+            'claimed_at' => 'datetime',
             'trigger' => AcknowledgmentTrigger::class,
         ];
     }
@@ -56,7 +56,7 @@ final class AcknowledgmentLog extends Model
     {
         return DB::table((new self)->getTable())->insertOrIgnore([
             'withdrawal_id' => $withdrawal->id,
-            'sent_at' => now(),
+            'claimed_at' => now(),
             'trigger' => $trigger->value,
         ]) === 1;
     }

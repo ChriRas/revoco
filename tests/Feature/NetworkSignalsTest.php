@@ -220,7 +220,9 @@ it('does not let a failing network signal reach the submit', function () {
         network: new NetworkInfo('SE', 29518, null),
     );
 
-    expect((new LearnedNetwork)->fires($context))->toBeFalse();
+    // The signal itself throws; the scorer reports it and counts it as not fired (slice-032).
+    expect(fn () => (new LearnedNetwork)->fires($context))->toThrow(QueryException::class)
+        ->and(app(SpamScorer::class)->assess($context)->signals)->not->toContain('learned_network');
 
     submitFromIp(NETWORK_FIXTURE_IP_SE)->assertRedirect(route('withdrawal.success'));
     expect(Withdrawal::count())->toBe(1);
@@ -235,9 +237,10 @@ it('does not fire the country signal when the settings cannot be read', function
         network: new NetworkInfo('US', 209, null),
     );
 
-    // The country is outside the saved ['SE'], so only a failing settings read can make this false.
+    // The country is outside the saved ['SE']; the failing settings read throws in the signal, and the
+    // scorer reports it and counts it as not fired (slice-032).
     expect(fn () => app(NetworkSignalSettings::class)->shipping_countries)->toThrow(QueryException::class)
-        ->and((new CountryOutsideShipping)->fires($context))->toBeFalse()
+        ->and(fn () => (new CountryOutsideShipping)->fires($context))->toThrow(QueryException::class)
         ->and(app(SpamScorer::class)->assess($context)->signals)->not->toContain('country_outside_shipping');
 });
 

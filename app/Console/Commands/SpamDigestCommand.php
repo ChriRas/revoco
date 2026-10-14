@@ -4,30 +4,32 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Enums\SpamLevel;
 use App\Mail\SpamDigest;
 use App\Models\Withdrawal;
+use App\Settings\NotificationSettings;
+use App\Spam\SpamDigestWindow;
 use App\Support\NotificationRecipient;
+use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 
 /**
- * Queues the morning digest of the red and the yellow withdrawals the operator has not yet
- * judged and that arrived in the last 24 hours, in two sections. Auto-sorted rows carry a
- * verdict and are left out. Scheduled daily at the time set on the notifications page; can
- * also be run by hand. Takes no input, so it is safe under --no-interaction. Sends nothing,
- * and says why, when there is nothing to report.
+ * Queues the morning digest of everything received since the last digest was queued (at most
+ * {@see Withdrawal::SPAM_RETENTION_DAYS} days back, also on the first run): the red and the yellow
+ * withdrawals the operator has not yet judged, in two sections, and a count of the rows sorted out
+ * automatically before they are purged. A skipped or empty run moves nothing forward, so no row
+ * misses the digest. Scheduled daily at the time set on the notifications page; can also be run by
+ * hand. Takes no input, so it is safe under --no-interaction. Sends nothing, and says why, when
+ * there is nothing to report.
  */
 final class SpamDigestCommand extends Command
 {
     protected $signature = 'revoco:spam-digest';
 
-    protected $description = 'Queue the digest mail of red and yellow, unjudged withdrawals from the last 24 hours.';
+    protected $description = 'Queue the digest mail of unjudged red and yellow withdrawals and auto-sorted spam since the last digest.';
 
-    public function handle(): int
+    public function handle(NotificationSettings $settings): int
     {
         $recipient = NotificationRecipient::resolve();
 
@@ -37,47 +39,33 @@ final class SpamDigestCommand extends Command
             return self::SUCCESS;
         }
 
-        $spam = $this->unjudged(SpamLevel::Red);
-        $suspected = $this->unjudged(SpamLevel::Yellow);
+        $now = CarbonImmutable::now();
+        $since = $this->since($settings, $now);
 
-        $total = $spam->count();
-        $suspectedTotal = $suspected->count();
+        $window = SpamDigestWindow::since($since);
 
-        if ($total === 0 && $suspectedTotal === 0) {
-            $this->line('No digest sent: no unresolved spam or suspected withdrawals in the last 24 hours.');
+        if ($window->isEmpty()) {
+            $this->line('No digest sent: nothing to report since the last digest.');
 
             return self::SUCCESS;
         }
 
-        Mail::to($recipient)->send(
-            (new SpamDigest($this->firstEntries($spam), $total, $this->firstEntries($suspected), $suspectedTotal))
-                ->locale(Config::string('app.default_locale')),
-        );
+        Mail::to($recipient)->send((new SpamDigest($window))->locale(Config::string('app.default_locale')));
 
-        $this->line("Digest queued: {$total} spam, {$suspectedTotal} suspected.");
+        $settings->spam_digest_last_sent_at = $now->toIso8601String();
+        $settings->save();
+
+        $this->line("Digest queued: {$window->spamTotal} spam, {$window->suspectedTotal} suspected, {$window->autoSortedTotal} auto-sorted.");
 
         return self::SUCCESS;
     }
 
-    /**
-     * Rows of the given level without a verdict from the last 24 hours.
-     *
-     * @return Builder<Withdrawal>
-     */
-    private function unjudged(SpamLevel $level): Builder
+    /** The window start: the last queued digest, but never more than the purge horizon back. */
+    private function since(NotificationSettings $settings, CarbonImmutable $now): CarbonImmutable
     {
-        return Withdrawal::query()
-            ->where('spam_level', $level)
-            ->whereNull('spam_verdict')
-            ->where('created_at', '>=', now()->subDay());
-    }
+        $horizon = $now->subDays(Withdrawal::SPAM_RETENTION_DAYS);
+        $last = $settings->spam_digest_last_sent_at;
 
-    /**
-     * @param  Builder<Withdrawal>  $query
-     * @return Collection<int, Withdrawal>
-     */
-    private function firstEntries(Builder $query): Collection
-    {
-        return $query->orderBy('created_at')->orderBy('id')->limit(SpamDigest::MAX_ENTRIES)->get();
+        return $last === null ? $horizon : CarbonImmutable::parse($last)->max($horizon);
     }
 }

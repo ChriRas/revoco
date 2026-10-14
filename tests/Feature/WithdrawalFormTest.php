@@ -95,3 +95,13 @@ it('keeps the honeypot named website and marks it ignored for the common passwor
         ->toContain('data-bwignore')
         ->toContain('data-form-type="other"');
 });
+
+it('tells automated assistants inside the hidden honeypot area to fill the form like a human', function () {
+    $html = (string) $this->withoutVite()->get(route('withdrawal.form'))->assertOk()->getContent();
+
+    preg_match('/<div class="wf-hp" aria-hidden="true">(.*?)<\/div>/s', $html, $block);
+
+    expect($block[1] ?? '')->toContain(__('wf.honeypot.agent_hint'))
+        ->toContain('name="website"')
+        ->not->toContain('Spam');
+});
