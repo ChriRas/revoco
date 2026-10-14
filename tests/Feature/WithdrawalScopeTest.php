@@ -80,7 +80,7 @@ it('accepts a free-text submit and redirects regardless of the scope config (§ 
     // NONE of the enabled categories — the submit must still succeed.
     WithdrawalScopeSettings::fake(['offers_goods' => true, 'offers_services' => false, 'offers_digital' => false]);
 
-    $this->post(route('withdrawal.store'), [
+    submitCleanWithdrawal([
         'name' => 'Max Mustermann',
         'email' => 'kunde@example.com',
         'orderNumber' => '',
@@ -99,7 +99,7 @@ it('introduces no new required field — the three mandated fields still suffice
     WithdrawalScopeSettings::fake(['offers_goods' => true, 'offers_services' => true, 'offers_digital' => true]);
 
     // Exactly the three § 356a Abs. 2 fields — no orderNumber, no scope field.
-    $this->post(route('withdrawal.store'), [
+    submitCleanWithdrawal([
         'name' => 'Max Mustermann',
         'email' => 'kunde@example.com',
         'subject' => 'Betrifft eine Bestellung',

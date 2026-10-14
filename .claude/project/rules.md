@@ -6,8 +6,8 @@
 
 - **Language:** PHP / Laravel — latest stable at scaffold time. Verify exact versions live before scaffolding.
 - **Frontend:** Blade + Controller + FormRequest (no Livewire); theming via CSS `data-theme`, active theme via `APP_THEME`.
-- **i18n:** Laravel localization (`lang/<code>/*`), all user-facing strings as keys; default `de`. More languages = new lang files.
-- **Operator backend:** Filament — one `Withdrawal` resource behind login.
+- **i18n:** Laravel localization (`lang/<code>/*`), all user-facing strings as keys; default `de`. More languages = new lang files. German framework translations (`lang/de.json`, `lang/de/{validation,auth,passwords,pagination,…}.php`) were published once from laravel-lang and are maintained in the repo — the package itself is not a dependency (it pulls abandoned packages that fail `composer audit`).
+- **Operator backend:** Filament — one `Withdrawal` resource behind login. Filament assets are committed under `public/`; after a Filament update run `php artisan filament:assets` — CI fails on drift.
 - **Database:** SQLite (file on a persistent volume).
 - **Queue:** database driver + worker (e-mails + ntfy push run async).
 - **Mail:** direct SMTP via `.env` (operator's mail server).
@@ -26,7 +26,7 @@
 - **Node is build-only** — kept out of the PHP image, run as a profiled `node` compose
   service (Vite).
 - **Task (go-task)** is the single host orchestrator; all PHP/Node tooling runs in
-  containers (no local runtimes). `task check` = Pint + PHPStan + Pest is the pre-commit gate.
+  containers (no local runtimes). `task check` = composer audit + Pint + PHPStan + Pest is the pre-commit gate (mirrors CI).
 - **SQLite** persists as a bind-mounted file in dev (no DB service); dev stack on `localhost:8580`.
 - **Compose = base + override:** `docker-compose.yml` is the generic **prod** base; `docker-compose.override.yml` carries the dev deltas. Plain `docker compose up` / `task up` → dev; prod runs `docker compose -f docker-compose.yml up`. Prod runs **non-root** (php-fpm workers + queue/scheduler as `www-data`); the prod entrypoint **fails fast if `APP_KEY` is missing** (never auto-generates). (slice-006)
 - **Tests pin the behaviour drivers** (`APP_ENV=testing`, `QUEUE_CONNECTION=sync`, `CACHE/SESSION/MAIL=array`) at the runner boundary — `RUN_TEST` in `Taskfile.yml` and the `-e` flags in `ci.yml`'s Pest step — because the prod-base compose env is inherited by the dev container and (as real OS env) would otherwise shadow `phpunit.xml`. **Keep the two in sync.** (slice-006)
@@ -45,7 +45,7 @@
 
 ## Workflow Rules
 
-- The withdrawal submit must never fail on an external dependency (SMTP, push, shop) — async via queue is mandatory. The delivery model (event → queued fan-out, ack-always, PII-free push) lives in [`design/delivery.md`](./design/delivery.md).
+- The withdrawal submit must never fail on an external dependency (SMTP, push, shop) — async via queue is mandatory. The delivery model (event → queued fan-out, acknowledgment per spam level — withheld for red rows until a “not spam” correction, PII-free push) lives in [`design/delivery.md`](./design/delivery.md).
 - Tests green before commit; Pint + PHPStan (level max) before commit.
 - No direct push to `main` — always via PR.
 - Keep versions current; upgrades are their own slices behind green gates.
@@ -67,7 +67,7 @@
 
 - No hard blocking of the submit via spam signals or captcha — signals classify only.
 - No mandatory fields beyond name / contract identification / e-mail; no advertising in the acknowledgment e-mail.
-- The stored withdrawal record is **immutable** — no operator UI or other code path may edit or delete it; the only permitted mutation is the operator's `handled_at` triage toggle. *Grounds:* integrity of the § 356a legal record (slice-005).
+- The stored withdrawal record is **immutable** — no operator UI or other code path may edit or delete its declaration content (name, e-mail, order, subject, receipt time). Permitted mutations: the operator's `handled_at` triage toggle and the spam status/score; rows **confirmed** as spam — by the operator, or automatically as definite spam (honeypot plus a second bot signal, slice-030) — are purged after 7 days (never unjudged ones). *Grounds:* integrity of the § 356a legal record (slice-005); spam amendment 2026-10-13 — see `design/spam-handling.md`.
 - **No operator/infra specifics in this public repo** — real domains, IPs, hosting, reverse-proxy/VPN details, secrets, and brand assets live in the private infra repo. Ship placeholders + `.env.example` only.
 - Non-production environments never send real mail/push (`MAIL_MAILER=log`, push off).
 - The `research/` folder is read-only and never committed.

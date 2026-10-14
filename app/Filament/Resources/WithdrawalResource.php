@@ -4,24 +4,26 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
+use App\Enums\SpamLevel;
 use App\Filament\Resources\WithdrawalResource\Pages;
+use App\Filament\Resources\WithdrawalResource\WithdrawalActions;
 use App\Models\Withdrawal;
+use App\Spam\SpamReasonLabels;
 use BackedEnum;
-use Filament\Actions\Action;
-use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\PageRegistration;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 
 final class WithdrawalResource extends Resource
 {
@@ -63,14 +65,15 @@ final class WithdrawalResource extends Resource
                     ->searchable()
                     ->placeholder('—'),
 
-                IconColumn::make('spam')
-                    ->label(__('panel.column.no_spam'))
-                    ->boolean()
-                    ->getStateUsing(fn (Withdrawal $record): bool => ! $record->spam)
-                    ->trueIcon('heroicon-o-check-circle')
-                    ->falseIcon('heroicon-o-exclamation-triangle')
-                    ->trueColor('success')
-                    ->falseColor('danger'),
+                TextColumn::make('spam_level')
+                    ->label(__('panel.column.spam_level'))
+                    ->badge()
+                    ->description(fn (Withdrawal $record): ?string => $record->isAutoSorted() ? $record->verdictLabel() : null),
+
+                TextColumn::make('country')
+                    ->label(__('panel.column.country'))
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 IconColumn::make('handled_at')
                     ->label(__('panel.column.handled'))
@@ -89,10 +92,9 @@ final class WithdrawalResource extends Resource
                     ->trueLabel(__('panel.filter.handled_only'))
                     ->falseLabel(__('panel.filter.unhandled_only')),
 
-                TernaryFilter::make('spam')
-                    ->label(__('panel.filter.spam_status'))
-                    ->trueLabel(__('panel.filter.spam_only'))
-                    ->falseLabel(__('panel.filter.not_spam_only')),
+                SelectFilter::make('spam_level')
+                    ->label(__('panel.filter.spam_level'))
+                    ->options(SpamLevel::class),
 
                 Filter::make('date_range')
                     ->label(__('panel.filter.date_range'))
@@ -111,20 +113,11 @@ final class WithdrawalResource extends Resource
                             ->when($until, fn (Builder $q): Builder => $q->whereDate('created_at', '<=', $until));
                     }),
             ])
-            ->actions([
-                ViewAction::make(),
-                Action::make('toggle_handled')
-                    ->label(fn (Withdrawal $record): string => $record->isHandled()
-                        ? __('panel.action.unmark_handled')
-                        : __('panel.action.mark_handled'))
-                    ->icon(fn (Withdrawal $record): string => $record->isHandled() ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
-                    ->color(fn (Withdrawal $record): string => $record->isHandled() ? 'gray' : 'success')
-                    ->action(function (Withdrawal $record): void {
-                        $record->handled_at = $record->isHandled() ? null : Carbon::now();
-                        $record->save();
-                    }),
+            ->recordActions(WithdrawalActions::row())
+            ->toolbarActions([
+                WithdrawalActions::bulkMarkAsSpam(),
+                WithdrawalActions::bulkMarkAsNotSpam(),
             ])
-            ->bulkActions([])
             ->recordAction(null)
             ->recordUrl(
                 fn (Withdrawal $record): string => Pages\ViewWithdrawal::getUrl(['record' => $record]),
@@ -152,14 +145,30 @@ final class WithdrawalResource extends Resource
                 Section::make(__('panel.infolist.section.triage'))
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('spam')
-                            ->label(__('panel.infolist.field.spam_signal'))
+                        TextEntry::make('spam_level')
+                            ->label(__('panel.infolist.field.spam_level'))
+                            ->badge(),
+                        TextEntry::make('spam_reason')
+                            ->label(__('panel.infolist.field.spam_reason'))
+                            ->formatStateUsing(fn (?string $state): ?string => SpamReasonLabels::render($state))
+                            ->placeholder('—'),
+                        TextEntry::make('spam_verdict')
+                            ->label(__('panel.infolist.field.spam_verdict'))
                             ->badge()
-                            ->formatStateUsing(fn (bool $state): string => $state
-                                ? __('panel.infolist.spam.yes')
-                                : __('panel.infolist.spam.no'))
-                            ->color(fn (bool $state): string => $state ? 'danger' : 'success'),
-                        TextEntry::make('spam_reason')->label(__('panel.infolist.field.spam_reason'))->placeholder('—'),
+                            ->formatStateUsing(fn (Withdrawal $record): ?string => $record->verdictLabel())
+                            ->placeholder('—'),
+                        TextEntry::make('spam_verdict_at')
+                            ->label(__('panel.infolist.field.spam_verdict_at'))
+                            ->dateTime('d.m.Y H:i', 'Europe/Berlin')
+                            ->placeholder('—'),
+                        TextEntry::make('country')
+                            ->label(__('panel.infolist.field.country'))
+                            ->placeholder('—'),
+                        TextEntry::make('asn')
+                            ->label(__('panel.infolist.field.network'))
+                            ->formatStateUsing(fn (?int $state, Withdrawal $record): ?string => $state === null ? null : trim('AS'.$state.' '.$record->asn_org))
+                            ->placeholder('—'),
+                        View::make('panels.db-ip-attribution')->columnSpanFull(),
                     ]),
 
                 Section::make(__('panel.infolist.section.status'))

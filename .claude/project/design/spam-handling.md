@@ -49,10 +49,176 @@
 - **IP-derived data:** resolve **country + ASN locally** and persist them on the row; the raw IP
   is still never persisted.
 
-## Open questions (for the planning dialogue)
+## Decisions (round 2)
 
-- Which confidence level suppresses which channel (merchant mail / push / ack)?
-- Ack for honeypot rows: suppress, delay with operator veto, or keep sending?
-- Persist IP-derived data (country, ASN) on the row, or evaluate transiently only?
-- Is a blocklist (IP, ASN, e-mail) operator-curated, feed-driven, or both?
-- Retention period for confirmed spam; does "handled spam" disappear or move to a trash view?
+- **Mail links:** every non-spam merchant notification carries "mark as spam"; the daily digest
+  carries "not spam" per entry. Both: random single-use token → confirmation page → POST
+  (scanner prefetch must not mutate).
+- **False-positive correction** ("not spam") **automatically sends the withheld acknowledgment**,
+  stating the original receipt date/time.
+- **Retention:** confirmed spam is hidden from the default view and **purged after 7 days**.
+- **Signals (all four groups, never blocking):** content (random strings, no space in name, equal
+  lengths) · network + country (datacenter ASN, country outside an operator-maintained shipping
+  list, Spamhaus DROP/ASN-DROP, Tor exits) · learning from confirmed spam (networks, e-mail) ·
+  behaviour (signed render timestamp → fill time, ancient UA).
+- **Abused-address memory (operator idea):** keep a keyed hash of e-mail addresses seen in
+  confirmed spam + timestamp; a hit raises the score; "not spam" removes the entry; entries
+  expire after ~1 year. Recommended shape: HMAC-SHA256 with an app-held key (a plain hash of an
+  e-mail is reversible by dictionary), normalized address (trim + lowercase), sliding expiry on
+  `last_seen_at`. Still pseudonymous personal data (GDPR) → legitimate interest (abuse
+  prevention), storage limitation via the expiry; the operator's privacy policy must mention it
+  (Revoco never authors that text).
+
+## Decisions (round 3)
+
+- **Abused-address hit alone = suspicion only** — it raises the score; spam needs at least one
+  further signal (a real victim who later withdraws for real still gets the acknowledgment).
+- **Three levels:**
+  - *green* — normal delivery.
+  - *yellow (suspicious)* — acknowledgment **sent**; merchant mail flagged "spam suspected" + a
+    "mark as spam" link; push as today.
+  - *red (spam)* — no acknowledgment, no per-row merchant mail, no push; daily digest only, with
+    a "not spam" link per entry. *(slice-030: auto-sorted red rows — see round 5 — carry a verdict
+    and are left out of the digest.)*
+- **Shipping countries:** maintained in the panel (multi-select), default `DE`; empty list
+  disables the country signal.
+- **Digest:** mornings (time configurable in the panel, default 07:00), sent **only when** there
+  was spam in the last 24 h. *(slice-030: also lists the unjudged yellow rows in a second section
+  with a "mark as spam" link each, and is sent when there is at least one red **or** yellow row.)*
+  *(slice-032: covers everything since the last queued digest, at most 7 days back, and counts the
+  auto-sorted rows — see round 6.)*
+
+> **Built by slice-026** (spam-delivery-routing): round 2's signed mail links, the confirmation page,
+> the re-sent acknowledgment on "not spam" (insert-only `withdrawal_acknowledgments` log), and round 3's
+> level-based channel gating and morning digest (time configurable in the panel, default 07:00).
+> Links are signed URLs made single-use by a `state` parameter, not stored tokens. See
+> [`delivery.md`](./delivery.md).
+
+## Decisions (round 4)
+
+- **Immutability amended** (`rules.md` Tabus): besides `handled_at`, the spam status and score
+  may change; rows **confirmed** as spam by the operator are purged after 7 days *(slice-030: and
+  rows auto-sorted as definite spam — round 5; `rules.md` amendment proposed at its Phase 9)*. The declaration
+  content (name, e-mail, order, subject, receipt time) stays immutable; unconfirmed red rows are
+  never purged.
+- **Default panel view = green + yellow.** Red and confirmed spam live behind a "Spam" tab/filter.
+  Yellow is highlighted; "spam" / "not spam" actions single + bulk.
+- **Delivery as an epic** with slices: (1) status model + panel actions + 7-day purge,
+  (2) mail links + digest + re-sent acknowledgment, (3) score + content/behaviour signals,
+  (4) GeoIP/ASN + shipping countries + feeds, (5) abused-address hash memory.
+
+## Open questions (for epic/slice planning)
+
+- Blocklist sources: ~~which feeds exactly~~ settled by slice-028 (DROP v4/v6, ASN-DROP, Tor exit list). Still
+  open: an operator-curated list in the panel and a datacenter-range list (not in slice-028).
+- ~~Exact score weights and the yellow/red thresholds.~~ Settled by slice-027 (see "Score engine" below).
+- ~~DB-IP Lite attribution: where the link back is shown~~ decided at the slice-028 plan gate: panel pages
+  (withdrawal view + network settings) and the README, not the public form or success page.
+- Edge rate-limit at the reverse proxy — operator infra, out of this repo.
+
+## Score engine (slice-027)
+
+Every submit is scored by `App\Spam\SpamScorer` and the result is stored; the score only classifies,
+the submit is always stored and always redirected (§ 356a).
+
+- **Stored on the row:** `spam_score` (nullable, legacy rows stay unscored), `spam_level`
+  (`App\Enums\SpamLevel`, from slice-025) and `spam_reason`: the fired signal keys, snake_case,
+  comma-separated, heaviest first, null when none fired. The level is computed once at submit time.
+- **Signals** (`app/Spam/Signals`, weights in `config('revoco.spam.weights')`, code defaults, no env/panel):
+  `honeypot` 100, `content_gibberish` 45, `render_token_invalid` 40, `fill_time_too_fast` 40,
+  `throttle` 30, `field_lengths_equal` 25, `user_agent_ancient` 25, `name_without_space` 15.
+  Thresholds: yellow >= 30, red >= 70. Red needs the honeypot or at least two strong signals; no other
+  single signal reaches red. `throttle` alone is yellow (it used to be red/withheld: bots rotate IPs,
+  NAT consumers may trip it).
+- **Render token:** `App\Spam\FormRenderToken` is the render time, `Crypt`-encrypted (APP_KEY-bound,
+  authenticated), in the hidden `rendered` field; `old('rendered', ...)` keeps it across a
+  validation-error re-render. Missing, tampered or future tokens are `render_token_invalid`; there
+  is no "too slow" signal.
+- **User agent:** evaluated in memory only, never persisted. Floors in `user_agent_floors`: Chrome
+  (also Edge/Opera, which carry `Chrome/`) 100, Firefox 100, Safari `Version/` 14 (with `Safari/`, without `Chrome/`);
+  missing/empty UA and `MSIE `/`Trident/` fire; unknown families never do. Formats verified live on
+  2026-10-13 (Chrome UA-reduced `Chrome/<major>.0.0.0`, Firefox `Firefox/<major>.0`, Safari
+  `Version/<major>.x Safari/605.1.15`).
+- **Extension point:** the signals are the container tag `spam.signals` (`AppServiceProvider::register()`).
+  A new signal implements `SpamSignal` (`key()`, `fires(SubmissionContext)`), is appended to the tag, gets a
+  weight under its key in `revoco.spam.weights`, and a label under `panel.spam_signal.<key>` in en + de.
+  `SubmissionContext` is transient (fields, honeypot flag, render token, UA, IP, time); a sibling slice
+  that needs more input adds a constructor field there.
+- **Labels:** `App\Spam\SpamReasonLabels::render()` is the one rendering point for `spam_reason`
+  (panel infolist, merchant mail, spam digest). Siblings add only lang keys under `panel.spam_signal`,
+  never another rendering path; an unlabelled key is shown raw.
+- **Test contract:** `submitCleanWithdrawal(array $payload, array $server = [])` in `tests/Pest.php` GETs
+  the form, takes the `rendered` token, travels the clock forward by `min_fill_seconds + 1` and POSTs
+  with a pinned current-browser UA (`CLEAN_BROWSER_USER_AGENT`). With nothing else firing it scores 0 /
+  green. `$server` overrides apply to that request only (e.g. `REMOTE_ADDR`). The clock stays moved:
+  six submits move it 24 s, inside the 60 s throttle window. Slice-028/029 assert their own signals on
+  top of this.
+
+## Network and geo signals (slice-028)
+
+Five signals read the client IP **transiently** and persist only the derived `country`, `asn`, `asn_org`
+(never the IP). They never block, and their weights sum to 69, below red (70): `drop_network` 30,
+`asn_drop` 20, `learned_network` 10, `tor_exit` 5, `country_outside_shipping` 4. A test guards the invariant.
+
+- **Lookup.** `App\Network\NetworkLookup` (bound to `MmdbNetworkLookup`) resolves an IP against the DB-IP Lite
+  country + ASN MMDBs (`maxmind-db/reader`; DB-IP ASN is `compat=GeoLite2-ASN`). Private and reserved IPs, a
+  missing or corrupt database and unknown addresses resolve to `NetworkInfo::unknown()`; the lookup never throws.
+  `SubmissionContext::$network` carries the result to the signals.
+- **Data files.** `revoco:network-data:refresh [--only=geo,drop,asn-drop,tor]` (daily 04:15, `withoutOverlapping`)
+  writes `dbip-country-lite.mmdb`, `dbip-asn-lite.mmdb`, `drop.json`, `asn-drop.json`, `tor-exits.txt` and
+  `meta.json` into `revoco.network.path` (`storage/app/private/network`), each through temp file + atomic rename.
+  DB-IP: current month, previous month on 404, skipped when the stored month is current. A failing source keeps its
+  file, is logged, and makes the exit code non-zero. `App\Network\NetworkData` reads the files lazily, once per
+  request; a missing or unparsable file reads as empty.
+- **Feed formats (verified live 2026-10-13).** Spamhaus `drop_v4.json`, `drop_v6.json` and `asndrop.json` are
+  NDJSON (`{"cidr":…}` / `{"asn":…}` lines plus a trailing `{"type":"metadata","timestamp":…}`); the Tor
+  bulk exit list is plain IPv4, one per line. DB-IP URL: `download.db-ip.com/free/dbip-{country,asn}-lite-YYYY-MM.mmdb.gz`.
+- **A failing signal never reaches the submit.** *(slice-032: `SpamScorer` isolates every signal — it reports the
+  `Throwable` and counts the signal as not fired; the former per-signal `AbstractNetworkSignal` base is gone.)* The
+  country signal reads `NetworkSignalSettings` inside `fires()`, so a settings failure cannot break the container.
+- **Learning.** `spam_network_hits(withdrawal_id PK, asn, confirmed_at)`: `RecordNetworkHitOnSpam` upserts on
+  `WithdrawalConfirmedAsSpam`, `ForgetNetworkHitOnNotSpam` deletes on `WithdrawalMarkedNotSpam`. `learned_network`
+  fires at 3 or more hits within 90 days (`revoco.network.learning`); older hits are pruned daily (`model:prune`). The
+  7-day purge of confirmed rows leaves hits alone (no foreign key).
+- **Trusted proxies.** `TRUSTED_PROXIES` (comma list or `*`, default empty) feeds `trustProxies(at: …)` in
+  `bootstrap/app.php`; without it `$request->ip()` is the reverse proxy and the signals see a private IP.
+- **Licence and labels.** The panel labels are neutral and name neither the source nor a verdict. The README names
+  Spamhaus factually in the technical section only; the `docs/` landing page does not. The DB-IP link ("IP
+  Geolocation by DB-IP", https://db-ip.com) is on the panel pages and in the README.
+- **Test contract.** MaxMind's public test MMDBs under `tests/fixtures/network/` stand in for DB-IP;
+  `useNetworkDirectory()`, `writeNetworkFeeds()` and `shippingCountries()` in `tests/Pest.php` set a per-test
+  data directory, feed files and the shipping list. `NETWORK_FIXTURE_IP_SE` resolves to SE / AS29518.
+
+## Decisions (round 5 — slice-030, after the local hands-on test)
+
+- **Auto-sorting:** a submit with the `honeypot` signal **plus** at least one of `user_agent_ancient`,
+  `fill_time_too_fast`, `render_token_invalid`, `content_gibberish` is stored with the verdict "spam"
+  right away, source `auto` (config `revoco.spam.auto_confirm`). Network signals never count. The
+  honeypot alone stays an unjudged red row (password managers / AI agents on current browsers).
+- **Verdict source** is its own column (`spam_verdict_source`: `auto` | `operator`) — `SpamVerdict`
+  stays the operator-facing value set; slice-025's "verdict = the operator's word" now reads
+  "verdict = the operator's word or the auto-sorting rule, told apart by the source".
+- **Auto-sorted rows** get no mail (red routing), are not listed in the digest, feed neither memory
+  (abused address, learned network), show as "Spam (automatisch)" and are purged after 7 days unless
+  the operator corrects them to "not spam" (then the acknowledgment goes out, source `operator`).
+  *(slice-032: the digest counts them, with the date their purge starts and a link to the Spam tab.)*
+- **Honeypot** keeps the name `website`; password-manager ignore attributes (`data-1p-ignore`,
+  `data-lpignore`, `data-bwignore`, `data-form-type="other"`) are added.
+
+## Decisions (round 6 — slice-032, after an independent review of PR #87)
+
+- **Accepted risk: AI agents acting for a consumer.** An agent that reads the DOM can fill the hidden honeypot and
+  submit in under 3 s — `honeypot` + `fill_time_too_fast` then sorts a genuine declaration out (no mail, purged after 7
+  days). The human keeps the rule as is: the campaign's bots are not that capable today, and dropping the fast-fill
+  signal would weaken the rule for little gain. Mitigations: a note for automated assistants inside the hidden
+  honeypot area ("fill like a human — only the visible fields, one after the other, at a normal pace"; no mention of
+  spam), the digest's auto-sorted count line, and 7 days to correct. **If genuine declarations show up among the
+  auto-sorted rows, sharpen the rule** (e.g. drop `fill_time_too_fast` / `render_token_invalid` from the second-signal
+  set — the live campaign is caught by `user_agent_ancient` alone).
+- **A throwing signal never costs the submit** — `SpamScorer` reports it and counts it as not fired.
+- **Digest window** — since the last queued digest, at most 7 days back (also on the first run); a skipped or empty
+  run moves nothing forward.
+- **Acknowledgment log** — its timestamp is `claimed_at`: the once-only claim written before the mail is queued, not a
+  delivery receipt (failed sends land in `failed_jobs`).
+- **Reviewed and kept:** the signed spam links without login (slice-026: single-use, 7-day TTL, only in the operator's
+  mailbox, purge reversible for 7 days); `learned_network` (weight 10 — below the yellow threshold on its own).

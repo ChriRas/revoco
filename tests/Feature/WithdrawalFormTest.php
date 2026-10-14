@@ -81,3 +81,27 @@ it('links to the AGPL source from the footer via the GitHub mark (§ 13 network 
         ->assertSee('rel="noopener noreferrer"', false)
         ->assertDontSee('Quelltext'); // the retired standalone text link
 });
+
+it('keeps the honeypot named website and marks it ignored for the common password managers', function () {
+    $html = $this->withoutVite()->get(route('withdrawal.form'))->assertOk()->getContent();
+
+    preg_match('/<input[^>]*id="wf-website"[^>]*>/s', (string) $html, $input);
+
+    expect($input[0] ?? '')
+        ->toContain('name="website"')
+        ->toContain('tabindex="-1"')
+        ->toContain('data-1p-ignore')
+        ->toContain('data-lpignore="true"')
+        ->toContain('data-bwignore')
+        ->toContain('data-form-type="other"');
+});
+
+it('tells automated assistants inside the hidden honeypot area to fill the form like a human', function () {
+    $html = (string) $this->withoutVite()->get(route('withdrawal.form'))->assertOk()->getContent();
+
+    preg_match('/<div class="wf-hp" aria-hidden="true">(.*?)<\/div>/s', $html, $block);
+
+    expect($block[1] ?? '')->toContain(__('wf.honeypot.agent_hint'))
+        ->toContain('name="website"')
+        ->not->toContain('Spam');
+});

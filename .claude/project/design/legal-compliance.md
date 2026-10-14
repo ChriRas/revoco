@@ -50,8 +50,8 @@ pre-submit gate:
   silent spam filters are allowed.
 
 **Consequence for this app:** honeypot and rate-limit are **signals only** — they
-set a `spam` flag (+ reason), they never reject. Every submission is stored so
-the receipt can be proven. The `spam` flag governs downstream e-mail gating
+set a `spam_level` (+ reason), they never reject. Every submission is stored so
+the receipt can be proven. The `spam_level` governs downstream e-mail gating
 (Phase 4), not acceptance.
 
 ## Two-stage flow (§ 356a Abs. 1 & 3)
@@ -90,8 +90,19 @@ contains no advertising ban (verified against the statute text 2026-09-16).
 ## Data protection
 
 The operator is the **controller**. Persist the minimum: the four form fields +
-`locale` + a boolean `spam` flag (+ reason). **Do not persist the IP** —
-rate-limit transiently via cache.
+`locale` + a `spam_level` (+ reason, + the operator's optional verdict). **Do not persist the IP** —
+rate-limit transiently via cache. The network signals (slice-028) resolve the IP locally to a country and
+an ASN and persist those three derived values (`country`, `asn`, `asn_org`; network-level data, not the
+address). The operator's privacy policy must say that country and network derived from the IP are stored.
+
+**Abused-address memory (slice-029).** When the operator confirms a withdrawal as spam, an HMAC-SHA256 hash of its
+e-mail address (trimmed, lowercased; key derived from `APP_KEY`) is remembered in `abused_addresses`. A later submit
+from that address scores the `abused_address` signal (yellow on its own, never red, never blocked). This is
+**pseudonymous personal data**, processed under legitimate interest (GDPR Art. 6(1)(f): abuse prevention). The entry
+counts for one year after the last confirmation and is deleted by "not spam" or by the daily `model:prune`; the plaintext
+address is never stored in it, and it has no foreign key to the withdrawal and holds none of its content (it can be matched to
+rows with the same address only by recomputing the hash with the app key). The operator's privacy policy must mention this
+processing; Revoco never authors that text.
 
 ### Retention & erasure (OPEN — deferred)
 
@@ -107,6 +118,14 @@ therefore **read-only + a "handled" status** — no in-panel edit/delete, so the
 record's integrity is protected by default. Erasure, if needed, is currently a
 manual DB operation; a proper retention policy (retention period + a controlled
 erasure path) is a candidate for a later slice. Revisit before public release.
+
+One exception since the spam-handling amendment (2026-10-13): rows **confirmed** as spam are
+hard-deleted 7 days after the confirmation (`model:prune`) — confirmed by the operator, or, since
+slice-030, automatically as definite spam (honeypot plus a second bot signal; see
+`spam-handling.md` round 5, incl. the accepted risk for AI agents acting for a consumer). Until
+the purge the operator can correct a row to "not spam"; the daily digest counts the auto-sorted
+rows with their purge date. Unjudged rows are never deleted; the general retention question
+stays open.
 
 ## Imprint & privacy policy (footer legal pages)
 

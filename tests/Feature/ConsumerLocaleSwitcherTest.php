@@ -64,14 +64,15 @@ it('persists the en locale on submit and routes delivery languages correctly', f
     LocaleSettings::fake(['available' => ['de', 'en'], 'default' => 'de']);
     config(['revoco.merchant_email' => 'merchant@example.com']);
 
-    $this->withUnencryptedCookie('locale', 'en')
-        ->post(route('withdrawal.store'), [
-            'name' => 'Max Mustermann',
-            'email' => 'kunde@example.com',
-            'orderNumber' => 'A-12345',
-            'subject' => 'Inflatable boat model X',
-            'website' => '',
-        ])
+    $this->withUnencryptedCookie('locale', 'en');
+
+    submitCleanWithdrawal([
+        'name' => 'Max Mustermann',
+        'email' => 'kunde@example.com',
+        'orderNumber' => 'A-12345',
+        'subject' => 'Inflatable boat model X',
+        'website' => '',
+    ])
         ->assertRedirect(route('withdrawal.success'));
 
     expect(Withdrawal::firstOrFail()->locale)->toBe('en');
@@ -91,7 +92,7 @@ it('renders the acknowledgment e-mail in English for an en withdrawal', function
         'order_number' => 'A-12345',
         'subject' => 'Inflatable boat model X',
         'locale' => 'en',
-        'spam' => false,
+        'spam_level' => 'green',
         'spam_reason' => null,
     ]);
 

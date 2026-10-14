@@ -48,6 +48,24 @@ return [
         'spam_status' => 'Spam-Status',
         'spam_yes' => 'Verdacht',
         'spam_no' => 'unauffällig',
+        'mark_spam_link' => 'Als Spam markieren',
+        'mark_spam_hint' => 'Der Link öffnet eine Bestätigungsseite und ist :days Tage gültig. Erst die Bestätigung ändert etwas.',
+    ],
+
+    'digest' => [
+        'subject' => '{1} Spam-Zusammenfassung: 1 Eingang seit der letzten Zusammenfassung|[2,*] Spam-Zusammenfassung: :count Eingänge seit der letzten Zusammenfassung',
+        'heading' => 'Spam-Zusammenfassung',
+        'intro' => '{1} Seit der letzten Zusammenfassung ist 1 Widerruf als Spam eingestuft worden. Er wurde gespeichert, aber weder bestätigt noch einzeln gemeldet.|[2,*] Seit der letzten Zusammenfassung sind :count Widerrufe als Spam eingestuft worden. Sie wurden gespeichert, aber weder bestätigt noch einzeln gemeldet.',
+        'spam_heading' => 'Als Spam eingestuft',
+        'suspected_heading' => 'Verdächtig',
+        'suspected_intro' => '{1} Seit der letzten Zusammenfassung ist 1 Widerruf als verdächtig eingestuft worden. Er liegt im Posteingang, die Eingangsbestätigung wurde verschickt.|[2,*] Seit der letzten Zusammenfassung sind :count Widerrufe als verdächtig eingestuft worden. Sie liegen im Posteingang, die Eingangsbestätigung wurde verschickt.',
+        'reason' => 'Grund',
+        'not_spam_link' => 'Kein Spam',
+        'spam_link' => 'Als Spam markieren',
+        'auto_sorted' => '{1} 1 Eingang wurde automatisch als Spam aussortiert (Honeypot + Bot-Signal) und wird ab dem :date gelöscht.|[2,*] :count Eingänge wurden automatisch als Spam aussortiert (Honeypot + Bot-Signal) und werden ab dem :date gelöscht.',
+        'auto_sorted_link' => 'Im Spam-Reiter prüfen',
+        'more' => '… und :count weitere',
+        'panel_link' => 'Alle im Backend ansehen',
     ],
 
 ];

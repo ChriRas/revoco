@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    @stack('head')
     <title>{{ __('wf.title') }}@if (config('revoco.brand_name')) · {{ config('revoco.brand_name') }}@endif</title>
     {{-- Critical CSS inlined: the page is fully styled at first paint, with no
          external render-blocking stylesheet to wait for — this eliminates the FOUC.

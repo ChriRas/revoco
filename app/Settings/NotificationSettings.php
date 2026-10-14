@@ -20,6 +20,12 @@ final class NotificationSettings extends Settings
     /** Operator address new withdrawals are reported to; null → fall back (see resolver). */
     public ?string $notification_email = null;
 
+    /** Time of day (HH:MM, app timezone) the spam digest goes out. */
+    public string $spam_digest_time = '07:00';
+
+    /** When the last spam digest was queued (ISO 8601); the next one starts there. Null before the first. */
+    public ?string $spam_digest_last_sent_at = null;
+
     public static function group(): string
     {
         return 'notification';

@@ -17,6 +17,8 @@
          `required`/`aria-required` stay for assistive-tech semantics. --}}
     <form class="wf-card" data-theme="{{ config('revoco.theme') }}" method="POST" action="{{ route('withdrawal.store') }}" novalidate>
         @csrf
+        {{-- Signed render time (spam signal "fill time"); old() keeps the original across a validation re-render. --}}
+        <input type="hidden" name="rendered" value="{{ old('rendered', $renderToken) }}">
 
         <div class="wf-utility">
             @if (config('revoco.logo_url'))
@@ -106,10 +108,16 @@
                 </div>
 
                 {{-- Honeypot: anti-spam decoy, hidden from users + assistive tech.
-                     Filled → stored with spam=true; never blocks (handled in the controller). --}}
+                     Filled → scored as spam (red); never blocks (see App\Spam\Signals\Honeypot).
+                     The name stays "website" (what bots target); the data-* attributes keep
+                     1Password, LastPass, Bitwarden and Dashlane from filling it for a human. The note
+                     addresses AI agents that read the DOM for a consumer: fill like a human, so the
+                     honeypot / fill-time signals do not sort a genuine declaration out (slice-032). --}}
                 <div class="wf-hp" aria-hidden="true">
+                    <p>{{ __('wf.honeypot.agent_hint') }}</p>
                     <label for="wf-website">{{ __('wf.honeypot.label') }}</label>
-                    <input type="text" id="wf-website" name="website" tabindex="-1" autocomplete="off">
+                    <input type="text" id="wf-website" name="website" tabindex="-1" autocomplete="off"
+                           data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other">
                 </div>
 
                 <div class="wf-actions">

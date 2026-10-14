@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Spam\FormRenderToken;
 use Illuminate\Contracts\View\View;
 
 /**
- * Renders the neutral § 356a BGB withdrawal form (render-only).
+ * Renders the neutral § 356a BGB withdrawal form.
  *
- * The form posts to the `withdrawal.store` stub; the real submit handler
- * (validation, persistence, async mail/push) lands in slice-003.
+ * Hands the view a signed render timestamp; the submit handler uses it to judge how
+ * fast the form was filled (a spam signal — it never blocks the consumer).
  */
 final class ShowWithdrawalFormController extends Controller
 {
-    public function __invoke(): View
+    public function __invoke(FormRenderToken $renderToken): View
     {
-        return view('withdrawal.form');
+        return view('withdrawal.form', ['renderToken' => $renderToken->issue()]);
     }
 }

@@ -1,3 +1,5 @@
+@use('App\Enums\SpamLevel')
+@use('App\Spam\SpamReasonLabels')
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -9,9 +11,9 @@
     <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e1e6ec;border-radius:12px;padding:28px 32px;">
         <h1 style="margin:0 0 16px;font-size:1.3rem;color:#161b22;">{{ __('mail.notification.heading') }}</h1>
 
-        @if ($withdrawal->spam)
+        @if ($withdrawal->spam_level !== SpamLevel::Green)
             <p style="margin:0 0 18px;padding:10px 14px;background:#fdeceb;border:1px solid #f3c0bb;border-radius:8px;color:#a32a1e;">
-                <strong>{{ __('mail.notification.spam_warning', ['reason' => $withdrawal->spam_reason ?? '—']) }}</strong>
+                <strong>{{ __('mail.notification.spam_warning', ['reason' => SpamReasonLabels::render($withdrawal->spam_reason) ?? '—']) }}</strong>
             </p>
         @endif
 
@@ -21,8 +23,15 @@
             <tr><td style="padding:6px 0;color:#5d6776;">{{ __('mail.field.order') }}</td><td style="padding:6px 0;">{{ $withdrawal->order_number ?? '—' }}</td></tr>
             <tr><td style="padding:6px 0;color:#5d6776;vertical-align:top;">{{ __('mail.field.subject') }}</td><td style="padding:6px 0;">{{ $withdrawal->subject }}</td></tr>
             <tr><td style="padding:6px 0;color:#5d6776;">{{ __('mail.field.datetime') }}</td><td style="padding:6px 0;">@include('mail.withdrawal.received-at', ['at' => $withdrawal->created_at])</td></tr>
-            <tr><td style="padding:6px 0;color:#5d6776;">{{ __('mail.notification.spam_status') }}</td><td style="padding:6px 0;">{{ $withdrawal->spam ? __('mail.notification.spam_yes') : __('mail.notification.spam_no') }}</td></tr>
+            <tr><td style="padding:6px 0;color:#5d6776;">{{ __('mail.notification.spam_status') }}</td><td style="padding:6px 0;">{{ $withdrawal->spam_level !== SpamLevel::Green ? __('mail.notification.spam_yes') : __('mail.notification.spam_no') }}</td></tr>
         </table>
+
+        @if ($markSpamUrl !== null)
+            <p style="margin:22px 0 0;">
+                <a href="{{ $markSpamUrl }}" style="display:inline-block;padding:10px 18px;background:#1e2630;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:600;">{{ __('mail.notification.mark_spam_link') }}</a>
+            </p>
+            <p style="margin:10px 0 0;font-size:.85rem;color:#5d6776;">{{ __('mail.notification.mark_spam_hint', ['days' => \App\Spam\SpamLinks::TTL_DAYS]) }}</p>
+        @endif
     </div>
 </body>
 </html>

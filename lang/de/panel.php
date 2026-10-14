@@ -21,6 +21,10 @@ return [
                 'label' => 'Empfängeradresse',
                 'help' => 'Adresse, an die neue Widerrufe gemeldet werden. Kann sich von der Absenderadresse unterscheiden (z. B. Versand über no-reply@, Eingang an shop@). Bleibt das Feld leer, wird die Umgebungsvariable MERCHANT_NOTIFICATION_EMAIL und andernfalls die Impressum-E-Mail verwendet.',
             ],
+            'spam_digest_time' => [
+                'label' => 'Uhrzeit der Spam-Zusammenfassung',
+                'help' => 'Täglich um diese Uhrzeit (HH:MM, Zeitzone der Anwendung) geht eine Zusammenfassung an die Empfängeradresse: die seit der letzten Zusammenfassung eingegangenen Spam- und verdächtigen Eingänge ohne Ihre Entscheidung sowie die Anzahl der automatisch aussortierten (höchstens 7 Tage zurück). Ohne solche Eingänge wird nichts versendet.',
+            ],
             'test' => [
                 'button' => 'Test-Mail senden',
                 'sent' => 'Test-Mail an :email gesendet.',
@@ -41,6 +45,33 @@ return [
                 'help' => 'Wird verwendet, wenn der Verbraucher keine Sprache gewählt hat.',
                 'not_available' => 'Die Standardsprache muss eine der angebotenen Sprachen sein.',
             ],
+        ],
+        'network' => [
+            'navigation_label' => 'Netzwerk-Signale',
+            'title' => 'Netzwerk-Signale',
+            'description' => 'Land und Netz eines Eingangs werden auf diesem Server aus der IP-Adresse abgeleitet. Sie erhöhen nur den Spam-Wert und blockieren nie einen Eingang. Die IP-Adresse selbst wird nicht gespeichert.',
+            'shipping_countries' => [
+                'label' => 'Versandländer',
+                'help' => 'Nur ein Signal — blockiert nie. Ein Eingang aus einem anderen Land erhöht den Spam-Wert geringfügig. Leer = Signal aus.',
+            ],
+            'status' => [
+                'heading' => 'Datenquellen',
+                'help' => 'Wird täglich aktualisiert. Ohne Daten bleiben die Netzwerk-Signale stumm.',
+                'last_refresh' => 'Letzte Aktualisierung',
+                'entries' => 'Einträge',
+                'never' => 'nie',
+                'source' => [
+                    'geo' => 'Länder- und Netz-Datenbank',
+                    'drop' => 'Gelistete IP-Netze',
+                    'asn-drop' => 'Gelistete Netzbetreiber',
+                    'tor' => 'Tor-Exit-Knoten',
+                ],
+            ],
+            'refresh' => [
+                'button' => 'Jetzt aktualisieren',
+                'queued' => 'Aktualisierung eingeplant — der Queue-Worker lädt die Daten.',
+            ],
+            'attribution' => 'IP Geolocation by DB-IP',
         ],
         'scope' => [
             'navigation_label' => 'Widerrufsumfang',
@@ -146,17 +177,16 @@ return [
         'received' => 'Eingegangen',
         'name' => 'Name',
         'order_number' => 'Bestellnr.',
-        'no_spam' => 'Kein Spam',
+        'spam_level' => 'Spam-Stufe',
         'handled' => 'Bearbeitet',
+        'country' => 'Land',
     ],
 
     'filter' => [
         'handled_status' => 'Bearbeitungsstatus',
         'handled_only' => 'Nur bearbeitete',
         'unhandled_only' => 'Nur unbearbeitete',
-        'spam_status' => 'Spam-Status',
-        'spam_only' => 'Nur Spam',
-        'not_spam_only' => 'Kein Spam',
+        'spam_level' => 'Spam-Stufe',
         'date_range' => 'Zeitraum',
         'date_from' => 'Von',
         'date_until' => 'Bis',
@@ -165,6 +195,47 @@ return [
     'action' => [
         'mark_handled' => 'Als bearbeitet markieren',
         'unmark_handled' => 'Markierung aufheben',
+        'mark_spam' => 'Als Spam markieren',
+        'mark_spam_heading' => 'Als Spam markieren?',
+        'mark_spam_description' => 'Der Widerruf wechselt in den Reiter „Spam“ und wird in :days Tagen endgültig gelöscht. Bis dahin können Sie das mit „Kein Spam“ rückgängig machen.',
+        'is_not_spam' => '„Kein Spam“ bestätigt',
+        'not_spam' => 'Kein Spam',
+        'not_spam_heading' => 'Als „Kein Spam“ markieren?',
+        'not_spam_description' => 'Der Widerruf wechselt in den Reiter „Posteingang“ und wird nie automatisch gelöscht. Die Eingangsbestätigung geht an den Einreicher, falls sie noch nicht verschickt wurde.',
+    ],
+
+    'tab' => [
+        'inbox' => 'Posteingang',
+        'spam' => 'Spam',
+    ],
+
+    'spam_level' => [
+        'green' => 'Unauffällig',
+        'yellow' => 'Verdächtig',
+        'red' => 'Spam',
+    ],
+
+    'spam_verdict' => [
+        'spam' => 'Bestätigter Spam',
+        'not_spam' => 'Kein Spam',
+        'spam_auto' => 'Spam (automatisch)',
+    ],
+
+    'spam_signal' => [
+        'honeypot' => 'Verstecktes Honeypot-Feld ausgefüllt',
+        'throttle' => 'Zu viele Eingänge von derselben IP-Adresse',
+        'render_token_invalid' => 'Formular-Token fehlt oder ist ungültig',
+        'fill_time_too_fast' => 'Formular unplausibel schnell ausgefüllt',
+        'user_agent_ancient' => 'Veraltete oder fehlende Browser-Kennung',
+        'content_gibberish' => 'Name oder Gegenstand wirkt zufällig',
+        'name_without_space' => 'Name ohne Leerzeichen',
+        'field_lengths_equal' => 'Mehrere Felder mit identischer Länge',
+        'country_outside_shipping' => 'Land außerhalb der Versandländer',
+        'drop_network' => 'IP-Adresse in einem gelisteten Netz',
+        'asn_drop' => 'Gelisteter Netzbetreiber',
+        'tor_exit' => 'Tor-Exit-Knoten',
+        'learned_network' => 'Netz mit wiederholt bestätigtem Spam',
+        'abused_address' => 'Adresse aus bestätigtem Spam bekannt',
     ],
 
     'setup' => [
@@ -187,15 +258,15 @@ return [
             'order_number' => 'Bestell-/Vertragsnummer',
             'locale' => 'Sprache',
             'subject' => 'Betreffende Ware / Dienstleistung',
-            'spam_signal' => 'Spam-Signal',
+            'spam_level' => 'Spam-Stufe',
             'spam_reason' => 'Spam-Grund',
+            'spam_verdict' => 'Ihre Entscheidung',
+            'spam_verdict_at' => 'Entscheidung am',
+            'country' => 'Land',
+            'network' => 'Netz',
             'handled_at' => 'Bearbeitet am',
             'received_at' => 'Eingegangen am',
             'last_updated' => 'Zuletzt aktualisiert',
-        ],
-        'spam' => [
-            'yes' => 'Spam',
-            'no' => 'Kein Spam',
         ],
         'not_handled' => 'Nicht bearbeitet',
     ],

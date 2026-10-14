@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Pages;
 
+use App\Enums\SpamLevel;
 use App\Mail\WithdrawalNotification;
 use App\Models\Withdrawal;
 use App\Settings\NotificationSettings;
@@ -67,6 +68,12 @@ final class ManageNotifications extends SettingsPage
                         ->helperText(__('panel.settings.notification.email.help'))
                         ->email()
                         ->maxLength(512),
+                    TextInput::make('spam_digest_time')
+                        ->label(__('panel.settings.notification.spam_digest_time.label'))
+                        ->helperText(__('panel.settings.notification.spam_digest_time.help'))
+                        ->placeholder('07:00')
+                        ->required()
+                        ->regex('/^([01]\d|2[0-3]):[0-5]\d$/'),
                 ]),
         ]);
     }
@@ -110,7 +117,8 @@ final class ManageNotifications extends SettingsPage
             'order_number' => 'TEST-0001',
             'subject' => __('panel.settings.notification.test.sample_subject'),
             'locale' => $locale,
-            'spam' => false,
+            'spam_score' => 0,
+            'spam_level' => SpamLevel::Green,
             'spam_reason' => null,
         ]);
         $sample->created_at = now();

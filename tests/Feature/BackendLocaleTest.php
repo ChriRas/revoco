@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Filament\Resources\WithdrawalResource\Pages\ListWithdrawals;
 use App\Models\User;
 use App\Models\Withdrawal;
+use Filament\Auth\Pages\Login;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Livewire\livewire;
@@ -32,7 +33,7 @@ it('renders English panel labels via middleware when BACKEND_LOCALE is en', func
         ->get('/admin/withdrawals')
         ->assertOk()
         ->assertSee('Received')          // panel.column.received (en)
-        ->assertSee('No Spam')           // panel.column.no_spam (en)
+        ->assertSee('Spam level')        // panel.column.spam_level (en)
         ->assertDontSee('Widerruf');     // must not leak German resource label
 });
 
@@ -170,4 +171,33 @@ it('maintains the German locale after a Livewire table filter interaction', func
         ->filterTable('handled_at', '1')
         ->assertSee('Widerruf')      // panel label still German after filter interaction
         ->assertSee('Eingegangen');  // column still German after filter interaction
+});
+
+/** Framework messages (slice-030): the German validation/auth strings from laravel-lang, not the raw keys. */
+it('shows German validation and auth messages on the panel login', function (): void {
+    app()->setLocale('de');
+    User::factory()->create(['email' => 'kunde@example.com']);
+
+    $empty = livewire(Login::class)
+        ->set('data.email', '')
+        ->set('data.password', '')
+        ->call('authenticate')
+        ->assertHasErrors(['data.email', 'data.password']);
+
+    $messages = collect($empty->errors()->all());
+    expect($messages)->each->toContain('muss ausgefüllt werden')
+        ->and($messages->implode(' '))->not->toContain('validation.');
+
+    $wrong = livewire(Login::class)
+        ->set('data.email', 'kunde@example.com')
+        ->set('data.password', 'falsch')
+        ->call('authenticate')
+        ->assertHasErrors(['data.email']);
+
+    // Filament's own failure message (shipped in German by Filament itself).
+    expect($wrong->errors()->first('data.email'))->toContain('Zugangsdaten');
+
+    // The framework files published by laravel-lang resolve instead of echoing the key.
+    expect(__('auth.failed'))->toContain('Zugangsdaten')
+        ->and(__('validation.required', ['attribute' => 'E-Mail']))->toBe('E-Mail muss ausgefüllt werden.');
 });

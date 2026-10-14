@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
+use App\Enums\SpamLevel;
+use App\Enums\SpamLinkAction;
 use App\Models\Withdrawal;
+use App\Spam\SpamLinks;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -13,8 +16,9 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Merchant notification — always sent to the configured operator address.
- * Carries the full case data AND the spam status for triage. Operator-facing
+ * Merchant notification — sent to the configured operator address for green and
+ * yellow rows (red rows only appear in the spam digest). Carries the full case data,
+ * the spam status for triage and a signed "mark as spam" link. Operator-facing
  * (rendered in the app default locale).
  */
 final class WithdrawalNotification extends Mailable implements ShouldQueue
@@ -34,7 +38,7 @@ final class WithdrawalNotification extends Mailable implements ShouldQueue
 
         // Spam verdict up front, not appended — the operator must see it at a
         // glance in an inbox list without opening or widening the subject.
-        if ($this->withdrawal->spam) {
+        if ($this->withdrawal->spam_level !== SpamLevel::Green) {
             $subject = __('mail.notification.spam_prefix').' '.$subject;
         }
 
@@ -43,6 +47,14 @@ final class WithdrawalNotification extends Mailable implements ShouldQueue
 
     public function content(): Content
     {
-        return new Content(view: 'mail.withdrawal.notification');
+        return new Content(
+            view: 'mail.withdrawal.notification',
+            with: [
+                // An unsaved row (the settings page's test mail) has no entry to link to.
+                'markSpamUrl' => $this->withdrawal->exists
+                    ? SpamLinks::url($this->withdrawal, SpamLinkAction::Spam)
+                    : null,
+            ],
+        );
     }
 }

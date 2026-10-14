@@ -23,7 +23,7 @@ function withdrawalPayload(array $overrides = []): array
 }
 
 it('stores a valid withdrawal and redirects to the success page', function () {
-    $this->post(route('withdrawal.store'), withdrawalPayload())
+    submitCleanWithdrawal(withdrawalPayload())
         ->assertRedirect(route('withdrawal.success'));
 
     $this->assertDatabaseHas('withdrawals', [
@@ -32,13 +32,14 @@ it('stores a valid withdrawal and redirects to the success page', function () {
         'order_number' => 'A-12345',
         'subject' => 'Schlauchboot Modell X',
         'locale' => 'de',
-        'spam' => false,
+        'spam_score' => 0,
+        'spam_level' => 'green',
         'spam_reason' => null,
     ]);
 });
 
 it('persists order_number as null when omitted', function () {
-    $this->post(route('withdrawal.store'), withdrawalPayload(['orderNumber' => '']));
+    submitCleanWithdrawal(withdrawalPayload(['orderNumber' => '']));
 
     $this->assertDatabaseHas('withdrawals', [
         'email' => 'erika@example.com',
@@ -67,37 +68,39 @@ it('rejects an invalid e-mail address with the invalid-format message', function
 });
 
 it('stores a honeypot submission flagged as spam, never rejecting it', function () {
-    $this->post(route('withdrawal.store'), withdrawalPayload(['website' => 'http://spam.example']))
+    submitCleanWithdrawal(withdrawalPayload(['website' => 'http://spam.example']))
         ->assertRedirect(route('withdrawal.success'));
 
     $this->assertDatabaseHas('withdrawals', [
         'email' => 'erika@example.com',
-        'spam' => true,
+        'spam_score' => 100,
+        'spam_level' => 'red',
         'spam_reason' => 'honeypot',
     ]);
 });
 
-it('flags throttled submissions as spam but still stores them (never 429)', function () {
+it('flags throttled submissions as yellow but still stores them (never 429)', function () {
     // Five clean submits exhaust the per-IP window.
     for ($i = 0; $i < 5; $i++) {
-        $this->post(route('withdrawal.store'), withdrawalPayload(['email' => "user{$i}@example.com"]))
+        submitCleanWithdrawal(withdrawalPayload(['email' => "user{$i}@example.com"]))
             ->assertRedirect(route('withdrawal.success'));
     }
 
     // The sixth is over the limit → flagged, still stored, still redirected (no 429).
-    $this->post(route('withdrawal.store'), withdrawalPayload(['email' => 'over@example.com']))
+    submitCleanWithdrawal(withdrawalPayload(['email' => 'over@example.com']))
         ->assertRedirect(route('withdrawal.success'));
 
     $this->assertDatabaseHas('withdrawals', [
         'email' => 'over@example.com',
-        'spam' => true,
+        'spam_score' => 30,
+        'spam_level' => 'yellow',
         'spam_reason' => 'throttle',
     ]);
     $this->assertDatabaseCount('withdrawals', 6);
 });
 
 it('captures the consumer locale and an Europe/Berlin timestamp', function () {
-    $this->post(route('withdrawal.store'), withdrawalPayload());
+    submitCleanWithdrawal(withdrawalPayload());
 
     $withdrawal = Withdrawal::firstOrFail();
 

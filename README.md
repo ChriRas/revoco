@@ -37,7 +37,7 @@ task init
 # Start the dev stack (http://localhost:8580)
 task up
 
-# Run the quality gate (Pint + PHPStan + Pest)
+# Run the quality gate (composer audit + Pint + PHPStan + Pest)
 task check
 
 # Start the Vite dev server (HMR) — separate terminal
@@ -140,6 +140,36 @@ so changing them needs no redeploy. Key environment variables:
 | `MAIL_MAILER` | No | `log` (safe) | Set to `smtp` in prod and configure `MAIL_*`. |
 | `MERCHANT_NOTIFICATION_EMAIL` | No | — | Fallback recipient for the operator notification. The in-panel setting takes precedence; if neither is set, the imprint e-mail is used. |
 | `NTFY_ENABLED` | No | `false` | Opt-in ntfy push (no PII sent). |
+| `TRUSTED_PROXIES` | No | — (trust nothing) | Comma-separated proxy IPs/CIDRs, or `*`. Set it behind a reverse proxy so the client IP (not the proxy) feeds the spam signals; the proxy must send `X-Forwarded-For`. |
+
+---
+
+## Network signals (country and network)
+
+Every submit is classified with a few network signals. They only add to the spam score and never block
+a submission: the country is outside the shipping countries (panel, default `DE`), the IP lies in a listed
+network, the network operator is listed, the IP is a Tor exit node, and a network from which spam was
+repeatedly confirmed. The lookup runs **locally**; the app does not call a third party on a submit.
+
+- **Data sources.** Country and network (ASN) come from the free
+  [DB-IP Lite](https://db-ip.com/db/lite.php) databases. The listed networks come from the Spamhaus
+  DROP / ASN-DROP lists, the Tor exit nodes from the Tor Project's bulk exit list. A daily scheduler job
+  (`revoco:network-data:refresh`) refreshes them into `storage/app/private/network/`; a failing source keeps
+  its previous file. The operator panel (Settings, Network signals) shows the status and has a "Refresh now" action.
+- **First run.** There is no data until the first refresh; the signals stay silent without it. Fill it once
+  after deploying:
+
+  ```bash
+  task artisan -- revoco:network-data:refresh
+  ```
+
+  (In a prod stack: `docker compose -f docker-compose.yml exec -u www-data app php artisan revoco:network-data:refresh`; run as `www-data`, so the scheduler and the
+  queue worker can later write the same files.)
+- **Privacy.** The IP address is used in memory only and is never stored. The **country, the ASN and the
+  network operator's name derived from it are stored** with the withdrawal. The operator's privacy policy must
+  say so.
+- **Attribution.** [IP Geolocation by DB-IP](https://db-ip.com). The link is also shown on the panel pages that
+  display the data.
 
 ---
 
@@ -188,6 +218,11 @@ Revoco serves an Impressum (§ 5 DDG) and a privacy policy at `/impressum` and
 `/datenschutz`, backed by operator-editable settings in the Filament **Legal** panel
 (neutral "not configured yet" placeholders until filled). The operator is the data
 controller and authors the substantive text — Revoco ships only the mechanism.
+
+**Privacy policy and spam handling.** When you confirm a withdrawal as spam, Revoco remembers a one-way hash
+(HMAC-SHA256, keyed from `APP_KEY`) of its e-mail address for one year, so a later submit from the same address is
+flagged as suspicious (never blocked). Your privacy policy should cover this pseudonymous processing (legitimate
+interest, abuse prevention); Revoco never writes that text for you. Rotating `APP_KEY` resets the memory.
 
 ### The `legal-extraction` skill
 

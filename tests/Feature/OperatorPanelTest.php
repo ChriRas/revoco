@@ -78,16 +78,16 @@ it('filters withdrawals by handled status', function () {
         ->assertCanNotSeeTableRecords([$unhandled]);
 });
 
-it('filters withdrawals by spam status', function () {
+it('filters withdrawals by spam level', function () {
     $operator = User::factory()->create();
-    $spam = Withdrawal::factory()->spam()->create();
+    $yellow = Withdrawal::factory()->yellow()->create();
     $clean = Withdrawal::factory()->create();
 
     $this->actingAs($operator);
 
     livewire(ListWithdrawals::class)
-        ->filterTable('spam', '1')
-        ->assertCanSeeTableRecords([$spam])
+        ->filterTable('spam_level', 'yellow')
+        ->assertCanSeeTableRecords([$yellow])
         ->assertCanNotSeeTableRecords([$clean]);
 });
 
