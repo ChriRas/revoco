@@ -105,8 +105,9 @@ tasks:
       - "{{.RUN}} ./vendor/bin/phpstan analyse --no-progress --memory-limit=1G {{.CLI_ARGS}}"
 
   check:
-    desc: Run all quality gates (Pint --test, PHPStan, Pest) — the pre-commit gate
+    desc: Run all quality gates (composer audit, Pint --test, PHPStan, Pest) — the pre-commit gate, same as CI
     cmds:
+      - task: audit
       - task: pint
         vars: { PINT_ARGS: '--test' }
       - task: stan
