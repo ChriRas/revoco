@@ -40,6 +40,23 @@ jobs:
             revoco-app:dev \
             composer install --no-interaction --no-progress --prefer-dist
 
+      # The Filament assets are committed under public/ and served as they are. A lock bump
+      # (e.g. Dependabot) never re-publishes them, so they can go stale against the installed
+      # Filament — a missing script once broke the login. Re-publish and fail on any change.
+      - name: Check committed Filament assets are current
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/var/www/html \
+            -w /var/www/html \
+            revoco-app:dev \
+            php artisan filament:assets
+          drift="$(git status --porcelain -- public/js/filament public/css/filament public/fonts/filament)"
+          if [ -n "$drift" ]; then
+            echo "::error::Filament assets are stale. Run 'php artisan filament:assets' and commit public/:"
+            echo "$drift"
+            exit 1
+          fi
+
       # Fail the build on any known security advisory in the locked dependencies.
       # Runs before the slower npm/build/test steps so a vulnerable lock fails fast.
       - name: Audit Composer dependencies (security)
