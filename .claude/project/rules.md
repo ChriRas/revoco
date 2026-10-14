@@ -26,7 +26,7 @@
 - **Node is build-only** — kept out of the PHP image, run as a profiled `node` compose
   service (Vite).
 - **Task (go-task)** is the single host orchestrator; all PHP/Node tooling runs in
-  containers (no local runtimes). `task check` = Pint + PHPStan + Pest is the pre-commit gate.
+  containers (no local runtimes). `task check` = composer audit + Pint + PHPStan + Pest is the pre-commit gate (mirrors CI).
 - **SQLite** persists as a bind-mounted file in dev (no DB service); dev stack on `localhost:8580`.
 - **Compose = base + override:** `docker-compose.yml` is the generic **prod** base; `docker-compose.override.yml` carries the dev deltas. Plain `docker compose up` / `task up` → dev; prod runs `docker compose -f docker-compose.yml up`. Prod runs **non-root** (php-fpm workers + queue/scheduler as `www-data`); the prod entrypoint **fails fast if `APP_KEY` is missing** (never auto-generates). (slice-006)
 - **Tests pin the behaviour drivers** (`APP_ENV=testing`, `QUEUE_CONNECTION=sync`, `CACHE/SESSION/MAIL=array`) at the runner boundary — `RUN_TEST` in `Taskfile.yml` and the `-e` flags in `ci.yml`'s Pest step — because the prod-base compose env is inherited by the dev container and (as real OS env) would otherwise shadow `phpunit.xml`. **Keep the two in sync.** (slice-006)

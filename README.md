@@ -37,7 +37,7 @@ task init
 # Start the dev stack (http://localhost:8580)
 task up
 
-# Run the quality gate (Pint + PHPStan + Pest)
+# Run the quality gate (composer audit + Pint + PHPStan + Pest)
 task check
 
 # Start the Vite dev server (HMR) — separate terminal
