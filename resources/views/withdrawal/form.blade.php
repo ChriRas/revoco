@@ -108,10 +108,13 @@
                 </div>
 
                 {{-- Honeypot: anti-spam decoy, hidden from users + assistive tech.
-                     Filled → scored as spam (red); never blocks (see App\Spam\Signals\Honeypot). --}}
+                     Filled → scored as spam (red); never blocks (see App\Spam\Signals\Honeypot).
+                     The name stays "website" (what bots target); the data-* attributes keep
+                     1Password, LastPass, Bitwarden and Dashlane from filling it for a human. --}}
                 <div class="wf-hp" aria-hidden="true">
                     <label for="wf-website">{{ __('wf.honeypot.label') }}</label>
-                    <input type="text" id="wf-website" name="website" tabindex="-1" autocomplete="off">
+                    <input type="text" id="wf-website" name="website" tabindex="-1" autocomplete="off"
+                           data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other">
                 </div>
 
                 <div class="wf-actions">
