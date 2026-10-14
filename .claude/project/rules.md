@@ -6,8 +6,8 @@
 
 - **Language:** PHP / Laravel — latest stable at scaffold time. Verify exact versions live before scaffolding.
 - **Frontend:** Blade + Controller + FormRequest (no Livewire); theming via CSS `data-theme`, active theme via `APP_THEME`.
-- **i18n:** Laravel localization (`lang/<code>/*`), all user-facing strings as keys; default `de`. More languages = new lang files.
-- **Operator backend:** Filament — one `Withdrawal` resource behind login.
+- **i18n:** Laravel localization (`lang/<code>/*`), all user-facing strings as keys; default `de`. More languages = new lang files. German framework translations come from laravel-lang (dev dependency); re-run `php artisan lang:update` after Laravel upgrades.
+- **Operator backend:** Filament — one `Withdrawal` resource behind login. Filament assets are committed under `public/`; after a Filament update run `php artisan filament:assets` — CI fails on drift.
 - **Database:** SQLite (file on a persistent volume).
 - **Queue:** database driver + worker (e-mails + ntfy push run async).
 - **Mail:** direct SMTP via `.env` (operator's mail server).
@@ -45,7 +45,7 @@
 
 ## Workflow Rules
 
-- The withdrawal submit must never fail on an external dependency (SMTP, push, shop) — async via queue is mandatory. The delivery model (event → queued fan-out, ack-always, PII-free push) lives in [`design/delivery.md`](./design/delivery.md).
+- The withdrawal submit must never fail on an external dependency (SMTP, push, shop) — async via queue is mandatory. The delivery model (event → queued fan-out, acknowledgment per spam level — withheld for red rows until a “not spam” correction, PII-free push) lives in [`design/delivery.md`](./design/delivery.md).
 - Tests green before commit; Pint + PHPStan (level max) before commit.
 - No direct push to `main` — always via PR.
 - Keep versions current; upgrades are their own slices behind green gates.
@@ -67,7 +67,7 @@
 
 - No hard blocking of the submit via spam signals or captcha — signals classify only.
 - No mandatory fields beyond name / contract identification / e-mail; no advertising in the acknowledgment e-mail.
-- The stored withdrawal record is **immutable** — no operator UI or other code path may edit or delete its declaration content (name, e-mail, order, subject, receipt time). Permitted mutations: the operator's `handled_at` triage toggle and the spam status/score; rows the operator **confirmed** as spam are purged after 7 days (never unconfirmed ones). *Grounds:* integrity of the § 356a legal record (slice-005); spam amendment 2026-10-13 — see `design/spam-handling.md`.
+- The stored withdrawal record is **immutable** — no operator UI or other code path may edit or delete its declaration content (name, e-mail, order, subject, receipt time). Permitted mutations: the operator's `handled_at` triage toggle and the spam status/score; rows **confirmed** as spam — by the operator, or automatically as definite spam (honeypot plus a second bot signal, slice-030) — are purged after 7 days (never unjudged ones). *Grounds:* integrity of the § 356a legal record (slice-005); spam amendment 2026-10-13 — see `design/spam-handling.md`.
 - **No operator/infra specifics in this public repo** — real domains, IPs, hosting, reverse-proxy/VPN details, secrets, and brand assets live in the private infra repo. Ship placeholders + `.env.example` only.
 - Non-production environments never send real mail/push (`MAIL_MAILER=log`, push off).
 - The `research/` folder is read-only and never committed.
