@@ -107,3 +107,19 @@ it('resolves the container scorer and scores a bot-like context red', function (
     expect($assessment->signals)->toContain('honeypot', 'render_token_invalid', 'user_agent_ancient', 'content_gibberish', 'name_without_space')
         ->and($assessment->level)->toBe(SpamLevel::Red);
 });
+
+it('auto-confirms the honeypot together with any of the configured bot signals', function (string $second) {
+    $assessment = (new SpamScorer([fixedSignal('honeypot', true), fixedSignal($second, true)]))->assess(spamContext());
+
+    expect($assessment->autoConfirmed)->toBeTrue();
+})->with(['user_agent_ancient', 'fill_time_too_fast', 'render_token_invalid', 'content_gibberish']);
+
+it('does not auto-confirm the honeypot alone, with a network signal, or a bot signal without it', function (array $keys) {
+    $signals = array_map(fn (string $key): SpamSignal => fixedSignal($key, true), $keys);
+
+    expect((new SpamScorer($signals))->assess(spamContext())->autoConfirmed)->toBeFalse();
+})->with([
+    'honeypot alone' => [['honeypot']],
+    'honeypot + network' => [['honeypot', 'drop_network', 'asn_drop', 'tor_exit']],
+    'bot signals without honeypot' => [['user_agent_ancient', 'fill_time_too_fast', 'render_token_invalid', 'content_gibberish']],
+]);

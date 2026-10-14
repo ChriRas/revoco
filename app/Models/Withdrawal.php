@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\SpamLevel;
 use App\Enums\SpamVerdict;
+use App\Enums\SpamVerdictSource;
 use Database\Factories\WithdrawalFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property SpamLevel $spam_level
  * @property SpamVerdict|null $spam_verdict
  * @property Carbon|null $spam_verdict_at
+ * @property SpamVerdictSource|null $spam_verdict_source
  * @property string|null $spam_reason
  * @property string|null $country
  * @property int|null $asn
@@ -57,8 +59,9 @@ final class Withdrawal extends Model
         'country',
         'asn',
         'asn_org',
-        // handled_at, spam_verdict and spam_verdict_at are intentionally excluded — set
-        // exclusively via the operator actions, never mass-assigned (immutable-record invariant).
+        // handled_at and the spam_verdict* columns are intentionally excluded — set
+        // exclusively via the operator actions or the auto-sorting rule on store, never
+        // mass-assigned (immutable-record invariant).
     ];
 
     /**
@@ -72,6 +75,7 @@ final class Withdrawal extends Model
             'spam_level' => SpamLevel::class,
             'spam_verdict' => SpamVerdict::class,
             'spam_verdict_at' => 'datetime',
+            'spam_verdict_source' => SpamVerdictSource::class,
             'handled_at' => 'datetime',
         ];
     }
@@ -95,10 +99,25 @@ final class Withdrawal extends Model
             || ($this->spam_verdict === null && $this->spam_level !== SpamLevel::Green);
     }
 
-    /** Whether the operator confirmed this withdrawal as spam. */
+    /** Whether the operator confirmed this withdrawal as spam, or the auto-sorting rule did. */
     public function isConfirmedSpam(): bool
     {
         return $this->spam_verdict === SpamVerdict::Spam;
+    }
+
+    /** Whether the auto-sorting rule (honeypot + a bot signal) sorted this withdrawal out on store. */
+    public function isAutoSorted(): bool
+    {
+        return $this->spam_verdict === SpamVerdict::Spam
+            && $this->spam_verdict_source === SpamVerdictSource::Auto;
+    }
+
+    /** The verdict for display, telling an auto-sorted row from an operator verdict; null without a verdict. */
+    public function verdictLabel(): ?string
+    {
+        return $this->isAutoSorted()
+            ? (string) __('panel.spam_verdict.spam_auto')
+            : $this->spam_verdict?->getLabel();
     }
 
     /**
@@ -134,8 +153,8 @@ final class Withdrawal extends Model
     }
 
     /**
-     * Rows `model:prune` hard-deletes: confirmed as spam at least 7 days ago.
-     * Unconfirmed rows are never pruned.
+     * Rows `model:prune` hard-deletes: confirmed as spam (by the operator or the auto-sorting
+     * rule) at least 7 days ago. Unconfirmed rows are never pruned.
      *
      * @return Builder<Withdrawal>
      */

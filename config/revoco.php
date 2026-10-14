@@ -102,6 +102,16 @@ return [
             'red' => 70,
         ],
 
+        /*
+         * Auto-sorting (slice-030): when `trigger` fired together with any of `with_any`,
+         * the submit is stored with the verdict "spam" right away (source `auto`). Network
+         * signals are deliberately absent — genuine customers abroad or behind VPNs.
+         */
+        'auto_confirm' => [
+            'trigger' => 'honeypot',
+            'with_any' => ['user_agent_ancient', 'fill_time_too_fast', 'render_token_invalid', 'content_gibberish'],
+        ],
+
         'min_fill_seconds' => 3,
 
         'user_agent_floors' => [

@@ -6,7 +6,10 @@ namespace App\Spam;
 
 use App\Enums\SpamLevel;
 
-/** The scorer's result for one submit: score, level and the signal keys that fired (heaviest first). */
+/**
+ * The scorer's result for one submit: score, level, the signal keys that fired (heaviest
+ * first) and whether the auto-sorting rule judged it definite spam.
+ */
 final readonly class SpamAssessment
 {
     /**
@@ -16,6 +19,7 @@ final readonly class SpamAssessment
         public int $score,
         public SpamLevel $level,
         public array $signals,
+        public bool $autoConfirmed = false,
     ) {}
 
     /** The stored `spam_reason` value: comma-separated keys, null when none fired. */

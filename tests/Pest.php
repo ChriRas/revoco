@@ -55,6 +55,12 @@ expect()->extend('toBeOne', function () {
  */
 const CLEAN_BROWSER_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36';
 
+/** Chrome 90 — below the `user_agent_floors`, so `user_agent_ancient` fires (the live campaign's pattern). */
+const ANCIENT_CHROME_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36';
+
+/** Firefox 60 — below the `user_agent_floors`, so `user_agent_ancient` fires. */
+const ANCIENT_FIREFOX_USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; rv:60.0) Gecko/20100101 Firefox/60.0';
+
 /**
  * Submits the withdrawal form the way a consumer does, so that no spam signal fires.
  *

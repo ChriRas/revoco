@@ -6,6 +6,7 @@ namespace Database\Factories;
 
 use App\Enums\SpamLevel;
 use App\Enums\SpamVerdict;
+use App\Enums\SpamVerdictSource;
 use App\Models\Withdrawal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
@@ -73,6 +74,20 @@ final class WithdrawalFactory extends Factory
         return $this->spam()->state(fn (array $attributes) => [
             'spam_verdict' => SpamVerdict::Spam,
             'spam_verdict_at' => $at ?? Carbon::now(),
+            'spam_verdict_source' => SpamVerdictSource::Operator,
+        ]);
+    }
+
+    /** The auto-sorting rule sorted this withdrawal out on store (honeypot + ancient browser). */
+    public function autoSorted(?Carbon $at = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'spam_score' => 125,
+            'spam_level' => SpamLevel::Red,
+            'spam_reason' => 'honeypot,user_agent_ancient',
+            'spam_verdict' => SpamVerdict::Spam,
+            'spam_verdict_at' => $at ?? Carbon::now(),
+            'spam_verdict_source' => SpamVerdictSource::Auto,
         ]);
     }
 
@@ -82,6 +97,7 @@ final class WithdrawalFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'spam_verdict' => SpamVerdict::NotSpam,
             'spam_verdict_at' => $at ?? Carbon::now(),
+            'spam_verdict_source' => SpamVerdictSource::Operator,
         ]);
     }
 

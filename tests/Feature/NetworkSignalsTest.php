@@ -98,7 +98,7 @@ it('stores country and ASN of a shipping-country submit and no IP', function () 
 
     expect(Schema::getColumnListing('withdrawals'))->toEqualCanonicalizing([
         'id', 'name', 'email', 'order_number', 'subject', 'locale', 'created_at', 'updated_at', 'handled_at',
-        'spam_verdict', 'spam_verdict_at', 'spam_level', 'spam_reason', 'spam_score', 'country', 'asn', 'asn_org',
+        'spam_verdict', 'spam_verdict_at', 'spam_verdict_source', 'spam_level', 'spam_reason', 'spam_score', 'country', 'asn', 'asn_org',
     ]);
     expect(json_encode($row->getAttributes()))->not->toContain(NETWORK_FIXTURE_IP_SE);
 });

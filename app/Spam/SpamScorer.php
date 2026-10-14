@@ -36,7 +36,23 @@ final class SpamScorer
 
         $score = array_sum($fired);
 
-        return new SpamAssessment($score, $this->level($score), $keys);
+        return new SpamAssessment($score, $this->level($score), $keys, $this->autoConfirmed($keys));
+    }
+
+    /**
+     * The auto-sorting rule: the trigger signal plus at least one of the configured bot signals.
+     *
+     * @param  list<string>  $keys
+     */
+    private function autoConfirmed(array $keys): bool
+    {
+        $trigger = Config::string('revoco.spam.auto_confirm.trigger', '');
+        /** @var list<string> $withAny */
+        $withAny = Config::array('revoco.spam.auto_confirm.with_any', []);
+
+        return $trigger !== ''
+            && in_array($trigger, $keys, true)
+            && array_intersect($withAny, $keys) !== [];
     }
 
     private function weight(string $key): int

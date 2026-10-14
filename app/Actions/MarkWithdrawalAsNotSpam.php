@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions;
 
 use App\Enums\SpamVerdict;
+use App\Enums\SpamVerdictSource;
 use App\Events\WithdrawalMarkedNotSpam;
 use App\Models\Withdrawal;
 
@@ -23,6 +24,7 @@ final class MarkWithdrawalAsNotSpam
 
         $withdrawal->spam_verdict = SpamVerdict::NotSpam;
         $withdrawal->spam_verdict_at = now();
+        $withdrawal->spam_verdict_source = SpamVerdictSource::Operator;
         $withdrawal->save();
 
         WithdrawalMarkedNotSpam::dispatch($withdrawal);
