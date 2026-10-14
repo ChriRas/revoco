@@ -107,7 +107,7 @@ it('lists 50 entries and counts the rest', function () {
 
 it('sends nothing, and says why, with no rows or no recipient', function () {
     $this->artisan('revoco:spam-digest')
-        ->expectsOutput('No digest sent: no unresolved spam in the last 24 hours.')
+        ->expectsOutput('No digest sent: no unresolved spam or suspected withdrawals in the last 24 hours.')
         ->assertSuccessful();
 
     Withdrawal::factory()->spam()->create(['created_at' => now()->subHour()]);
@@ -115,6 +115,69 @@ it('sends nothing, and says why, with no rows or no recipient', function () {
 
     $this->artisan('revoco:spam-digest', ['--no-interaction' => true])
         ->expectsOutput('No digest sent: no notification recipient is configured.')
+        ->assertSuccessful();
+
+    Mail::assertNothingQueued();
+});
+
+it('lists unjudged yellow rows of the last 24 hours in a separate section with a mark-as-spam link', function () {
+    $red = Withdrawal::factory()->spam()->create(['created_at' => now()->subHours(3)]);
+    $yellow = Withdrawal::factory()->yellow()->create([
+        'name' => 'Erika Mustermann',
+        'email' => 'kunde2@example.com',
+        'spam_reason' => 'user_agent_ancient',
+        'created_at' => now()->subHours(2),
+    ]);
+    Withdrawal::factory()->yellow()->create(['created_at' => now()->subHours(30)]);
+    Withdrawal::factory()->yellow()->notSpam()->create(['created_at' => now()->subHours(2)]);
+    Withdrawal::factory()->yellow()->create(['spam_verdict' => 'spam', 'spam_verdict_at' => now(), 'created_at' => now()->subHours(2)]);
+
+    $this->artisan('revoco:spam-digest')
+        ->expectsOutput('Digest queued: 1 spam, 1 suspected.')
+        ->assertSuccessful();
+
+    $queued = Mail::queued(SpamDigest::class)->first();
+    expect($queued)->not->toBeNull()
+        ->and($queued->entries->pluck('id')->all())->toBe([$red->id])
+        ->and($queued->suspected?->pluck('id')->all())->toBe([$yellow->id])
+        ->and($queued->suspectedTotal)->toBe(1);
+
+    $queued->locale('de');
+    $html = $queued->render();
+    $suspectedSection = (string) strstr($html, 'Verdächtig');
+
+    expect($queued->envelope()->subject)->toContain('2 Eingänge')
+        ->and($html)->toContain('Als Spam eingestuft')
+        ->and($html)->toContain('/spam/'.$red->id.'/not-spam?')
+        ->and($suspectedSection)->toContain('Erika Mustermann')
+        ->toContain('kunde2@example.com')
+        ->toContain('ist 1 Widerruf als verdächtig')
+        ->toContain('/spam/'.$yellow->id.'/spam?')
+        ->toContain('Als Spam markieren')
+        ->not->toContain('/spam/'.$yellow->id.'/not-spam?');
+});
+
+it('sends the digest when only yellow rows exist, without the spam section, linking the inbox', function () {
+    Withdrawal::factory()->yellow()->count(2)->create(['created_at' => now()->subHour()]);
+
+    $this->artisan('revoco:spam-digest')
+        ->expectsOutput('Digest queued: 0 spam, 2 suspected.')
+        ->assertSuccessful();
+
+    $queued = Mail::queued(SpamDigest::class)->first();
+    expect($queued)->not->toBeNull();
+    $html = $queued->locale('de')->render();
+
+    expect($html)->toContain('sind 2 Widerrufe als verdächtig')
+        ->not->toContain('Als Spam eingestuft')
+        ->not->toContain('tab=spam');
+});
+
+it('leaves auto-sorted rows out of the digest', function () {
+    Withdrawal::factory()->autoSorted()->create(['created_at' => now()->subHour()]);
+
+    $this->artisan('revoco:spam-digest')
+        ->expectsOutput('No digest sent: no unresolved spam or suspected withdrawals in the last 24 hours.')
         ->assertSuccessful();
 
     Mail::assertNothingQueued();
