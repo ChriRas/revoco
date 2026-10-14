@@ -6,7 +6,7 @@
 
 - **Language:** PHP / Laravel — latest stable at scaffold time. Verify exact versions live before scaffolding.
 - **Frontend:** Blade + Controller + FormRequest (no Livewire); theming via CSS `data-theme`, active theme via `APP_THEME`.
-- **i18n:** Laravel localization (`lang/<code>/*`), all user-facing strings as keys; default `de`. More languages = new lang files. German framework translations come from laravel-lang (dev dependency); re-run `php artisan lang:update` after Laravel upgrades.
+- **i18n:** Laravel localization (`lang/<code>/*`), all user-facing strings as keys; default `de`. More languages = new lang files. German framework translations (`lang/de.json`, `lang/de/{validation,auth,passwords,pagination,…}.php`) were published once from laravel-lang and are maintained in the repo — the package itself is not a dependency (it pulls abandoned packages that fail `composer audit`).
 - **Operator backend:** Filament — one `Withdrawal` resource behind login. Filament assets are committed under `public/`; after a Filament update run `php artisan filament:assets` — CI fails on drift.
 - **Database:** SQLite (file on a persistent volume).
 - **Queue:** database driver + worker (e-mails + ntfy push run async).
