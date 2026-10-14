@@ -186,7 +186,7 @@ it('puts the open red and yellow submits of a simulated day into the digest, the
     simulateSubmit(['website' => 'https://cheap-pills.example', 'ua' => ANCIENT_CHROME_USER_AGENT, 'email' => 'opfer4@example.com']);
 
     $this->artisan('revoco:spam-digest')
-        ->expectsOutput('Digest queued: 1 spam, 1 suspected.')
+        ->expectsOutput('Digest queued: 1 spam, 1 suspected, 1 auto-sorted.')
         ->assertSuccessful();
 
     $digest = Mail::queued(SpamDigest::class)->first();

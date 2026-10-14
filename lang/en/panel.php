@@ -23,7 +23,7 @@ return [
             ],
             'spam_digest_time' => [
                 'label' => 'Spam digest time',
-                'help' => 'Every day at this time (HH:MM, application time zone) a summary of the withdrawals classified as spam in the last 24 hours goes to the recipient address. Nothing is sent when there are none.',
+                'help' => 'Every day at this time (HH:MM, application time zone) a summary goes to the recipient address: the spam and suspected withdrawals without your decision received since the last summary, plus the number sorted out automatically (at most 7 days back). Nothing is sent when there are none.',
             ],
             'test' => [
                 'button' => 'Send test e-mail',

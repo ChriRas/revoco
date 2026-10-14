@@ -23,7 +23,17 @@ beforeEach(function (): void {
     Mail::fake();
     config(['revoco.merchant_email' => 'merchant@example.com']);
     $this->travelTo(Carbon::create(2026, 10, 14, 7, 0, 0, 'Europe/Berlin'));
+    // Yesterday's digest went out: this run covers the last 24 hours.
+    lastDigestAt(now()->subDay());
 });
+
+/** Records when the previous digest was queued; null = none yet. */
+function lastDigestAt(?Carbon $at): void
+{
+    $settings = app(NotificationSettings::class);
+    $settings->spam_digest_last_sent_at = $at?->toIso8601String();
+    $settings->save();
+}
 
 /** The digest event as registered on a fresh schedule. */
 function digestEvent(): Event
@@ -89,7 +99,7 @@ it('uses the singular for a single entry', function () {
     $queued = Mail::queued(SpamDigest::class)->first();
     expect($queued)->not->toBeNull();
     $queued->locale('de');
-    expect($queued->envelope()->subject)->toContain('1 Eingang in')
+    expect($queued->envelope()->subject)->toContain('1 Eingang seit')
         ->and($queued->render())->toContain('ist 1 Widerruf als Spam');
 });
 
@@ -107,7 +117,7 @@ it('lists 50 entries and counts the rest', function () {
 
 it('sends nothing, and says why, with no rows or no recipient', function () {
     $this->artisan('revoco:spam-digest')
-        ->expectsOutput('No digest sent: no unresolved spam or suspected withdrawals in the last 24 hours.')
+        ->expectsOutput('No digest sent: nothing to report since the last digest.')
         ->assertSuccessful();
 
     Withdrawal::factory()->spam()->create(['created_at' => now()->subHour()]);
@@ -133,7 +143,7 @@ it('lists unjudged yellow rows of the last 24 hours in a separate section with a
     Withdrawal::factory()->yellow()->create(['spam_verdict' => 'spam', 'spam_verdict_at' => now(), 'created_at' => now()->subHours(2)]);
 
     $this->artisan('revoco:spam-digest')
-        ->expectsOutput('Digest queued: 1 spam, 1 suspected.')
+        ->expectsOutput('Digest queued: 1 spam, 1 suspected, 0 auto-sorted.')
         ->assertSuccessful();
 
     $queued = Mail::queued(SpamDigest::class)->first();
@@ -161,7 +171,7 @@ it('sends the digest when only yellow rows exist, without the spam section, link
     Withdrawal::factory()->yellow()->count(2)->create(['created_at' => now()->subHour()]);
 
     $this->artisan('revoco:spam-digest')
-        ->expectsOutput('Digest queued: 0 spam, 2 suspected.')
+        ->expectsOutput('Digest queued: 0 spam, 2 suspected, 0 auto-sorted.')
         ->assertSuccessful();
 
     $queued = Mail::queued(SpamDigest::class)->first();
@@ -173,14 +183,72 @@ it('sends the digest when only yellow rows exist, without the spam section, link
         ->not->toContain('tab=spam');
 });
 
-it('leaves auto-sorted rows out of the digest', function () {
-    Withdrawal::factory()->autoSorted()->create(['created_at' => now()->subHour()]);
+it('counts auto-sorted rows with their purge date instead of listing them, and sends for them alone', function () {
+    Withdrawal::factory()->autoSorted(now()->subHours(5))->create(['created_at' => now()->subHours(5)]);
+    Withdrawal::factory()->autoSorted(now()->subHours(2))->create(['created_at' => now()->subHours(2)]);
 
     $this->artisan('revoco:spam-digest')
-        ->expectsOutput('No digest sent: no unresolved spam or suspected withdrawals in the last 24 hours.')
+        ->expectsOutput('Digest queued: 0 spam, 0 suspected, 2 auto-sorted.')
         ->assertSuccessful();
 
-    Mail::assertNothingQueued();
+    $queued = Mail::queued(SpamDigest::class)->first();
+    expect($queued)->not->toBeNull()
+        ->and($queued->entries)->toHaveCount(0)
+        ->and($queued->autoSortedTotal)->toBe(2);
+
+    // The first of them was judged 5 hours ago (14.10. 02:00) and is purged 7 days later.
+    expect($queued->locale('de')->render())->toContain('2 Eingänge wurden automatisch als Spam aussortiert')
+        ->toContain('ab dem 21.10.2026 gelöscht')
+        ->toContain('Im Spam-Reiter prüfen')
+        ->toContain('tab=spam');
+});
+
+it('leaves the count line out without auto-sorted rows', function () {
+    Withdrawal::factory()->spam()->create(['created_at' => now()->subHour()]);
+
+    $this->artisan('revoco:spam-digest')->assertSuccessful();
+
+    expect(Mail::queued(SpamDigest::class)->first()?->locale('de')->render())->not->toContain('automatisch als Spam aussortiert');
+});
+
+it('covers everything since the last queued digest, so a skipped run loses nothing', function () {
+    lastDigestAt(now()->subDays(3));
+    $threeDays = Withdrawal::factory()->spam()->create(['created_at' => now()->subDays(2)->subHours(20)]);
+    Withdrawal::factory()->spam()->create(['created_at' => now()->subDays(4)]);
+
+    $this->artisan('revoco:spam-digest')->assertSuccessful();
+
+    expect(Mail::queued(SpamDigest::class)->first()?->entries->pluck('id')->all())->toBe([$threeDays->id])
+        ->and(app(NotificationSettings::class)->spam_digest_last_sent_at)->toBe(now()->toIso8601String());
+});
+
+it('looks back at most 7 days, also on the very first run', function () {
+    lastDigestAt(null);
+    $sixDays = Withdrawal::factory()->spam()->create(['created_at' => now()->subDays(6)]);
+    Withdrawal::factory()->spam()->create(['created_at' => now()->subDays(8)]);
+
+    $this->artisan('revoco:spam-digest')->assertSuccessful();
+
+    expect(Mail::queued(SpamDigest::class)->first()?->entries->pluck('id')->all())->toBe([$sixDays->id]);
+
+    lastDigestAt(now()->subDays(30));
+    Mail::fake();
+
+    $this->artisan('revoco:spam-digest')->assertSuccessful();
+
+    expect(Mail::queued(SpamDigest::class)->first()?->entries->pluck('id')->all())->toBe([$sixDays->id]);
+});
+
+it('keeps the window open when there is nothing to report', function () {
+    $this->artisan('revoco:spam-digest')->expectsOutput('No digest sent: nothing to report since the last digest.');
+    expect(app(NotificationSettings::class)->spam_digest_last_sent_at)->toBe(now()->subDay()->toIso8601String());
+
+    $this->travel(1)->day();
+    $row = Withdrawal::factory()->spam()->create(['created_at' => now()->subHours(30)]);
+
+    $this->artisan('revoco:spam-digest')->assertSuccessful();
+
+    expect(Mail::queued(SpamDigest::class)->first()?->entries->pluck('id')->all())->toBe([$row->id]);
 });
 
 it('registers the schedule at the configured time in the app timezone', function () {

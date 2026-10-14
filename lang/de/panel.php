@@ -23,7 +23,7 @@ return [
             ],
             'spam_digest_time' => [
                 'label' => 'Uhrzeit der Spam-Zusammenfassung',
-                'help' => 'Täglich um diese Uhrzeit (HH:MM, Zeitzone der Anwendung) geht eine Zusammenfassung der als Spam eingestuften Eingänge der letzten 24 Stunden an die Empfängeradresse. Ohne solche Eingänge wird nichts versendet.',
+                'help' => 'Täglich um diese Uhrzeit (HH:MM, Zeitzone der Anwendung) geht eine Zusammenfassung an die Empfängeradresse: die seit der letzten Zusammenfassung eingegangenen Spam- und verdächtigen Eingänge ohne Ihre Entscheidung sowie die Anzahl der automatisch aussortierten (höchstens 7 Tage zurück). Ohne solche Eingänge wird nichts versendet.',
             ],
             'test' => [
                 'button' => 'Test-Mail senden',
