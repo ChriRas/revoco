@@ -22,7 +22,8 @@ final class RefreshNetworkDataCommand extends Command
 
     public function handle(NetworkDataRefresher $refresher): int
     {
-        $only = array_values(array_filter(array_map('trim', explode(',', (string) $this->option('only')))));
+        $option = $this->option('only');
+        $only = array_values(array_filter(array_map('trim', explode(',', is_string($option) ? $option : ''))));
         $unknown = array_diff($only, NetworkDataRefresher::SOURCES);
 
         if ($unknown !== []) {
