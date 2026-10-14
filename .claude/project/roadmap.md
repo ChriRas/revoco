@@ -88,6 +88,31 @@ paired with Pest-tested artisan commands; all output operator-reviewed via Filam
 never auto-published. The cross-cutting "deterministic command core + AI wrapper"
 pattern is captured in `design/authoring-skills.md`.
 
+### Phase 12 — Shop integration (idea, not planned)
+Raised by the human on 2026-10-14 during the epic-003 hands-on test. Optional, per-deployment
+connection to the operator's shop — Shopware 5 first, Shopware 6 later — to (a) cross-check an
+incoming withdrawal (does a customer / an order with this e-mail exist?) as a spam signal and
+(b) later as comfort automation (link the order in the merchant mail, set an order status).
+
+Shape the human described (2026-10-14): Revoco offers **one universal, shop-agnostic integration
+point**; a **configurable adapter per shop system** (e.g. run as a command, mechanism still open)
+does the shop's API query and translates its data to that contract. Revoco never knows a shop
+API itself. First adapter: Shopware 5 — the human's shop still runs on it. To be planned later
+as its own epic, after the epic-003 follow-ups and the live-preview slice.
+
+Open before planning:
+- **Conflicts with `intent.md`** — Non-Goals list "No shop adapter / lookup"; needs
+  `/craft:intent-update` first.
+- **Legal limits** to be clarified (the human's own caveat): a genuine consumer may withdraw with a
+  different address than the order's (guest order, typo, second mailbox) — a missing match must
+  never block, and must not by itself withhold the § 356a acknowledgment (red level). A *match* is
+  strong evidence for "genuine"; a *non-match* is weak evidence for "spam".
+- **Shopware 5 is end-of-life** (official security updates ended July 2024; only paid third-party
+  LTS) — confirm the target shop still runs it.
+- **Prior work exists** in `revoco_old` (github.com/ChriRas/revoco_old): lookup contract
+  (slice-023), SW5 order-lookup adapter (slice-024), classification (slice-026), SW6 adapter
+  (slice-029), plus the contract-testing lessons (live read-only shops instead of spec mocks).
+
 ## Releases (optional)
 
 | Version | Date | Highlights |
