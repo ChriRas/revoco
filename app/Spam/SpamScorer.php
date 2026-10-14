@@ -6,12 +6,15 @@ namespace App\Spam;
 
 use App\Enums\SpamLevel;
 use Illuminate\Support\Facades\Config;
+use Throwable;
 
 /**
  * Sums the configured weights of the signals that fired and sorts the score into a level.
  *
  * Weights and thresholds are read from `config('revoco.spam')` on every call. The
  * signals are the container tag `spam.signals`; appending to it is the extension point.
+ * A signal that throws is reported and counts as not fired: scoring must never cost the
+ * submit (§ 356a — the declaration is always stored).
  */
 final class SpamScorer
 {
@@ -25,7 +28,7 @@ final class SpamScorer
         $fired = [];
 
         foreach ($this->signals as $signal) {
-            if ($signal->fires($context)) {
+            if ($this->firesSafely($signal, $context)) {
                 $fired[$signal->key()] = $this->weight($signal->key());
             }
         }
@@ -53,6 +56,17 @@ final class SpamScorer
         return $trigger !== ''
             && in_array($trigger, $keys, true)
             && array_intersect($withAny, $keys) !== [];
+    }
+
+    private function firesSafely(SpamSignal $signal, SubmissionContext $context): bool
+    {
+        try {
+            return $signal->fires($context);
+        } catch (Throwable $e) {
+            report($e);
+
+            return false;
+        }
     }
 
     private function weight(string $key): int
