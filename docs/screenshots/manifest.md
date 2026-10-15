@@ -1,13 +1,18 @@
 # Revoco — Screenshot Set (Landing-Page Source Material)
 
 Curated screenshots of the Revoco withdrawal app, produced from a locally seeded
-**fake** dev database for the GitHub-Pages landing-page design session.
+**fake** dev database for the GitHub-Pages landing page.
+
+- **Sessions:** the consumer and legal-page shots (below, "kept") come from the
+  2026-07 session. All operator-panel shots were retaken on **2026-10-15** in one
+  session of the **1.2.0** panel (slice-036); the panel shows `Revoco 1.2.0` at the
+  sidebar foot, without an update badge.
 
 - **Language:** every screenshot is **English**. The consumer form is German by
   default; here it was switched to English via the built-in language switcher
   (`/locale/en`). The operator backend ran with `BACKEND_LOCALE=en`.
 - **Captured from:** the dev stack on `http://localhost:8580` (Laravel 13 /
-  Filament 5, SQLite), via `agent-browser` (headless Chromium).
+  Filament 5, SQLite), via `agent-browser` (headless Chromium, light mode).
 - **Retina:** desktop shots are 2× (CSS 1440×900 → 2880×1800 px); mobile shots
   are 3× on an iPhone-14 viewport (CSS 390×844 → 1170×2532 px). "Full page"
   means the image is the full scroll height, so its pixel height is larger.
@@ -20,7 +25,7 @@ Curated screenshots of the Revoco withdrawal app, produced from a locally seeded
 
 ---
 
-## Consumer-facing — desktop (English)
+## Consumer-facing — desktop (English) — kept from the 2026-07 session
 
 | File | Shows | Lang | Viewport |
 |---|---|---|---|
@@ -32,7 +37,7 @@ Curated screenshots of the Revoco withdrawal app, produced from a locally seeded
 | `imprint.png` | Imprint / §5 DDG page, populated (Muster Shop GmbH) | en | Desktop, full page |
 | `privacy.png` | Privacy-policy page, populated (sample copy) | en | Desktop, full page |
 
-## Consumer-facing — mobile (English)
+## Consumer-facing — mobile (English) — kept from the 2026-07 session
 
 | File | Shows | Lang | Viewport |
 |---|---|---|---|
@@ -41,34 +46,64 @@ Curated screenshots of the Revoco withdrawal app, produced from a locally seeded
 | `success-mobile.png` | Confirmation page, mobile (neutral) | en | Mobile 390×844 |
 | `imprint-mobile.png` | Imprint page, mobile | en | Mobile, full page |
 
-## Operator backend — Filament (English)
+## Operator backend — Filament (English) — session 2026-10-15
 
-| File | Shows | Lang | Viewport |
-|---|---|---|---|
-| `backend-login.png` | Panel login screen | en | Desktop 1440×900 |
-| `backend-list.png` | Withdrawals list — 9 entries, status columns (Received / Name / Order # / No Spam / Handled). **This is the panel home** (see note) | en | Desktop 1440×900 |
-| `backend-detail.png` | Single withdrawal detail — Submitter / Statement / Triage / Status sections + the **Mark handled** toggle | en | Desktop 1440×900 |
-| `backend-list-search.png` | Withdrawals list with an active search filter (`Muster` → 4 of 9 rows) | en | Desktop 1440×900 |
-| `backend-warning-banner.png` | Setup-completeness warning banner ("Setup pending — … Imprint, Privacy Policy"), captured **before** the legal content was imported | en | Desktop 1440×900 |
-| `backend-settings-legal.png` | Legal settings page, populated (imprint + privacy fields) | en | Desktop, full page |
-| `backend-settings-locale.png` | Localization settings page | en | Desktop 1440×900 |
-| `backend-settings-scope.png` | Withdrawal-scope settings page | en | Desktop 1440×900 |
+All at desktop 1440×900 (2880×1800 px) unless noted; the version `1.2.0` shows at
+the sidebar foot of every shot except the login screen and the banner shot (see the
+note below).
+
+| File | Shows | URL / state |
+|---|---|---|
+| `backend-login.png` | Panel login screen | `/admin/login`, empty form, nothing focused |
+| `backend-warning-banner.png` | Setup-completeness banner ("Setup pending — … Imprint, Privacy Policy"), captured **before** `ScreenshotLegalSeeder` ran | `/admin/withdrawals`, Inbox, top of page |
+| `backend-list.png` | Inbox tab: live preview of the newest row (Max Mustermann) and the list. **The panel home** (no dashboard) | `/admin/withdrawals`, top of page, pointer away from the list |
+| `backend-list-spam.png` | Spam tab: 2 red open rows, 2 auto-sorted ("Spam (automatic)"), 1 operator-confirmed | `/admin/withdrawals?tab=spam`, scrolled 255 px |
+| `backend-list-search.png` | Inbox with the search `Muster` (4 of the 11 Inbox rows match by name) | `/admin/withdrawals`, search `Muster`, scrolled to the end |
+| `backend-list-signal-filter.png` | Inbox filtered by one signal ("Form filled in implausibly fast"): 2 rows, one "Not spam (your decision)". Source material, not on the landing page | `/admin/withdrawals`, filter Signal, panel closed, scrolled 133 px |
+| `backend-detail.png` | Detail of a yellow row (Sabine Musterfrau): submitter, statement, triage with signal labels, status, and Mark as spam / Not spam / Mark handled in the header | `/admin/withdrawals/{id}` |
+| `backend-statistics.png` | Statistics page, period **Year**: six tiles and the monthly history chart (Jan–Oct; Nov, Dec empty) | `/admin/statistics`, scrolled 100 px so tiles and chart fit |
+| `backend-settings-locale.png` | Localization settings (Deutsch + English offered, default Deutsch) | `/admin/manage-localization` |
+| `backend-settings-scope.png` | Withdrawal-scope settings (goods and services on, digital off) | `/admin/manage-withdrawal-scope` |
+| `backend-settings-legal.png` | Legal settings, privacy tab with sample copy in both languages (**full page**, 2880 px wide) | `/admin/manage-legal`, `--full` |
 
 ---
 
 ## Notes for the design session
 
 - **No separate dashboard.** The Filament panel has no dashboard widget; its home
-  page *is* the withdrawals list (`backend-list.png`). There is no
-  `backend-dashboard.png`.
-- **No dark mode.** The public form ships a single light palette (no
-  `prefers-color-scheme` / dark theme in the CSS), so no light/dark pair is
-  included. The branding axis is instead shown as **neutral vs. branded**.
+  page *is* the withdrawals list (`backend-list.png`). The Statistics page is its own
+  sidebar entry.
+- **No dark mode.** The public form ships a single light palette; the operator shots
+  are light mode (`--color-scheme light`). The branding axis is instead shown as
+  **neutral vs. branded**.
 - **Neutral vs. branded** is the key visual story: `form-neutral*` is the
   out-of-the-box default; `form-branded*` shows the same form after a deploy-time
   brand overlay (generated by `revoco:make-theme`) + logo + brand name.
-- **Spam & handled states** are visible in `backend-list.png`: two rows are
-  spam-flagged (red icon in the "No Spam" column), three are marked handled
-  (green check + "Unmark handled"). *Outdated since slice-025:* the column is now a
-  "Spam level" badge and red rows sit under the "Spam" tab — retake with the docs sync.
+- **Spam and handled states** are visible in `backend-list.png` (spam-level badges,
+  handled check marks) and `backend-list-spam.png` (verdict notes under the badge).
 - **Dates** render as `DD.MM.YYYY HH:MM` regardless of UI language.
+- **Version foot under the banner:** with the setup banner showing, the sidebar is
+  pushed down by the banner height, so the version line at its foot falls just below
+  the 900 px viewport. `backend-warning-banner.png` therefore does not show it.
+
+## Reproducing the operator session
+
+Seed data is fictitious and fixed (no Faker, no randomness), in two seeders that
+refuse to run in production and are kept out of the production image
+(`.dockerignore`): `ScreenshotSeeder` (withdrawals, twelve months of daily-counter
+history, operator settings) and `ScreenshotLegalSeeder` (placeholder imprint and
+privacy copy, kept separate because the banner shot needs the legal settings empty).
+
+1. Back up the developer's `database/database.sqlite` (the next step wipes it).
+2. Start the dev stack with the panel language and the version set through the
+   container environment, e.g. a compose override file passed as a third `-f` with
+   `BACKEND_LOCALE: en`, `REVOCO_VERSION: "1.2.0"`, `REVOCO_UPDATE_CHECK: "false"`
+   (the version source is `config('revoco.version')`, baked from `REVOCO_VERSION`).
+3. `php artisan migrate:fresh --seeder=ScreenshotSeeder` inside the app container,
+   then create a throwaway operator with `php artisan app:operator --email=operator@example.com --password=<anything>`.
+4. `agent-browser --color-scheme light`, then `set viewport 1440 900 2`; log in,
+   capture `backend-login` (before login) and `backend-warning-banner`.
+5. `php artisan db:seed --class=ScreenshotLegalSeeder`, then capture the remaining
+   shots as in the table above, looking at each one before moving on.
+6. Regenerate the WebP derivatives (`docs/assets/README.md`), run
+   `bash docs/assets/check-images.sh`, stop the stack and restore the database file.
