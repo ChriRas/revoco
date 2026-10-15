@@ -125,14 +125,14 @@ Runs locally and in the release CI workflow.
 
 Deployment configuration is via environment variables. See [`.env.example`](.env.example)
 for the full list with inline documentation. Content-level settings — the legal pages
-(imprint & privacy), consumer languages, withdrawal scope, and the withdrawal-notification
-recipient — are managed by the operator in the Filament panel and persist in the database,
+(imprint & privacy), consumer languages, withdrawal scope, the withdrawal-notification
+recipient, the spam-digest time and the shipping countries — are managed by the operator in the Filament panel and persist in the database,
 so changing them needs no redeploy. Key environment variables:
 
 | Variable | Required | Default | Notes |
 |---|---|---|---|
 | `APP_KEY` | Yes | — | Generate with `key:generate --show`. Fail-fast if missing. |
-| `APP_URL` | Yes | `http://localhost` | Full public URL incl. scheme. |
+| `APP_URL` | Yes | `http://localhost` | Full public URL incl. scheme. Also builds the links in mails, so the queue and scheduler need it too. |
 | `APP_TIMEZONE` | No | `Europe/Berlin` | Time zone for withdrawal timestamps (receipt date and time). |
 | `APP_THEME` | No | `neutral` | Visual theme token set (`data-theme`). |
 | `DB_DATABASE` | No | `/var/www/html/storage/database/database.sqlite` | SQLite path inside container. |
@@ -141,6 +141,40 @@ so changing them needs no redeploy. Key environment variables:
 | `MERCHANT_NOTIFICATION_EMAIL` | No | — | Fallback recipient for the operator notification. The in-panel setting takes precedence; if neither is set, the imprint e-mail is used. |
 | `NTFY_ENABLED` | No | `false` | Opt-in ntfy push (no PII sent). |
 | `TRUSTED_PROXIES` | No | — (trust nothing) | Comma-separated proxy IPs/CIDRs, or `*`. Set it behind a reverse proxy so the client IP (not the proxy) feeds the spam signals; the proxy must send `X-Forwarded-For`. |
+
+---
+
+## Spam handling
+
+Every submit is stored and the form never blocks one — no captcha, no geo-blocking. A background score sorts each
+declaration into one of three levels, and the level decides what is sent:
+
+| Level | Acknowledgment to the consumer | Operator e-mail and push | Panel tab |
+|---|---|---|---|
+| Clean | sent | sent | Inbox |
+| Suspicious | sent | sent, flagged in the subject, with a "mark as spam" link | Inbox |
+| Spam | **withheld** | none — listed in the morning digest instead, with a "not spam" link | Spam |
+
+- **Signals.** Content patterns (random strings, a name without a space), a signed render token and the fill time,
+  a hidden honeypot field, an ancient browser, the per-IP submit rate, the network signals below, and addresses from
+  spam you confirmed earlier. All are evaluated locally; none blocks a submit.
+- **Digest.** Daily at the time set on the panel's notifications page (default 07:00, `APP_TIMEZONE`). It covers
+  everything since the previous digest, at most 7 days back: unjudged spam, unjudged suspicious declarations and a count
+  of auto-sorted ones. Nothing to report, no digest.
+- **Mail links.** "Mark as spam" and "not spam" are signed, single-use links that open a confirmation page first, so a
+  mail scanner that opens a link changes nothing. They are built from `APP_URL`, so the queue and scheduler containers
+  need it too (the bundled `docker-compose.yml` passes it on).
+- **Panel.** Inbox and Spam tabs, single and bulk "spam" / "not spam" actions, and a live preview of the newest
+  declaration in the current tab (it follows the row under the pointer or keyboard focus).
+- **Correcting a mistake.** "Not spam" moves a declaration to the Inbox and sends the withheld acknowledgment once,
+  with the original date and time of receipt.
+- **Auto-sorting.** A submit that fills the honeypot *and* shows a second bot signal (ancient browser, too fast,
+  missing or invalid render token, random-string content) is stored as confirmed spam right away. The digest counts these rows.
+- **Retention.** Confirmed spam (by you or by auto-sorting) is deleted 7 days after the verdict; until then "not spam"
+  restores it. Unconfirmed spam is never deleted automatically. The declaration content itself is never edited.
+
+Behind a reverse proxy, set `TRUSTED_PROXIES` — otherwise every submit seems to come from the proxy, and the per-IP
+rate and the network signals judge the proxy instead of the client.
 
 ---
 

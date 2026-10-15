@@ -101,9 +101,9 @@
 
       <ul class="law-facts">
         <li><span class="check" aria-hidden="true">✓</span><span>Only the three items listed in § 356a (2) BGB are mandatory — name, contract identification, e-mail. Any further field is optional.</span></li>
-        <li><span class="check" aria-hidden="true">✓</span><span>The submit is never blocked: no captcha, no order-number gate. Spam signals only classify — every declaration is stored.</span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>The submit is never blocked: no captcha, no order-number gate. Spam signals only classify — every declaration is stored. A declaration classified as spam gets its acknowledgment only once you release it.</span></li>
         <li><span class="check" aria-hidden="true">✓</span><span>Acknowledgment e-mail with declaration content plus date and time of receipt (configurable time zone) — sent asynchronously, so a mail-server hiccup never breaks the submit.</span></li>
-        <li><span class="check" aria-hidden="true">✓</span><span>Every declaration is stored and cannot be edited in the panel, so you can trace its receipt later.</span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>The content of a declaration cannot be edited in the panel, so you can trace its receipt later. Only declarations confirmed as spam are deleted, after 7 days.</span></li>
       </ul>
 
       <p class="disclaimer">Revoco is software, not legal advice, and does not guarantee that your shop meets the legal requirements. Whether and how § 356a BGB applies to your shop is a question for your legal counsel.</p>
@@ -153,8 +153,40 @@
     </div>
   </section>
 
+  <!-- ============ Spam handling ============ -->
+  <section class="section" id="spam">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Spam handling</span>
+        <h2>Bots are sorted out — real customers are never blocked</h2>
+        <p>Public withdrawal forms attract bots that submit strangers' e-mail addresses — and every acknowledgment would then go to a stranger. Revoco never blocks a submit: no captcha, no geo-blocking. Instead it scores every declaration in the background and routes it by confidence.</p>
+      </div>
+      <div class="card-grid">
+        <div class="card">
+          <h3>Clean</h3>
+          <p>Normal delivery: the acknowledgment goes to the consumer, the notification e-mail and the push go to you.</p>
+        </div>
+        <div class="card">
+          <h3>Suspicious</h3>
+          <p>The acknowledgment still goes out. Your notification e-mail is flagged in the subject line and carries a one-click "mark as spam" link.</p>
+        </div>
+        <div class="card">
+          <h3>Spam</h3>
+          <p>Stored, but no acknowledgment, no single e-mail, no push. A morning digest lists these declarations, each with a "not spam" link that sends the withheld acknowledgment.</p>
+        </div>
+      </div>
+      <ul class="law-facts facts-spaced">
+        <li><span class="check" aria-hidden="true">✓</span><span>Signals are evaluated locally: content patterns, fill time, a hidden honeypot field, the browser's age, country and network from a local database, the Spamhaus DROP and Tor exit lists, and addresses from spam you already confirmed (kept only as a keyed hash). No third-party lookup on a submit; the IP address is never stored.</span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>Inbox and Spam tabs in the panel, single and bulk actions, and a live preview of the newest declaration in the current tab.</span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>Mail links are single-use and open a confirmation page first, so a link scanner that opens them changes nothing.</span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>The unmistakable bot pattern — the hidden field plus a second bot signal — is sorted out automatically and counted in the digest. Confirmed spam is deleted after 7 days; until then, one click releases it.</span></li>
+      </ul>
+      <p class="disclaimer">No filter is perfect: a genuine declaration can land in Spam. Check the digest and the Spam tab — releasing a declaration sends its acknowledgment with the original date and time of receipt.</p>
+    </div>
+  </section>
+
   <!-- ============ Screenshots ============ -->
-  <section class="section" id="screenshots">
+  <section class="section section-alt" id="screenshots">
     <div class="container">
       <div class="section-head">
         <span class="kicker">Screenshots</span>
@@ -198,7 +230,7 @@
 
       <div class="showcase-block">
         <h3>An operator panel that stays out of your way</h3>
-        <p>Incoming withdrawals in one list with search and spam signals, a detail view with a single "handled" toggle, and settings for languages, legal pages, withdrawal scope and the notification recipient. A setup banner tells fresh installs exactly what is still missing.</p>
+        <p>Incoming withdrawals in Inbox and Spam tabs with search, spam levels and a live preview, a detail view with "handled" and spam actions, and settings for languages, legal pages, withdrawal scope, notifications and network signals. A setup banner tells fresh installs exactly what is still missing.</p>
         <div class="shot-grid">
           <figure class="browser-frame">
             <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -208,7 +240,7 @@
           <figure class="browser-frame">
             <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
             <img src="assets/img/backend-detail.webp" alt="Operator panel: detail view of one withdrawal with submitter, statement, triage and status sections" width="1440" height="900" loading="lazy">
-            <figcaption>Detail record, not editable in the panel, with a single triage action: mark handled</figcaption>
+            <figcaption>Detail record — the declaration itself cannot be edited in the panel</figcaption>
           </figure>
           <figure class="browser-frame">
             <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -243,7 +275,7 @@
   </section>
 
   <!-- ============ Push notifications ============ -->
-  <section class="section section-alt push-section" id="push">
+  <section class="section push-section" id="push">
     <div class="container">
       <div>
         <div class="section-head section-head-tight">
@@ -252,7 +284,7 @@
         </div>
         <p class="push-copy">Withdrawal declarations are rare events with legal deadlines attached — exactly the kind of thing you want pushed to your phone, not buried in an inbox. Revoco can notify you through <a href="https://ntfy.sh" rel="noopener">ntfy</a>: instant push to your phone or desktop the moment a declaration lands.</p>
         <ul class="law-facts facts-spaced">
-          <li><span class="check" aria-hidden="true">✓</span><span>Every declaration also lands as an e-mail to the operator — sent to a recipient you set in the panel (separate from the sending address), with a one-click test send, and a spam-flagged case marked right in the subject line.</span></li>
+          <li><span class="check" aria-hidden="true">✓</span><span>Every declaration not classified as spam also lands as an e-mail to the operator — sent to a recipient you set in the panel (separate from the sending address), with a one-click test send. A suspicious case is marked in the subject line; spam goes into a morning digest instead.</span></li>
           <li><span class="check" aria-hidden="true">✓</span><span>Data-minimal by design — the push carries no personal data, just the event.</span></li>
           <li><span class="check" aria-hidden="true">✓</span><span>Self-hostable like everything else: a ready-made ntfy service ships as an optional compose profile.</span></li>
           <li><span class="check" aria-hidden="true">✓</span><span>Optional and decoupled — one <code>.env</code> toggle, and a push failure never affects the consumer's submission.</span></li>
@@ -274,7 +306,7 @@
   </section>
 
   <!-- ============ AI authoring skills ============ -->
-  <section class="section" id="ai-setup">
+  <section class="section section-alt" id="ai-setup">
     <div class="container">
       <div class="section-head">
         <span class="kicker">AI-assisted setup</span>
@@ -308,7 +340,7 @@
   </section>
 
   <!-- ============ Quick start ============ -->
-  <section class="section section-alt" id="quickstart">
+  <section class="section" id="quickstart">
     <div class="container">
       <div class="section-head">
         <span class="kicker">Quick start</span>
@@ -345,7 +377,7 @@
   </section>
 
   <!-- ============ FAQ ============ -->
-  <section class="section" id="faq">
+  <section class="section section-alt" id="faq">
     <div class="container">
       <div class="section-head">
         <span class="kicker">FAQ</span>
@@ -442,6 +474,7 @@
         <ul>
           <li><a href="#law">Why now — the withdrawal duty</a></li>
           <li><a href="#features">Features</a></li>
+          <li><a href="#spam">Spam handling</a></li>
           <li><a href="#quickstart">Quick start</a></li>
           <li><a href="#faq">FAQ</a></li>
         </ul>

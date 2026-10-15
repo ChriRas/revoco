@@ -101,9 +101,9 @@
 
       <ul class="law-facts">
         <li><span class="check" aria-hidden="true">✓</span><span>Nur die drei in § 356a Abs. 2 BGB genannten Angaben sind Pflicht — Name, Vertragsidentifikation, E-Mail. Weitere Felder sind optional.</span></li>
-        <li><span class="check" aria-hidden="true">✓</span><span>Das Absenden wird nie blockiert: kein Captcha, keine Bestellnummern-Sperre. Spam-Signale klassifizieren nur — jede Erklärung wird gespeichert.</span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>Das Absenden wird nie blockiert: kein Captcha, keine Bestellnummern-Sperre. Spam-Signale klassifizieren nur — jede Erklärung wird gespeichert. Eine als Spam eingestufte Erklärung bekommt ihre Eingangsbestätigung erst, wenn du sie freigibst.</span></li>
         <li><span class="check" aria-hidden="true">✓</span><span>Eingangsbestätigung mit Erklärungsinhalt sowie Datum und Uhrzeit des Eingangs (Zeitzone konfigurierbar) — asynchron versendet, damit ein Mailserver-Schluckauf nie das Absenden bricht.</span></li>
-        <li><span class="check" aria-hidden="true">✓</span><span>Jede Erklärung wird gespeichert und ist im Panel nicht bearbeitbar. So kannst du den Eingang später nachvollziehen.</span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>Der Inhalt einer Erklärung ist im Panel nicht bearbeitbar. So kannst du den Eingang später nachvollziehen. Nur als Spam bestätigte Erklärungen werden gelöscht, nach 7 Tagen.</span></li>
       </ul>
 
       <p class="disclaimer">Revoco ist Software, keine Rechtsberatung, und garantiert nicht, dass dein Shop die gesetzlichen Anforderungen erfüllt. Ob und wie § 356a BGB auf deinen Shop anwendbar ist, klärst du mit deiner Rechtsberatung.</p>
@@ -153,8 +153,40 @@
     </div>
   </section>
 
+  <!-- ============ Spam handling ============ -->
+  <section class="section" id="spam">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Spam-Schutz</span>
+        <h2>Bots werden aussortiert — echte Kunden werden nie blockiert</h2>
+        <p>Öffentliche Widerrufsformulare ziehen Bots an, die fremde E-Mail-Adressen eintragen — jede Eingangsbestätigung ginge dann an Unbeteiligte. Revoco blockiert das Absenden trotzdem nie: kein Captcha, kein Geo-Blocking. Stattdessen bewertet es jede Erklärung im Hintergrund und leitet sie nach Sicherheit weiter.</p>
+      </div>
+      <div class="card-grid">
+        <div class="card">
+          <h3>Unauffällig</h3>
+          <p>Normale Zustellung: Die Eingangsbestätigung geht an den Verbraucher, Benachrichtigungs-E-Mail und Push gehen an dich.</p>
+        </div>
+        <div class="card">
+          <h3>Verdächtig</h3>
+          <p>Die Eingangsbestätigung geht trotzdem raus. Deine Benachrichtigung ist im Betreff markiert und hat einen „Als Spam markieren“-Link für einen Klick.</p>
+        </div>
+        <div class="card">
+          <h3>Spam</h3>
+          <p>Gespeichert, aber ohne Eingangsbestätigung, ohne einzelne E-Mail und ohne Push. Eine Zusammenfassung am Morgen listet diese Erklärungen, jede mit einem „Kein Spam“-Link, der die zurückgehaltene Bestätigung verschickt.</p>
+        </div>
+      </div>
+      <ul class="law-facts facts-spaced">
+        <li><span class="check" aria-hidden="true">✓</span><span>Die Signale werden lokal ausgewertet: Inhaltsmuster, Ausfüllzeit, ein verstecktes Honeypot-Feld, das Alter des Browsers, Land und Netz aus einer lokalen Datenbank, die Spamhaus-DROP- und Tor-Exit-Listen sowie Adressen aus bereits bestätigtem Spam (nur als Hash mit geheimem Schlüssel). Beim Absenden wird kein Drittanbieter abgefragt; die IP-Adresse wird nie gespeichert.</span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>Reiter Posteingang und Spam im Panel, Einzel- und Sammelaktionen und eine Live-Vorschau der neuesten Erklärung im aktuellen Reiter.</span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>Mail-Links gelten nur einmal und öffnen zuerst eine Bestätigungsseite — ein Link-Scanner, der sie aufruft, ändert nichts.</span></li>
+        <li><span class="check" aria-hidden="true">✓</span><span>Das eindeutige Bot-Muster — verstecktes Feld plus ein zweites Bot-Signal — wird automatisch aussortiert und in der Zusammenfassung gezählt. Bestätigter Spam wird nach 7 Tagen gelöscht; bis dahin gibt ihn ein Klick wieder frei.</span></li>
+      </ul>
+      <p class="disclaimer">Kein Filter ist perfekt: Auch eine echte Erklärung kann im Spam landen. Prüfe die Zusammenfassung und den Spam-Reiter — gibst du eine Erklärung frei, geht ihre Eingangsbestätigung mit dem ursprünglichen Datum und der Uhrzeit des Eingangs raus.</p>
+    </div>
+  </section>
+
   <!-- ============ Screenshots ============ -->
-  <section class="section" id="screenshots">
+  <section class="section section-alt" id="screenshots">
     <div class="container">
       <div class="section-head">
         <span class="kicker">Screenshots</span>
@@ -198,7 +230,7 @@
 
       <div class="showcase-block">
         <h3>Ein Betreiber-Panel, das dir nicht im Weg steht</h3>
-        <p>Eingehende Widerrufe in einer Liste mit Suche und Spam-Signalen, eine Detailansicht mit einem einzigen „Erledigt“-Schalter und Einstellungen für Sprachen, Rechtsseiten, Widerrufsumfang und den Benachrichtigungs-Empfänger. Ein Setup-Banner sagt frischen Installationen genau, was noch fehlt.</p>
+        <p>Eingehende Widerrufe in den Reitern Posteingang und Spam mit Suche, Spam-Stufen und Live-Vorschau, eine Detailansicht mit „Erledigt“- und Spam-Aktionen und Einstellungen für Sprachen, Rechtsseiten, Widerrufsumfang, Benachrichtigungen und Netzwerk-Signale. Ein Setup-Banner sagt frischen Installationen genau, was noch fehlt.</p>
         <div class="shot-grid">
           <figure class="browser-frame">
             <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -208,7 +240,7 @@
           <figure class="browser-frame">
             <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
             <img src="../assets/img/backend-detail.webp" alt="Betreiber-Panel: Detailansicht eines Widerrufs mit Abschnitten für Absender, Erklärung, Triage und Status" width="1440" height="900" loading="lazy">
-            <figcaption>Im Panel nicht bearbeitbarer Datensatz mit einer einzigen Triage-Aktion: als erledigt markieren</figcaption>
+            <figcaption>Detailansicht — die Erklärung selbst ist im Panel nicht bearbeitbar</figcaption>
           </figure>
           <figure class="browser-frame">
             <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -243,7 +275,7 @@
   </section>
 
   <!-- ============ Push-Benachrichtigungen ============ -->
-  <section class="section section-alt push-section" id="push">
+  <section class="section push-section" id="push">
     <div class="container">
       <div>
         <div class="section-head section-head-tight">
@@ -252,7 +284,7 @@
         </div>
         <p class="push-copy">Widerrufserklärungen sind seltene Ereignisse mit gesetzlichen Fristen — genau das, was du als Push aufs Handy willst statt vergraben im Postfach. Revoco benachrichtigt dich auf Wunsch über <a href="https://ntfy.sh" rel="noopener">ntfy</a>: Sofort-Push auf Handy oder Desktop, sobald eine Erklärung eingeht.</p>
         <ul class="law-facts facts-spaced">
-          <li><span class="check" aria-hidden="true">✓</span><span>Jeder Widerruf geht außerdem als E-Mail an den Betreiber — an einen im Panel gesetzten Empfänger (getrennt von der Absenderadresse), mit Ein-Klick-Testversand, und ein Spam-Verdacht steht direkt im Betreff.</span></li>
+          <li><span class="check" aria-hidden="true">✓</span><span>Jeder Widerruf, der nicht als Spam eingestuft ist, geht außerdem als E-Mail an den Betreiber — an einen im Panel gesetzten Empfänger (getrennt von der Absenderadresse), mit Ein-Klick-Testversand. Ein Spam-Verdacht steht im Betreff; Spam landet stattdessen in der Zusammenfassung am Morgen.</span></li>
           <li><span class="check" aria-hidden="true">✓</span><span>Datenminimal per Design — der Push enthält keine personenbezogenen Daten, nur das Ereignis.</span></li>
           <li><span class="check" aria-hidden="true">✓</span><span>Selbst hostbar wie alles andere: Ein fertiger ntfy-Dienst liegt als optionales Compose-Profil bei.</span></li>
           <li><span class="check" aria-hidden="true">✓</span><span>Optional und entkoppelt — ein <code>.env</code>-Schalter, und ein Push-Fehler beeinträchtigt nie das Absenden des Verbrauchers.</span></li>
@@ -274,7 +306,7 @@
   </section>
 
   <!-- ============ KI-Authoring-Skills ============ -->
-  <section class="section" id="ai-setup">
+  <section class="section section-alt" id="ai-setup">
     <div class="container">
       <div class="section-head">
         <span class="kicker">KI-gestütztes Setup</span>
@@ -308,7 +340,7 @@
   </section>
 
   <!-- ============ Schnellstart ============ -->
-  <section class="section section-alt" id="quickstart">
+  <section class="section" id="quickstart">
     <div class="container">
       <div class="section-head">
         <span class="kicker">Schnellstart</span>
@@ -345,7 +377,7 @@
   </section>
 
   <!-- ============ FAQ ============ -->
-  <section class="section" id="faq">
+  <section class="section section-alt" id="faq">
     <div class="container">
       <div class="section-head">
         <span class="kicker">FAQ</span>
@@ -442,6 +474,7 @@
         <ul>
           <li><a href="#law">Warum jetzt — die Widerrufspflicht</a></li>
           <li><a href="#features">Funktionen</a></li>
+          <li><a href="#spam">Spam-Schutz</a></li>
           <li><a href="#quickstart">Schnellstart</a></li>
           <li><a href="#faq">FAQ</a></li>
         </ul>
