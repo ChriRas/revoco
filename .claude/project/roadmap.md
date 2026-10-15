@@ -113,6 +113,14 @@ Open before planning:
   (slice-023), SW5 order-lookup adapter (slice-024), classification (slice-026), SW6 adapter
   (slice-029), plus the contract-testing lessons (live read-only shops instead of spec mocks).
 
+### Phase 13 — Operator insights (next, ahead of Phase 12)
+Raised by the human on 2026-10-15 after the 1.1.0 live release: a statistics page (genuine / suspected /
+spam per day, month, year, all time, on anonymous daily counters that survive the 7-day spam purge), a
+filter by the triggering spam signal, and the running version with an update badge in the logged-in panel;
+afterwards the documentation screenshots are retaken. Planned as epic-004 `operator-insights`; the counter
+slice ships first so live's campaign rows are counted before their purge (2026-10-22). Phase 12 (shop
+integration) is deferred behind it. See `design/operator-insights.md`.
+
 ## Releases (optional)
 
 | Version | Date | Highlights |

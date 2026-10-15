@@ -25,6 +25,9 @@ docker-compose.*.yml
 # Tests never enter the production image (slice-001 decision D2: test-free prod).
 tests
 
+# Demo-data seeders for the documentation screenshots stay out of the production image.
+database/seeders/Screenshot*.php
+
 # Runtime artifacts.
 storage/logs/*
 *.sqlite

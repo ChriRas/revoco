@@ -4,6 +4,49 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] — 2026-10-15
+
+Operator insights. A statistics page shows how many declarations were genuine, suspected or
+spam — per day, month, year and all time — and how often the spam sorting erred. It reads
+anonymous daily counters that outlive the 7-day purge of confirmed spam. The panel also shows
+the running version, with a badge when a newer release exists.
+
+### Added
+
+- **Daily counters** — a `withdrawal_daily_counts` table holds, per receipt day, spam level,
+  outcome (no verdict, spam sorted out automatically, spam by the operator, not spam) and
+  signal, how many withdrawals there were. It is updated on every submit and every verdict
+  change, a withdrawal with several signals counts once per signal, and the purge never takes
+  a count away. The counters hold no name, e-mail address or other personal data.
+- **Backfill on deploy** — the migration counts every withdrawal that already exists, so the
+  confirmed spam rows still waiting for their purge are included. `php artisan migrate`
+  (which the container entrypoint runs on every start) does it once; no extra step.
+- **Signal filter** — the withdrawals list has a multi-select *Signal* filter. It shows the
+  rows that carry at least one of the selected signals, within the active tab.
+- **Statistics page** — a *Statistics* entry next to *Withdrawals*: a Today / Month / Year /
+  All time switch, tiles for genuine, suspected, spam, auto-sorted, false alarms (spam
+  released as "not spam") and missed spam (marked as spam later), a stacked history chart,
+  and a per-signal table whose counts open the withdrawals list filtered by that signal and
+  period.
+- **Version display and update badge** — the logged-in panel shows the running version at the
+  foot of the sidebar. Once a day the scheduler asks the public GitHub Releases API for the
+  latest stable release (one anonymous request, no instance data); when it is newer, a badge
+  links to its release notes. `REVOCO_UPDATE_CHECK=false` opts out. The release image now
+  carries its version from the git tag (`REVOCO_VERSION`); an untagged build reports `dev`.
+
+### Changed
+
+- The documentation screenshots (README, landing pages EN/DE) show the current panel: Inbox
+  with live preview, Spam tab, signal filter, detail page and the statistics page, taken with
+  fictitious data from new, non-shipped screenshot seeders.
+- `composer.json` no longer carries a `version` field — the git tag is the one source.
+
+### Upgrade notes
+
+- Migrations run automatically on boot; the new one also counts every existing withdrawal.
+- The update badge follows **published GitHub Releases**, not bare tags. Set
+  `REVOCO_UPDATE_CHECK=false` for the `app` and `scheduler` services to turn the check off.
+
 ## [1.1.0] — 2026-10-15
 
 Spam handling. Bot campaigns that fill the form with strangers' e-mail addresses no longer
@@ -315,6 +358,7 @@ operator notification are sent. Neutral by default, configurable per `.env`.
 - Operator deployment specifics (real domains, reverse proxy, secrets, brand assets)
   live in a separate private infrastructure repository, never in this public repo.
 
+[1.2.0]: https://github.com/ChriRas/revoco/releases/tag/v1.2.0
 [1.1.0]: https://github.com/ChriRas/revoco/releases/tag/v1.1.0
 [1.0.3]: https://github.com/ChriRas/revoco/releases/tag/v1.0.3
 [1.0.2]: https://github.com/ChriRas/revoco/releases/tag/v1.0.2

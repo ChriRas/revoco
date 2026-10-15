@@ -140,6 +140,7 @@ so changing them needs no redeploy. Key environment variables:
 | `MAIL_MAILER` | No | `log` (safe) | Set to `smtp` in prod and configure `MAIL_*`. |
 | `MERCHANT_NOTIFICATION_EMAIL` | No | — | Fallback recipient for the operator notification. The in-panel setting takes precedence; if neither is set, the imprint e-mail is used. |
 | `NTFY_ENABLED` | No | `false` | Opt-in ntfy push (no PII sent). |
+| `REVOCO_UPDATE_CHECK` | No | `true` | Once a day the scheduler asks the public GitHub Releases API for the latest stable release; the panel shows the running version and a badge when a newer one exists. One anonymous request, no instance data. Set `false` to opt out (no request, no badge). |
 | `TRUSTED_PROXIES` | No | — (trust nothing) | Comma-separated proxy IPs/CIDRs, or `*`. Set it behind a reverse proxy so the client IP (not the proxy) feeds the spam signals; the proxy must send `X-Forwarded-For`. |
 
 ---
@@ -172,6 +173,10 @@ declaration into one of three levels, and the level decides what is sent:
   missing or invalid render token, random-string content) is stored as confirmed spam right away. The digest counts these rows.
 - **Retention.** Confirmed spam (by you or by auto-sorting) is deleted 7 days after the verdict; until then "not spam"
   restores it. Unconfirmed spam is never deleted automatically. The declaration content itself is never edited.
+- **Statistics.** The panel's *Statistics* page shows genuine, suspected and spam declarations for today, a month, a
+  year or all time, plus the auto-sorted ones, false alarms (spam released as "not spam") and missed spam (marked as
+  spam later), a history chart and a per-signal table that opens the list filtered by that signal. It reads anonymous
+  daily counters (no personal data) that outlive the 7-day purge; the withdrawals list has a matching *Signal* filter.
 
 Behind a reverse proxy, set `TRUSTED_PROXIES` — otherwise every submit seems to come from the proxy, and the per-IP
 rate and the network signals judge the proxy instead of the client.
@@ -290,6 +295,10 @@ GitHub Actions are configured in [`.github/workflows/`](.github/workflows/):
 - **`release.yml`** — on a `v*` SemVer tag: builds the prod image, runs the
   smoke test, and pushes to `ghcr.io/chriras/revoco` (SemVer + `latest`). A fork
   publishes under its own lowercased owner.
+  The build bakes the tag's version into the image (`REVOCO_VERSION`), which the
+  panel shows at the foot of the sidebar; a build without the tag reports `dev`. The
+  "newer version available" badge follows *published GitHub Releases*, not bare tags —
+  publish a release for the tag to make it show up.
 - **`security-audit.yml`** — scheduled `composer audit` (~every 2 days) that opens
   an issue if a locked dependency has a known advisory. Dependabot
   (`.github/dependabot.yml`) complements it with weekly update PRs.
