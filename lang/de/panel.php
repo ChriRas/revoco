@@ -308,6 +308,12 @@ return [
         'page_privacy' => 'Datenschutzerklärung',
     ],
 
+    'version' => [
+        'running' => 'Revoco :version',
+        'available' => ':version verfügbar',
+        'release_notes' => 'Release Notes zu :version öffnen',
+    ],
+
     'preview' => [
         'heading' => 'Vorschau',
         'empty' => 'Keine Widerrufe in diesem Reiter.',

@@ -66,6 +66,7 @@ services:
       NTFY_SERVER: "${NTFY_SERVER:-https://ntfy.sh}"
       NTFY_TOPIC: "${NTFY_TOPIC:-}"
       NTFY_TOKEN: "${NTFY_TOKEN:-}"
+      REVOCO_UPDATE_CHECK: "${REVOCO_UPDATE_CHECK:-true}"
       OPERATOR_EMAIL: "${OPERATOR_EMAIL:-}"
       OPERATOR_PASSWORD: "${OPERATOR_PASSWORD:-}"
       BACKEND_LOCALE: "${BACKEND_LOCALE:-en}"
@@ -148,6 +149,7 @@ services:
       SESSION_DRIVER: database
       QUEUE_CONNECTION: database
       CACHE_STORE: database
+      REVOCO_UPDATE_CHECK: "${REVOCO_UPDATE_CHECK:-true}"
     volumes:
       - app_storage:/var/www/html/storage
     depends_on:

@@ -308,6 +308,12 @@ return [
         'page_privacy' => 'Privacy Policy',
     ],
 
+    'version' => [
+        'running' => 'Revoco :version',
+        'available' => ':version available',
+        'release_notes' => 'Open the release notes for :version',
+    ],
+
     'preview' => [
         'heading' => 'Preview',
         'empty' => 'No withdrawals in this tab.',

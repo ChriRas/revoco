@@ -54,6 +54,10 @@ final class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::TOPBAR_AFTER,
                 fn (): string => view('panels.legal-content-warning')->render(),
             )
+            ->renderHook(
+                PanelsRenderHook::SIDEBAR_FOOTER,
+                fn (): string => view('panels.version')->render(),
+            )
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

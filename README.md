@@ -140,6 +140,7 @@ so changing them needs no redeploy. Key environment variables:
 | `MAIL_MAILER` | No | `log` (safe) | Set to `smtp` in prod and configure `MAIL_*`. |
 | `MERCHANT_NOTIFICATION_EMAIL` | No | — | Fallback recipient for the operator notification. The in-panel setting takes precedence; if neither is set, the imprint e-mail is used. |
 | `NTFY_ENABLED` | No | `false` | Opt-in ntfy push (no PII sent). |
+| `REVOCO_UPDATE_CHECK` | No | `true` | Once a day the scheduler asks the public GitHub Releases API for the latest stable release; the panel shows the running version and a badge when a newer one exists. One anonymous request, no instance data. Set `false` to opt out (no request, no badge). |
 | `TRUSTED_PROXIES` | No | — (trust nothing) | Comma-separated proxy IPs/CIDRs, or `*`. Set it behind a reverse proxy so the client IP (not the proxy) feeds the spam signals; the proxy must send `X-Forwarded-For`. |
 
 ---
@@ -290,6 +291,10 @@ GitHub Actions are configured in [`.github/workflows/`](.github/workflows/):
 - **`release.yml`** — on a `v*` SemVer tag: builds the prod image, runs the
   smoke test, and pushes to `ghcr.io/chriras/revoco` (SemVer + `latest`). A fork
   publishes under its own lowercased owner.
+  The build bakes the tag's version into the image (`REVOCO_VERSION`), which the
+  panel shows at the foot of the sidebar; a build without the tag reports `dev`. The
+  "newer version available" badge follows *published GitHub Releases*, not bare tags —
+  publish a release for the tag to make it show up.
 - **`security-audit.yml`** — scheduled `composer audit` (~every 2 days) that opens
   an issue if a locked dependency has a known advisory. Dependabot
   (`.github/dependabot.yml`) complements it with weekly update PRs.
