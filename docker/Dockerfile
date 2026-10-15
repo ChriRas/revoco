@@ -116,5 +116,10 @@ RUN mkdir -p \
         storage/database \
     && chown -R www-data:www-data storage _public_src public
 
+# The release build passes the tag's SemVer; an untagged build reports `dev`. Declared
+# last so a changing version does not invalidate the layers above.
+ARG REVOCO_VERSION=dev
+ENV REVOCO_VERSION=${REVOCO_VERSION}
+
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["php-fpm"]

@@ -57,12 +57,23 @@ jobs:
           push: false
           load: true
           tags: ghcr.io/local/revoco:smoke
+          build-args: REVOCO_VERSION=${{ steps.meta.outputs.semver }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # Smoke test: boot the generic prod stack, curl / → 200, then tear down.
+      # Smoke test: the image reports the tag's version, then boot the generic prod
+      # stack, curl / → 200, then tear down.
       - name: Smoke test
+        env:
+          SEMVER: ${{ steps.meta.outputs.semver }}
         run: |
+          BAKED="$(docker run --rm --entrypoint php ghcr.io/local/revoco:smoke artisan config:show revoco.version)"
+          echo "Baked version: $BAKED"
+          if ! echo "$BAKED" | grep -qF "$SEMVER"; then
+            echo "Smoke FAILED: image does not report version $SEMVER" >&2
+            exit 1
+          fi
+
           SMOKE_KEY="base64:$(openssl rand -base64 32)"
 
           # Boot with the locally-built image (no-build, no dev override).
@@ -104,5 +115,6 @@ jobs:
           tags: |
             ${{ steps.meta.outputs.image_tag }}
             ${{ steps.meta.outputs.image_tag_latest }}
+          build-args: REVOCO_VERSION=${{ steps.meta.outputs.semver }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
