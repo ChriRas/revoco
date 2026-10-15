@@ -19,6 +19,9 @@ Schedule::command('model:prune', ['--model' => Withdrawal::class])->daily();
 Schedule::command('revoco:network-data:refresh')->dailyAt('04:15')->withoutOverlapping();
 Schedule::command('model:prune', ['--model' => SpamNetworkHit::class])->daily();
 
+// Asks GitHub for the latest stable release once a day (shown as the panel's version badge; opt out via REVOCO_UPDATE_CHECK).
+Schedule::command('revoco:release-check')->dailyAt('04:45')->withoutOverlapping();
+
 // Reclaims abused-address entries more than a year past their last confirmation (lookups ignore them already).
 Schedule::command('model:prune', ['--model' => AbusedAddress::class])->daily();
 

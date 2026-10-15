@@ -20,6 +20,8 @@ done
 The pages reference these derivatives with explicit `width`/`height`
 attributes — update those in `docs/index.html` and `docs/de/index.html` if a
 regenerated image changes its aspect ratio (`webpinfo` prints the dimensions).
+`bash docs/assets/check-images.sh` checks originals, derivatives, manifest and page
+references against each other (local check, not part of the Docs CI).
 
 ## Social preview (`og-image.png`)
 

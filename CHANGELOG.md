@@ -4,6 +4,25 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] — Unreleased
+
+Daily spam counters. Every withdrawal is now counted per day, without personal data, so the
+numbers survive the 7-day purge of confirmed spam. This is the groundwork for the statistics
+page.
+
+### Added
+
+- **Daily counters** — a `withdrawal_daily_counts` table holds, per receipt day, spam level,
+  outcome (no verdict, spam sorted out automatically, spam by the operator, not spam) and
+  signal, how many withdrawals there were. It is updated on every submit and every verdict
+  change, a withdrawal with several signals counts once per signal, and the purge never takes
+  a count away. The counters hold no name, e-mail address or other personal data.
+- **Backfill on deploy** — the migration counts every withdrawal that already exists, so the
+  confirmed spam rows still waiting for their purge are included. `php artisan migrate`
+  (which the container entrypoint runs on every start) does it once; no extra step.
+- **Signal filter** — the withdrawals list has a multi-select *Signal* filter. It shows the
+  rows that carry at least one of the selected signals, within the active tab.
+
 ## [1.1.0] — 2026-10-15
 
 Spam handling. Bot campaigns that fill the form with strangers' e-mail addresses no longer

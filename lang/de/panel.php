@@ -187,6 +187,7 @@ return [
         'handled_only' => 'Nur bearbeitete',
         'unhandled_only' => 'Nur unbearbeitete',
         'spam_level' => 'Spam-Stufe',
+        'signal' => 'Signal',
         'date_range' => 'Zeitraum',
         'date_from' => 'Von',
         'date_until' => 'Bis',
@@ -208,6 +209,65 @@ return [
     'tab' => [
         'inbox' => 'Posteingang',
         'spam' => 'Spam',
+    ],
+
+    'statistics' => [
+        'navigation_label' => 'Statistik',
+        'title' => 'Statistik',
+        'period' => [
+            'today' => 'Heute',
+            'month' => 'Monat',
+            'year' => 'Jahr',
+            'all' => 'Gesamt',
+        ],
+        'tile' => [
+            'genuine' => [
+                'label' => 'Echt',
+                'description' => 'Widerrufe, die als echt gelten',
+            ],
+            'suspected' => [
+                'label' => 'Verdächtig',
+                'description' => 'Widerrufe mit Verdacht, noch nicht beurteilt',
+            ],
+            'spam' => [
+                'label' => 'Spam',
+                'description' => 'Als Spam bestätigt oder eingestuft',
+            ],
+            'auto_sorted' => [
+                'label' => 'Automatisch aussortiert',
+                'description' => 'Automatisch als Spam aussortiert (Teil von Spam)',
+            ],
+            'false_alarms' => [
+                'label' => 'Fehlalarme',
+                'description' => 'Rot eingestuft, dann als „Kein Spam“ freigegeben',
+            ],
+            'missed' => [
+                'label' => 'Übersehen',
+                'description' => 'Grün oder gelb eingestuft, dann als Spam markiert',
+            ],
+        ],
+        'chart' => [
+            'heading' => 'Verlauf',
+            'day_format' => 'j.n.',
+            'empty' => 'In diesem Zeitraum wurden keine Widerrufe gezählt',
+            'series' => [
+                'genuine' => 'Echt',
+                'suspected' => 'Verdächtig',
+                'spam' => 'Spam',
+            ],
+        ],
+        'signals' => [
+            'heading' => 'Spam-Signale',
+            'empty' => 'In diesem Zeitraum hat kein Signal ausgelöst',
+            'column' => [
+                'signal' => 'Signal',
+                'genuine' => 'Echt',
+                'suspected' => 'Verdächtig',
+                'spam' => 'Spam',
+                'total' => 'Gesamt',
+            ],
+            'note' => 'Ein Widerruf mit mehreren Signalen wird pro Signal einmal gezählt. Ein Klick auf eine Zahl öffnet die Liste mit denselben Filtern, die Liste enthält aber nur noch gespeicherte Einträge: bestätigter Spam wird nach :days Tagen gelöscht.',
+        ],
     ],
 
     'spam_level' => [
@@ -246,6 +306,12 @@ return [
         'link' => 'Rechtstexte einrichten',
         'page_imprint' => 'Impressum',
         'page_privacy' => 'Datenschutzerklärung',
+    ],
+
+    'version' => [
+        'running' => 'Revoco :version',
+        'available' => ':version verfügbar',
+        'release_notes' => 'Release Notes zu :version öffnen',
     ],
 
     'preview' => [

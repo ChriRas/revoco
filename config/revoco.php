@@ -42,6 +42,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Version and update check
+    |--------------------------------------------------------------------------
+    |
+    | version:      baked into the release image from the git tag (REVOCO_VERSION build
+    |               arg); an untagged build runs as `dev`.
+    | update_check: the scheduler asks the public GitHub Releases API once a day for the
+    |               latest stable release (revoco:release-check); the panel only shows
+    |               the cached answer. REVOCO_UPDATE_CHECK=false opts out. `repository`
+    |               and `timeout` (seconds) are code defaults.
+    |
+    */
+
+    'version' => env('REVOCO_VERSION') ?: 'dev',
+
+    'update_check' => [
+        'enabled' => (bool) env('REVOCO_UPDATE_CHECK', true),
+        'repository' => 'ChriRas/revoco',
+        'timeout' => 10,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Delivery — merchant notification + optional ntfy push
     |--------------------------------------------------------------------------
     |

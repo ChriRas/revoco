@@ -100,9 +100,9 @@ it('backfills a submit entry for every existing row that is not red', function (
     $red = Withdrawal::factory()->spam()->create();
     $correctedRed = Withdrawal::factory()->spam()->notSpam()->create();
 
-    // Step 10: slice-032's two (claimed_at rename, digest last-sent setting), slice-030's verdict-source column, slice-029's table, slice-028's three migrations (network columns, hits table,
+    // Step 11: slice-033's counts table, slice-032's two (claimed_at rename, digest last-sent setting), slice-030's verdict-source column, slice-029's table, slice-028's three migrations (network columns, hits table,
     // shipping-countries setting), the score column (slice-027) and the digest-time settings migration roll back before the log migration.
-    Artisan::call('migrate:rollback', ['--step' => 10]);
+    Artisan::call('migrate:rollback', ['--step' => 11]);
     expect(Schema::hasTable('withdrawal_acknowledgments'))->toBeFalse();
     Artisan::call('migrate');
 
