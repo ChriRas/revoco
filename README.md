@@ -173,6 +173,10 @@ declaration into one of three levels, and the level decides what is sent:
   missing or invalid render token, random-string content) is stored as confirmed spam right away. The digest counts these rows.
 - **Retention.** Confirmed spam (by you or by auto-sorting) is deleted 7 days after the verdict; until then "not spam"
   restores it. Unconfirmed spam is never deleted automatically. The declaration content itself is never edited.
+- **Statistics.** The panel's *Statistics* page shows genuine, suspected and spam declarations for today, a month, a
+  year or all time, plus the auto-sorted ones, false alarms (spam released as "not spam") and missed spam (marked as
+  spam later), a history chart and a per-signal table that opens the list filtered by that signal. It reads anonymous
+  daily counters (no personal data) that outlive the 7-day purge; the withdrawals list has a matching *Signal* filter.
 
 Behind a reverse proxy, set `TRUSTED_PROXIES` — otherwise every submit seems to come from the proxy, and the per-IP
 rate and the network signals judge the proxy instead of the client.
