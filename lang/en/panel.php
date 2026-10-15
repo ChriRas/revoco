@@ -211,6 +211,65 @@ return [
         'spam' => 'Spam',
     ],
 
+    'statistics' => [
+        'navigation_label' => 'Statistics',
+        'title' => 'Statistics',
+        'period' => [
+            'today' => 'Today',
+            'month' => 'Month',
+            'year' => 'Year',
+            'all' => 'All time',
+        ],
+        'tile' => [
+            'genuine' => [
+                'label' => 'Genuine',
+                'description' => 'Withdrawals that count as genuine',
+            ],
+            'suspected' => [
+                'label' => 'Suspected',
+                'description' => 'Withdrawals that look suspicious, not yet judged',
+            ],
+            'spam' => [
+                'label' => 'Spam',
+                'description' => 'Confirmed or classified as spam',
+            ],
+            'auto_sorted' => [
+                'label' => 'Auto-sorted',
+                'description' => 'Sorted out as spam automatically (part of Spam)',
+            ],
+            'false_alarms' => [
+                'label' => 'False alarms',
+                'description' => 'Classified red, then released as "not spam"',
+            ],
+            'missed' => [
+                'label' => 'Missed',
+                'description' => 'Classified green or yellow, then marked as spam',
+            ],
+        ],
+        'chart' => [
+            'heading' => 'History',
+            'day_format' => 'n/j',
+            'empty' => 'No withdrawals counted in this period',
+            'series' => [
+                'genuine' => 'Genuine',
+                'suspected' => 'Suspected',
+                'spam' => 'Spam',
+            ],
+        ],
+        'signals' => [
+            'heading' => 'Spam signals',
+            'empty' => 'No signal has fired in this period',
+            'column' => [
+                'signal' => 'Signal',
+                'genuine' => 'Genuine',
+                'suspected' => 'Suspected',
+                'spam' => 'Spam',
+                'total' => 'Total',
+            ],
+            'note' => 'A withdrawal with several signals is counted once per signal. A count opens the list with the same filters, but the list only holds the rows still stored: confirmed spam is deleted after :days days.',
+        ],
+    ],
+
     'spam_level' => [
         'green' => 'Clean',
         'yellow' => 'Suspicious',
