@@ -7,7 +7,9 @@ namespace App\Models;
 use App\Enums\SpamLevel;
 use App\Enums\SpamVerdict;
 use App\Enums\SpamVerdictSource;
+use App\Observers\WithdrawalObserver;
 use Database\Factories\WithdrawalFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -36,6 +38,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
+#[ObservedBy([WithdrawalObserver::class])]
 final class Withdrawal extends Model
 {
     /** @use HasFactory<WithdrawalFactory> */
