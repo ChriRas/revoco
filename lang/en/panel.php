@@ -187,6 +187,7 @@ return [
         'handled_only' => 'Handled only',
         'unhandled_only' => 'Unhandled only',
         'spam_level' => 'Spam level',
+        'signal' => 'Signal',
         'date_range' => 'Date range',
         'date_from' => 'From',
         'date_until' => 'Until',

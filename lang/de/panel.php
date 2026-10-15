@@ -187,6 +187,7 @@ return [
         'handled_only' => 'Nur bearbeitete',
         'unhandled_only' => 'Nur unbearbeitete',
         'spam_level' => 'Spam-Stufe',
+        'signal' => 'Signal',
         'date_range' => 'Zeitraum',
         'date_from' => 'Von',
         'date_until' => 'Bis',

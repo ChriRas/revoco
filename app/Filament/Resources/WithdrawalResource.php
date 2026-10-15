@@ -98,6 +98,17 @@ final class WithdrawalResource extends Resource
                     ->label(__('panel.filter.spam_level'))
                     ->options(SpamLevel::class),
 
+                SelectFilter::make('signal')
+                    ->label(__('panel.filter.signal'))
+                    ->multiple()
+                    ->options(fn (): array => self::signalOptions())
+                    ->query(function (Builder $query, array $data): Builder {
+                        /** @var list<string> $keys */
+                        $keys = array_values(array_filter((array) ($data['values'] ?? []), is_string(...)));
+
+                        return self::whereSignalIn($query, $keys);
+                    }),
+
                 Filter::make('date_range')
                     ->label(__('panel.filter.date_range'))
                     ->form([
@@ -124,6 +135,45 @@ final class WithdrawalResource extends Resource
             ->recordUrl(
                 fn (Withdrawal $record): string => Pages\ViewWithdrawal::getUrl(['record' => $record]),
             );
+    }
+
+    /**
+     * Every signal the scorer weighs, labelled through the one rendering point.
+     *
+     * @return array<string, string>
+     */
+    private static function signalOptions(): array
+    {
+        $options = [];
+
+        foreach (array_keys((array) config('revoco.spam.weights')) as $key) {
+            $key = (string) $key;
+            $options[$key] = SpamReasonLabels::render($key) ?? $key;
+        }
+
+        return $options;
+    }
+
+    /**
+     * Rows whose `spam_reason` carries at least one of the keys. The match is comma-delimited, so one key
+     * never matches inside another, and LIKE wildcards in a key (the `_` of every snake_case key) are escaped.
+     *
+     * @param  Builder<Withdrawal>  $query
+     * @param  list<string>  $keys
+     * @return Builder<Withdrawal>
+     */
+    private static function whereSignalIn(Builder $query, array $keys): Builder
+    {
+        if ($keys === []) {
+            return $query;
+        }
+
+        return $query->where(function (Builder $q) use ($keys): void {
+            foreach ($keys as $key) {
+                $pattern = '%,'.addcslashes($key, '\\%_').',%';
+                $q->orWhereRaw("(',' || spam_reason || ',') LIKE ? ESCAPE '\\'", [$pattern]);
+            }
+        });
     }
 
     public static function infolist(Schema $schema): Schema
