@@ -4,6 +4,99 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] — 2026-10-15
+
+Spam handling. Bot campaigns that fill the form with strangers' e-mail addresses no longer
+turn Revoco into a mail cannon or flood the operator's inbox. The form still never blocks a
+submit and stores every declaration — a background score sorts each one into a level, and
+the level decides what is sent. See *Spam handling* in the README.
+
+### Added
+
+- **Three spam levels** — *clean*, *suspicious* and *spam*. Clean and suspicious
+  declarations get the acknowledgment as before; suspicious ones are flagged in the
+  operator e-mail. Spam gets **no acknowledgment, no operator e-mail and no push**.
+- **Score engine** with weighted, never-blocking signals: content patterns (random strings,
+  a name without a space), a signed render token and the fill time, the honeypot, an
+  ancient browser and the per-IP submit rate. A signal that throws is reported and counts
+  as not fired — it never costs the submit.
+- **Network signals**, resolved locally: country and ASN from the DB-IP Lite databases, a
+  country outside the shipping countries (panel setting, default `DE`), the Spamhaus DROP /
+  ASN-DROP lists, Tor exit nodes, and networks repeatedly seen in confirmed spam. A daily
+  scheduler job (`revoco:network-data:refresh`) refreshes the data; the panel shows its
+  status. The IP address is never stored; country, ASN and network name are.
+- **Abused-address memory** — addresses of confirmed spam are kept for one year as an
+  HMAC-SHA256 hash keyed from `APP_KEY`. A hit alone only makes a declaration suspicious.
+- **Auto-sorting** — the honeypot plus a second bot signal (ancient browser, too fast,
+  missing or invalid render token, random-string content) stores the declaration as
+  confirmed spam right away.
+- **Morning digest** at the time set on the notifications page (default 07:00). It covers
+  everything since the previous digest, at most 7 days back: unjudged spam and suspicious
+  declarations, each with a one-click link, plus a count of the auto-sorted ones.
+- **Signed mail links** — "mark as spam" in the operator e-mail, "not spam" in the digest.
+  Single-use, valid for 7 days, and they open a confirmation page first, so a mail scanner
+  that prefetches a link changes nothing.
+- **"Not spam" sends the withheld acknowledgment** once, with the original date and time of
+  receipt.
+- **Panel**: Inbox and Spam tabs, single and bulk spam / not-spam actions as row icons, the
+  verdict and who made it (operator or automatic), and a live preview of the newest
+  declaration in the current tab above the list (it follows the hovered or focused row).
+- **Retention** — confirmed spam (by the operator or by auto-sorting) is deleted 7 days
+  after the verdict. Unconfirmed spam is never deleted automatically.
+- **`TRUSTED_PROXIES`** — proxy IPs/CIDRs (or `*`) whose `X-Forwarded-For` is trusted, so
+  the per-IP rate and the network signals see the client instead of the proxy.
+- German framework messages (validation, pagination, passwords) for the panel and the form.
+- The hidden honeypot area asks automated assistants to fill only the visible fields, at a
+  human pace; password managers are told to ignore the field.
+
+### Changed
+
+- The immutability rule now allows the spam level, score and verdict to change and confirmed
+  spam to be deleted. The content of a declaration (name, e-mail, order, subject, time of
+  receipt) is still never edited.
+- `docker-compose.yml` passes `APP_URL` to the queue and scheduler services — links in
+  queued mails are built there.
+- Confirmed spam needs no handling: the "handled" toggle is hidden for it.
+- `task check` runs `composer audit` before Pint, PHPStan and Pest; CI fails when the
+  published Filament assets drift from the installed package.
+- Laravel framework 13.35.0 → 13.36.0, Filament 5.10.0 → 5.10.2 (panel assets republished),
+  new dependency `maxmind-db/reader` 1.14; dev: PHPStan 2.3.1, Larastan 3.13.0.
+
+### Upgrade notes
+
+- Migrations run automatically on boot. Then fill the network data once (it refreshes daily
+  afterwards):
+  `docker compose -f docker-compose.yml exec -u www-data app php artisan revoco:network-data:refresh`
+- Behind a reverse proxy, set `TRUSTED_PROXIES` for the `app` service.
+- If you run your own compose file, pass `APP_URL` to the queue and scheduler containers —
+  otherwise the links in mails point to `http://localhost`.
+- Review your privacy policy: Revoco now stores country, ASN and network name per
+  declaration and keeps a keyed hash of addresses from confirmed spam for one year.
+- Check the digest and the Spam tab now and then: no filter is perfect, and "not spam"
+  releases a declaration within the 7 days.
+
+### Notes
+
+- Quality gate green: `composer audit`, Pint, PHPStan level max, 481 Pest tests (1980
+  assertions).
+- Tested on staging as `1.1.0-rc.1` against the known spam scenarios, including the digest
+  and both "not spam" paths (panel and mail link) with real mail delivery.
+
+## [1.0.3] — 2026-10-13
+
+Hotfix for a bot campaign that abused the form with strangers' e-mail addresses.
+
+### Fixed
+
+- **No acknowledgment for spam-flagged submits.** A declaration flagged as spam is still
+  stored, and the operator is still notified, but the acknowledgment no longer goes to the
+  submitted address — Revoco no longer mails people who never used the form.
+
+### Changed
+
+- Laravel framework 13.32.0 → 13.35.0, Filament 5.8.2 → 5.10.0, Livewire 4.4.5 → 4.4.7;
+  dev: Larastan 3.12.2; npm: shell-quote / concurrently and source-map-js 1.2.2.
+
 ## [1.0.2] — 2026-09-17
 
 Maintenance release. No functional changes and no configuration changes — this release
@@ -222,6 +315,8 @@ operator notification are sent. Neutral by default, configurable per `.env`.
 - Operator deployment specifics (real domains, reverse proxy, secrets, brand assets)
   live in a separate private infrastructure repository, never in this public repo.
 
+[1.1.0]: https://github.com/ChriRas/revoco/releases/tag/v1.1.0
+[1.0.3]: https://github.com/ChriRas/revoco/releases/tag/v1.0.3
 [1.0.2]: https://github.com/ChriRas/revoco/releases/tag/v1.0.2
 [1.0.1]: https://github.com/ChriRas/revoco/releases/tag/v1.0.1
 [1.0.0]: https://github.com/ChriRas/revoco/releases/tag/v1.0.0
