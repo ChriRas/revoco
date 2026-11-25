@@ -80,7 +80,7 @@ final class ScreenshotSeeder extends Seeder
     {
         if (app()->isProduction()) {
             // Unset when the seeder runs outside artisan.
-            $this->command?->error('ScreenshotSeeder refuses to run in production.'); // @phpstan-ignore nullsafe.neverNull
+            $this->command?->error('ScreenshotSeeder refuses to run in production.');
 
             return;
         }

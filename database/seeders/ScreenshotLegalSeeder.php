@@ -19,7 +19,7 @@ final class ScreenshotLegalSeeder extends Seeder
     {
         if (app()->isProduction()) {
             // Unset when the seeder runs outside artisan.
-            $this->command?->error('ScreenshotLegalSeeder refuses to run in production.'); // @phpstan-ignore nullsafe.neverNull
+            $this->command?->error('ScreenshotLegalSeeder refuses to run in production.');
 
             return;
         }
