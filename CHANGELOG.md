@@ -4,6 +4,52 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.2] — 2026-11-26
+
+Maintenance and security release. No functional changes and no configuration changes — this
+release refreshes the dependency tree on top of 1.2.0 and closes every advisory `composer
+audit` reported against it. Upgrading requires no operator action beyond pulling the new image.
+
+### Security
+
+- **laravel/framework 13.36.0 → 13.44.1** — task output injection via the concurrency
+  process driver (CVE-2026-128083, low).
+- **livewire/livewire 4.4.7 → 4.4.10** — authorization bypass in `#[Authorize]` via
+  reordered parameter keys (GHSA-mhf7-xp6r-6qrc, medium).
+- **symfony/http-foundation 8.1.9 → 8.1.12** — `private_ranges` trusted-proxies shortcut
+  (CVE-2026-121619), client-chosen host in generated URLs (CVE-2026-135802), path rules
+  bypass (CVE-2026-135801), HEAD requests bypassing the `methods` option (CVE-2026-118514).
+- **symfony/http-kernel 8.1.9 → 8.1.12** — inline fragments trusting forwarded headers
+  (CVE-2026-123339).
+- **symfony/mime 8.1.7 → 8.1.12** — e-mail header injection via non-token characters
+  (CVE-2026-45070, medium).
+- **symfony/routing 8.1.9 → 8.1.12** — host placeholders matching the start of the path
+  (CVE-2026-118516).
+- **symfony/html-sanitizer 8.1.8 → 8.1.12** — `srcset` not URL-sanitized
+  (CVE-2026-121949), narrow meta-refresh matching (CVE-2026-121373),
+  `allowLinkHosts()` / `allowMediaHosts()` bypass (CVE-2026-118517).
+- **league/csv 9.28.0 → 9.29.1** — denial of service through unbounded buffering in
+  `CharsetConverter` (GHSA-m9j4-54gj-jvf8).
+
+### Changed
+
+- **Filament 5.10.2 → 5.12.0** across all packages, with the published panel assets under
+  `public/js/filament/` and `public/css/filament/` rebuilt to match.
+- spatie/laravel-settings 3.9.0 → 3.10.2, Guzzle 8.2.0 → 8.6.0, Monolog 3.13.0,
+  Carbon 3.15.1, Tinker 3.2.0; 85 Composer packages in total, all within the existing
+  constraints.
+- Dev toolchain: Larastan 3.13.0 → 3.15.0, PHPStan 2.3.1 → 2.3.7, Pint 1.32.3;
+  npm: Vite 8.0.16 → 8.3.5. Two `@phpstan-ignore` comments the newer Larastan no longer
+  needs were removed from the screenshot seeders.
+- `SECURITY.md`: supported versions updated to 1.2.x.
+
+### Notes
+
+- The image also carries the patched PHP base image that the image-only `v1.2.1` tag
+  (2026-10-21) shipped without release notes.
+- Quality gate green: Pint, PHPStan level max, 587 Pest tests (2378 assertions);
+  `composer audit` and `npm audit` report no vulnerabilities.
+
 ## [1.2.0] — 2026-10-15
 
 Operator insights. A statistics page shows how many declarations were genuine, suspected or
@@ -358,6 +404,7 @@ operator notification are sent. Neutral by default, configurable per `.env`.
 - Operator deployment specifics (real domains, reverse proxy, secrets, brand assets)
   live in a separate private infrastructure repository, never in this public repo.
 
+[1.2.2]: https://github.com/ChriRas/revoco/releases/tag/v1.2.2
 [1.2.0]: https://github.com/ChriRas/revoco/releases/tag/v1.2.0
 [1.1.0]: https://github.com/ChriRas/revoco/releases/tag/v1.1.0
 [1.0.3]: https://github.com/ChriRas/revoco/releases/tag/v1.0.3
